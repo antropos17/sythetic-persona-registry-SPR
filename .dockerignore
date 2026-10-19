@@ -1,0 +1,12 @@
+.git
+.github
+var
+.env
+.env.*
+!.env.example
+node_modules
+screenshots
+research
+tests
+*.log
+*.sqlite*

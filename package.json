@@ -1,0 +1,14 @@
+{
+  "name": "synthetic-persona-registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.11.0 <25"
+  },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "check": "node --check server/index.mjs && node --check server/app.mjs && node --check server/db.mjs && node --check server/validation.mjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}

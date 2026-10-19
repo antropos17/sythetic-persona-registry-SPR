@@ -1,0 +1,336 @@
+{
+  "schema_version": "0.1.0",
+  "passport": {
+    "passport_id": "pp_fidan_001",
+    "created_at": "2026-07-27T00:00:00Z",
+    "updated_at": "2026-07-27T00:00:00Z",
+    "status": "draft",
+    "issuer": {
+      "name": "Ruslan Murtuzaliyev",
+      "organization": null,
+      "issuer_type": "persona_owner",
+      "contact": null
+    }
+  },
+
+  "persona": {
+    "persona_id": "persona_fidan_001",
+    "canonical_name": "Fidan",
+    "alternative_names": [],
+    "description": null,
+    "creation_date": null,
+
+    "identity_type": "fully_synthetic",
+
+    "evidence_level": "declared",
+
+    "ownership": {
+      "current_owner": {
+        "name": "Ruslan Murtuzaliyev",
+        "ownership_basis": "original_creator",
+        "effective_from": null,
+        "evidence_ids": []
+      },
+      "previous_owners": [],
+      "ownership_disputes": []
+    },
+
+    "synthetic_origin_declaration": {
+      "declared_fully_synthetic": true,
+      "based_on_specific_real_person": false,
+      "specific_real_person_name": null,
+      "real_person_consent_required": false,
+      "real_person_consent_evidence_ids": [],
+      "declaration_date": null,
+      "declaration_evidence_id": null
+    },
+
+    "identity_boundaries": {
+      "must_preserve": [
+        "core facial proportions",
+        "recognizable visual identity",
+        "canonical persona name"
+      ],
+      "allowed_variations": [
+        "hairstyle",
+        "clothing",
+        "environment",
+        "lighting"
+      ],
+      "prohibited_uses": [
+        "impersonation of a real person",
+        "political endorsement without explicit approval",
+        "misleading claims that the persona is a real human"
+      ]
+    },
+
+    "reference_assets": [
+      {
+        "asset_id": "ref_fidan_001",
+        "asset_type": "canonical_portrait",
+        "file_name": null,
+        "media_type": "image",
+        "sha256": null,
+        "perceptual_hash": null,
+        "created_at": null,
+        "storage_location": null,
+        "public_url": null,
+
+        "origin": {
+          "created_by": null,
+          "generation_method": "ai_generated",
+          "generation_event_id": null,
+          "source_asset_ids": []
+        },
+
+        "evidence_level": "declared",
+        "evidence_ids": []
+      }
+    ]
+  },
+
+  "model_bill_of_materials": {
+    "bom_id": "bom_fidan_001",
+    "bom_version": "0.1.0",
+    "applies_to_persona_id": "persona_fidan_001",
+    "created_at": "2026-07-27T00:00:00Z",
+
+    "components": [
+      {
+        "component_id": "model_base_001",
+        "component_type": "base_model",
+        "name": null,
+        "version": null,
+        "provider": null,
+
+        "source": {
+          "repository": null,
+          "download_url": null,
+          "publisher": null,
+          "downloaded_at": null
+        },
+
+        "artifact": {
+          "file_name": null,
+          "file_format": null,
+          "file_size_bytes": null,
+          "sha256": null,
+          "storage_location": null
+        },
+
+        "license": {
+          "license_name": null,
+          "license_version": null,
+          "license_url": null,
+          "license_text_sha256": null,
+          "commercial_use": "unknown",
+          "derivative_models_allowed": "unknown",
+          "redistribution_allowed": "unknown",
+          "transfer_allowed": "unknown",
+          "attribution_required": "unknown",
+          "additional_restrictions": [],
+          "review_status": "not_reviewed",
+          "reviewed_at": null,
+          "reviewed_by": null
+        },
+
+        "lineage": {
+          "parent_component_ids": [],
+          "declared_parent_models": [],
+          "lineage_complete": false,
+          "unknown_upstream": true,
+          "unknown_upstream_reason": null
+        },
+
+        "evidence_level": "declared",
+        "evidence_ids": [],
+        "unresolved_risk_ids": []
+      },
+
+      {
+        "component_id": "model_checkpoint_001",
+        "component_type": "checkpoint",
+        "name": null,
+        "version": null,
+        "provider": null,
+
+        "source": {
+          "repository": null,
+          "download_url": null,
+          "publisher": null,
+          "downloaded_at": null
+        },
+
+        "artifact": {
+          "file_name": null,
+          "file_format": null,
+          "file_size_bytes": null,
+          "sha256": null,
+          "storage_location": null
+        },
+
+        "license": {
+          "license_name": null,
+          "license_version": null,
+          "license_url": null,
+          "license_text_sha256": null,
+          "commercial_use": "unknown",
+          "derivative_models_allowed": "unknown",
+          "redistribution_allowed": "unknown",
+          "transfer_allowed": "unknown",
+          "attribution_required": "unknown",
+          "additional_restrictions": [],
+          "review_status": "not_reviewed",
+          "reviewed_at": null,
+          "reviewed_by": null
+        },
+
+        "lineage": {
+          "parent_component_ids": [
+            "model_base_001"
+          ],
+          "declared_parent_models": [],
+          "lineage_complete": false,
+          "unknown_upstream": true,
+          "unknown_upstream_reason": null
+        },
+
+        "evidence_level": "declared",
+        "evidence_ids": [],
+        "unresolved_risk_ids": []
+      },
+
+      {
+        "component_id": "model_lora_fidan_001",
+        "component_type": "lora",
+        "name": "Fidan LoRA",
+        "version": null,
+        "provider": "Ruslan Murtuzaliyev",
+
+        "source": {
+          "repository": "private",
+          "download_url": null,
+          "publisher": "Ruslan Murtuzaliyev",
+          "downloaded_at": null
+        },
+
+        "artifact": {
+          "file_name": null,
+          "file_format": "safetensors",
+          "file_size_bytes": null,
+          "sha256": null,
+          "storage_location": null
+        },
+
+        "license": {
+          "license_name": "proprietary",
+          "license_version": null,
+          "license_url": null,
+          "license_text_sha256": null,
+          "commercial_use": "allowed",
+          "derivative_models_allowed": "restricted",
+          "redistribution_allowed": "restricted",
+          "transfer_allowed": "case_by_case",
+          "attribution_required": "not_required",
+          "additional_restrictions": [],
+          "review_status": "not_reviewed",
+          "reviewed_at": null,
+          "reviewed_by": null
+        },
+
+        "lineage": {
+          "parent_component_ids": [
+            "model_checkpoint_001"
+          ],
+          "declared_parent_models": [],
+          "lineage_complete": false,
+          "unknown_upstream": true,
+          "unknown_upstream_reason": "Base model and checkpoint lineage have not yet been fully verified."
+        },
+
+        "training": {
+          "training_started_at": null,
+          "training_completed_at": null,
+          "training_tool": null,
+          "training_tool_version": null,
+          "training_parameters_location": null,
+          "dataset_ids": [],
+          "trainer": {
+            "name": "Ruslan Murtuzaliyev",
+            "role": "creator"
+          }
+        },
+
+        "evidence_level": "declared",
+        "evidence_ids": [],
+        "unresolved_risk_ids": []
+      }
+    ],
+
+    "generation_tools": [
+      {
+        "tool_id": "tool_001",
+        "name": null,
+        "version": null,
+        "provider": null,
+        "tool_type": "generation_interface",
+        "local_or_hosted": null,
+        "terms_url": null,
+        "commercial_use_status": "unknown",
+        "evidence_ids": []
+      }
+    ]
+  },
+
+  "evidence": [
+    {
+      "evidence_id": "evidence_001",
+      "evidence_type": "creator_declaration",
+      "title": "Fidan synthetic origin declaration",
+      "description": null,
+      "issued_by": "Ruslan Murtuzaliyev",
+      "issued_at": null,
+
+      "file": {
+        "file_name": null,
+        "media_type": "application/pdf",
+        "sha256": null,
+        "storage_location": null
+      },
+
+      "verification": {
+        "status": "unverified",
+        "verified_by": null,
+        "verified_at": null,
+        "method": null
+      }
+    }
+  ],
+
+  "unresolved_risks": [
+    {
+      "risk_id": "risk_001",
+      "category": "model_lineage",
+      "severity": "unknown",
+      "title": "Base model lineage not verified",
+      "description": "The complete upstream model lineage has not yet been reconstructed.",
+      "affected_component_ids": [
+        "model_base_001",
+        "model_checkpoint_001",
+        "model_lora_fidan_001"
+      ],
+      "status": "open",
+      "recommended_action": "Identify exact model files, calculate SHA-256 hashes and archive the applicable licence texts."
+    }
+  ],
+
+  "completeness": {
+    "identity_root_complete": false,
+    "model_bom_complete": false,
+    "reference_assets_hashed": false,
+    "all_model_files_hashed": false,
+    "all_licenses_archived": false,
+    "lineage_verified": false,
+    "open_risk_count": 1
+  }
+}

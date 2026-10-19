@@ -1,0 +1,35 @@
+name: Publish container
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.11.1'
+      - run: npm run check
+      - run: npm test
+      - name: Build and test the exact image to publish
+        run: |
+          docker build --tag spr:release .
+          docker run --detach --name spr-release --publish 127.0.0.1:4176:4176 spr:release
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4176/api/v1/health > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:4176/api/v1/health
+          docker rm --force spr-release
+      - name: Publish immutable commit tag
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          image="ghcr.io/${GITHUB_REPOSITORY,,}/spr:${GITHUB_SHA}"
+          docker tag spr:release "$image"
+          docker push "$image"

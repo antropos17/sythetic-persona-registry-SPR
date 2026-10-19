@@ -1,0 +1,375 @@
+{
+  "levels": [
+    "Declared",
+    "Evidence-backed",
+    "Reviewed",
+    "Controlled creation"
+  ],
+  "personas": [
+    {
+      "id": "PP-AZ-0001",
+      "surname": "FIDAN",
+      "given": "",
+      "name": "Fidan",
+      "handle": "@fidan.sings",
+      "nature": "Fully synthetic",
+      "lang": "Azerbaijani",
+      "code": "AZE",
+      "role": "Vocalist",
+      "holder": "Ruslan M.",
+      "level": "Evidence-backed",
+      "status": "Valid",
+      "note": "",
+      "issued": "12 Oct 2026",
+      "expires": "12 Oct 2031",
+      "created": "261012",
+      "exp": "311012",
+      "record": "a91f7c02",
+      "sort": 20261012,
+      "stamps": [
+        {
+          "t": "Identity root",
+          "v": "EVIDENCE-BACKED",
+          "c": "#1E6B47",
+          "k": "rect",
+          "r": -5
+        },
+        {
+          "t": "Model lineage",
+          "v": "DECLARED",
+          "sub": "upstream unknown",
+          "c": "#2C3A8C",
+          "k": "round",
+          "r": 4
+        },
+        {
+          "t": "Voice and music",
+          "v": "OPEN RISK",
+          "c": "#A3570A",
+          "k": "double",
+          "r": -3
+        },
+        {
+          "t": "TikTok channel",
+          "v": "OWNER VERIFIED",
+          "c": "#1E6B47",
+          "k": "pill",
+          "r": 6
+        },
+        {
+          "t": "Content credentials",
+          "v": "10 FILES SIGNED",
+          "c": "#2C3A8C",
+          "k": "dash",
+          "r": -2
+        }
+      ],
+      "history": [
+        {
+          "d": "12 Oct 2026",
+          "e": "Passport issued and published"
+        },
+        {
+          "d": "10 Oct 2026",
+          "e": "TikTok channel ownership verified"
+        },
+        {
+          "d": "02 Oct 2026",
+          "e": "Application received"
+        }
+      ],
+      "risks": [
+        "Voice made on a hosted service. Its commercial terms are not archived yet.",
+        "The base model publisher has not disclosed its training data."
+      ],
+      "portrait": "assets/portraits/PP-AZ-0001.png"
+    },
+    {
+      "id": "PP-TR-0004",
+      "surname": "KAYA",
+      "given": "LEYLA",
+      "name": "Leyla Kaya",
+      "handle": "@leyla.kaya",
+      "nature": "Fully synthetic",
+      "lang": "Turkish",
+      "code": "TUR",
+      "role": "Fashion host",
+      "holder": "Studio Nur",
+      "level": "Reviewed",
+      "status": "Valid",
+      "note": "",
+      "issued": "03 Sep 2026",
+      "expires": "03 Sep 2031",
+      "created": "260903",
+      "exp": "310903",
+      "record": "3be041d9",
+      "sort": 20260903,
+      "stamps": [
+        {
+          "t": "Identity root",
+          "v": "REVIEWED",
+          "c": "#1E6B47",
+          "k": "round",
+          "r": -4
+        },
+        {
+          "t": "Model lineage",
+          "v": "EVIDENCE-BACKED",
+          "c": "#1E6B47",
+          "k": "rect",
+          "r": 3
+        },
+        {
+          "t": "Voice",
+          "v": "LICENSED",
+          "c": "#1E6B47",
+          "k": "pill",
+          "r": -2
+        },
+        {
+          "t": "Instagram",
+          "v": "OWNER VERIFIED",
+          "c": "#2C3A8C",
+          "k": "double",
+          "r": 4
+        }
+      ],
+      "history": [
+        {
+          "d": "03 Sep 2026",
+          "e": "Passport issued after examiner review"
+        },
+        {
+          "d": "01 Sep 2026",
+          "e": "Examiner review completed"
+        },
+        {
+          "d": "18 Aug 2026",
+          "e": "Application received"
+        }
+      ],
+      "risks": [],
+      "portrait": "assets/portraits/PP-TR-0004.png"
+    },
+    {
+      "id": "PP-ES-0011",
+      "surname": "SOL",
+      "given": "MIRA",
+      "name": "Mira Sol",
+      "handle": "@mira.moves",
+      "nature": "Licensed likeness",
+      "lang": "Spanish",
+      "code": "ESP",
+      "role": "Fitness coach",
+      "holder": "Ola Media",
+      "level": "Evidence-backed",
+      "status": "Under review",
+      "note": "Consent renewal pending",
+      "issued": "28 Jul 2026",
+      "expires": "28 Jul 2031",
+      "created": "260728",
+      "exp": "310728",
+      "record": "c47a09e1",
+      "sort": 20260728,
+      "stamps": [
+        {
+          "t": "Likeness consent",
+          "v": "ON FILE",
+          "c": "#1E6B47",
+          "k": "rect",
+          "r": -3
+        },
+        {
+          "t": "Model lineage",
+          "v": "DECLARED",
+          "c": "#2C3A8C",
+          "k": "round",
+          "r": 5
+        },
+        {
+          "t": "Annual review",
+          "v": "PENDING",
+          "c": "#A3570A",
+          "k": "double",
+          "r": -2
+        }
+      ],
+      "history": [
+        {
+          "d": "10 Oct 2026",
+          "e": "Annual review opened"
+        },
+        {
+          "d": "28 Jul 2026",
+          "e": "Passport issued"
+        },
+        {
+          "d": "15 Jul 2026",
+          "e": "Signed likeness consent filed"
+        }
+      ],
+      "risks": [
+        "The model’s likeness consent expires on 30 Nov 2026."
+      ],
+      "portrait": "assets/portraits/PP-ES-0011.png"
+    },
+    {
+      "id": "PP-JP-0016",
+      "surname": "MORI",
+      "given": "AIKO",
+      "name": "Aiko Mori",
+      "handle": "@aiko.plays",
+      "nature": "Fully synthetic",
+      "lang": "Japanese",
+      "code": "JPN",
+      "role": "Game streamer",
+      "holder": "Kumo Labs",
+      "level": "Declared",
+      "status": "Under review",
+      "note": "Evidence requested",
+      "issued": "Pending",
+      "expires": "Pending",
+      "created": "261014",
+      "exp": "000000",
+      "record": "5d12ee70",
+      "sort": 20261014,
+      "stamps": [
+        {
+          "t": "Identity root",
+          "v": "DECLARED",
+          "c": "#2C3A8C",
+          "k": "round",
+          "r": 3
+        },
+        {
+          "t": "Examiner",
+          "v": "EVIDENCE REQUESTED",
+          "c": "#A3570A",
+          "k": "double",
+          "r": -4
+        }
+      ],
+      "history": [
+        {
+          "d": "16 Oct 2026",
+          "e": "Examiner requested model files and licences"
+        },
+        {
+          "d": "14 Oct 2026",
+          "e": "Application received"
+        }
+      ],
+      "risks": [
+        "Model files have not been hashed.",
+        "No licence snapshots on file."
+      ],
+      "portrait": "assets/portraits/PP-JP-0016.png"
+    },
+    {
+      "id": "PP-MX-0019",
+      "surname": "REYES",
+      "given": "NOVA",
+      "name": "Nova Reyes",
+      "handle": "@novareyes",
+      "nature": "Fully synthetic",
+      "lang": "Spanish",
+      "code": "MEX",
+      "role": "Lifestyle",
+      "holder": "Brightline",
+      "level": "Evidence-backed",
+      "status": "Suspended",
+      "note": "Undisclosed sponsored posts",
+      "issued": "19 May 2026",
+      "expires": "19 May 2031",
+      "created": "260519",
+      "exp": "310519",
+      "record": "88c31a4b",
+      "sort": 20260519,
+      "stamps": [
+        {
+          "t": "Identity root",
+          "v": "EVIDENCE-BACKED",
+          "c": "#1E6B47",
+          "k": "rect",
+          "r": -3
+        },
+        {
+          "t": "Status",
+          "v": "SUSPENDED",
+          "c": "#9A2F2B",
+          "k": "double",
+          "r": 7
+        }
+      ],
+      "history": [
+        {
+          "d": "02 Oct 2026",
+          "e": "Suspended for sponsored posts without an AI or ad label"
+        },
+        {
+          "d": "19 May 2026",
+          "e": "Passport issued"
+        }
+      ],
+      "risks": [
+        "Sponsored posts without disclosure on three channels."
+      ],
+      "portrait": "assets/portraits/PP-MX-0019.png"
+    },
+    {
+      "id": "PP-SE-0023",
+      "surname": "BERG",
+      "given": "ELIN",
+      "name": "Elin Berg",
+      "handle": "@elin.berg",
+      "nature": "Claimed synthetic",
+      "lang": "Swedish",
+      "code": "SWE",
+      "role": "Travel",
+      "holder": "North Pixel",
+      "level": "Declared",
+      "status": "Revoked",
+      "note": "Close match to a real person",
+      "issued": "02 Apr 2026",
+      "expires": "Revoked",
+      "created": "260402",
+      "exp": "000000",
+      "record": "0f6db52c",
+      "sort": 20260402,
+      "stamps": [
+        {
+          "t": "Face comparison",
+          "v": "MATCH FOUND",
+          "c": "#9A2F2B",
+          "k": "rect",
+          "r": -5
+        },
+        {
+          "t": "Status",
+          "v": "REVOKED",
+          "c": "#9A2F2B",
+          "k": "double",
+          "r": 5
+        }
+      ],
+      "history": [
+        {
+          "d": "24 Sep 2026",
+          "e": "Passport revoked"
+        },
+        {
+          "d": "21 Sep 2026",
+          "e": "Face comparison found a close match to a real person"
+        },
+        {
+          "d": "02 Apr 2026",
+          "e": "Passport issued"
+        }
+      ],
+      "risks": [
+        "Revoked. The persona’s face could not be cleared."
+      ],
+      "portrait": "assets/portraits/PP-SE-0023.png"
+    }
+  ]
+}

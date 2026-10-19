@@ -1,0 +1,1438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Synthetic Persona Registry</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap">
+<style>
+/* Layout: an international registry. Navy bands carry the agency (header, hero with the 3D passport, footer); white pages carry the work (notices grid, records, forms). Colour-coded notices are the system's language; the passport is the one rich object. */
+:root{
+  --navy:#0B2550; --navy-deep:#071A3A; --navy-2:#163A73; --navy-line:#2A4677; --on-navy:#FFFFFF; --on-navy-2:#B9C6DC;
+  --paper:#FFFFFF; --mist:#EEF2F7; --mist-2:#E1E7F0; --rule:#CAD3E0; --ink:#0A1424; --muted:#4A5873; --link:#1F4FBF;
+  --focus:#FFB700;
+  --g:#12804A; --g-tint:#E3F2EA; --g-ink:#0B5A33;
+  --y:#E5A800; --y-tint:#FDF3D6; --y-ink:#6B4E00;
+  --o:#D9590F; --o-tint:#FCE6D9; --o-ink:#8A3200;
+  --r:#C3112B; --r-tint:#F9DDE1; --r-ink:#8E0B1F;
+  --sans:Archivo,"Helvetica Neue",Arial,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--navy-deep)}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+p{margin:0}
+a{color:var(--link);text-underline-offset:.18em}
+a:hover{text-decoration-thickness:2px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.wide{font-stretch:125%}
+[tabindex="-1"]:focus{outline:none}
+.skip{position:absolute;left:12px;top:-60px;z-index:60;background:var(--focus);color:var(--ink);padding:10px 14px;font-weight:700}
+.skip:focus{top:calc(8px + env(safe-area-inset-top,0px))}
+
+/* bars */
+.util{background:var(--navy-deep);color:var(--on-navy-2);font-size:13.5px}
+.util .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 24px;padding-block:7px}
+.hdr{background:var(--navy);color:var(--on-navy);position:sticky;top:env(safe-area-inset-top,0px);z-index:30;box-shadow:0 1px 0 var(--navy-line)}
+.hdr .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px 28px;padding-block:10px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:12px;color:#fff;text-decoration:none;min-height:52px}
+.brand .wm{display:flex;flex-direction:column;line-height:1}
+.brand .wm b{font-stretch:125%;font-weight:850;font-size:24px;letter-spacing:.06em}
+.brand .wm small{font-stretch:112%;font-size:11.5px;letter-spacing:.08em;color:var(--on-navy-2);margin-top:5px;font-weight:600}
+.nav{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.nav a{color:#fff;text-decoration:none;font-weight:600;font-size:15.5px;padding:0 12px;min-height:44px;display:inline-flex;align-items:center;box-shadow:inset 0 -3px 0 transparent;transition:box-shadow .2s var(--ease)}
+.nav a:hover{box-shadow:inset 0 -3px 0 var(--on-navy-2)}
+.nav a[aria-current="page"]{box-shadow:inset 0 -3px 0 #fff}
+.kbtn{display:inline-flex;align-items:center;gap:10px;min-height:42px;padding:0 10px 0 12px;background:var(--navy-deep);border:1px solid var(--navy-line);color:var(--on-navy-2);border-radius:2px;cursor:pointer;font-size:15px}
+.kbtn:hover{border-color:var(--on-navy-2);color:#fff}
+.kbd{font-family:var(--mono);font-size:12px;padding:1px 6px;border:1px solid currentColor;border-radius:2px;opacity:.8}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;border:0;border-radius:2px;background:var(--navy);color:#fff;font-weight:700;font-size:16.5px;text-decoration:none;cursor:pointer;transition:background-color .15s var(--ease)}
+.btn:hover{background:var(--navy-2);color:#fff}
+.btn:active{background:var(--navy-deep)}
+.btn.light{background:#fff;color:var(--navy)}
+.btn.light:hover{background:var(--mist)}
+.btn.line{background:transparent;color:var(--navy);box-shadow:inset 0 0 0 2px var(--navy)}
+.btn.line:hover{background:var(--mist)}
+.btn.line-w{background:transparent;color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+.btn.line-w:hover{box-shadow:inset 0 0 0 2px #fff}
+.btn[disabled]{opacity:.45;cursor:default}
+.tlink{all:unset;cursor:pointer;color:var(--link);text-decoration:underline;text-underline-offset:.18em;font-weight:600}
+.tlink:hover{text-decoration-thickness:2px}
+.tlink:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* hero */
+.hero{background:var(--navy);color:#fff;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:32px 48px;align-items:center;padding-block:56px 64px}
+@media (max-width:980px){.hero .wrap{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-stretch:118%;font-weight:800;font-size:clamp(36px,4.6vw,60px);line-height:1.02;letter-spacing:-.012em;max-width:14ch}
+.hero .lede{color:var(--on-navy-2);font-size:19px;max-width:42ch;margin-top:18px}
+.verify{margin-top:30px;max-width:540px;position:relative}
+.verify label{display:block;font-weight:700;margin-bottom:8px}
+.verify .row{display:flex;gap:0}
+.verify input{flex:1 1 auto;min-width:0;min-height:56px;padding:0 16px;border:0;border-radius:2px 0 0 2px;background:#fff;color:var(--ink);font-family:var(--mono);font-size:17px}
+.verify input:focus{outline:3px solid var(--focus);outline-offset:0}
+.verify .btn{min-height:56px;border-radius:0 2px 2px 0;background:var(--focus);color:var(--ink)}
+.verify .btn:hover{background:#FFC93D}
+.try{margin-top:12px;font-size:15px;color:var(--on-navy-2);display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.try button{all:unset;cursor:pointer;color:#fff;text-decoration:underline;text-underline-offset:.18em;font-family:var(--mono);font-size:14.5px}
+.try button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.vres{margin-top:16px;display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--navy-deep);border-left:5px solid var(--nc,#fff)}
+.vres img{width:46px;height:56px;object-fit:cover;object-position:50% 30%;background:var(--mist)}
+.vres .t{flex:1 1 auto;min-width:0}
+.vres b{display:block}
+.vres span{color:var(--on-navy-2);font-size:14.5px}
+.stage{position:relative;max-width:100%}
+.stage .viewer{aspect-ratio:1.25}
+.stage .globe{position:absolute;inset:-6% -14% -6% -6%;opacity:.16;pointer-events:none}
+.vbox{position:relative;display:flex;flex-direction:column}
+.viewer{position:relative;width:100%;max-width:100%}
+.viewer:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.viewer canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;touch-action:pan-y;cursor:grab}
+.viewer canvas:active{cursor:grabbing}
+.vmsg{position:absolute;inset:0;display:grid;place-items:center;color:var(--on-navy-2);font-size:15px;padding:16px;text-align:center}
+.vmsg img{max-height:100%;width:auto}
+.vctl{position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 12px;padding:10px 0 0}
+.vbtns{display:flex;gap:8px}
+.vctl .hint{font-size:13.5px;color:var(--on-navy-2)}
+.vbtn{min-height:44px;padding:0 16px;border-radius:2px;border:1px solid rgba(255,255,255,.35);background:rgba(7,26,58,.72);color:#fff;font-weight:600;font-size:14.5px;cursor:pointer}
+.vbtn:hover{border-color:#fff}
+
+/* sections */
+.sec{padding-block:72px}
+.sec-h{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;margin-bottom:28px}
+.h2{font-stretch:118%;font-weight:800;font-size:clamp(28px,3.2vw,40px);line-height:1.06;letter-spacing:-.01em}
+.sub{color:var(--muted);max-width:56ch;margin-top:10px}
+
+/* notice key */
+.key{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:28px}
+@media (max-width:860px){.key{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.key button{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:18px 18px 18px 20px;border-left:1px solid var(--rule);position:relative;transition:background-color .15s var(--ease)}
+.key button:first-child{border-left:0}
+.key button::before{content:"";position:absolute;left:0;top:0;right:0;height:5px;background:var(--nc)}
+.key button:hover{background:var(--mist)}
+.key button[aria-pressed="true"]{background:var(--nt)}
+.key button:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.key .nm{display:flex;justify-content:space-between;gap:8px;font-weight:800;font-stretch:112%}
+.key .ct{font-family:var(--mono);font-weight:500;color:var(--muted)}
+.key .ad{color:var(--muted);font-size:15px}
+@media (max-width:860px){.key button:nth-child(3){border-left:0}.key button:nth-child(n+3){border-top:1px solid var(--rule)}}
+
+.tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin-bottom:18px}
+.tools .l{display:flex;flex-wrap:wrap;gap:10px;align-items:center;flex:1 1 320px;min-width:0}
+.field-in{min-height:46px;padding:0 14px;border:1.5px solid #8C99AF;border-radius:2px;background:#fff;min-width:0;flex:1 1 240px;max-width:380px}
+.field-in:focus{outline:3px solid var(--focus);outline-offset:0;border-color:var(--navy)}
+.sel{min-height:46px;padding:0 34px 0 12px;border:1.5px solid #8C99AF;border-radius:2px;background:#fff;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.viewsw{display:inline-flex;border:1.5px solid #8C99AF;border-radius:2px}
+.viewsw button{all:unset;cursor:pointer;min-height:43px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;color:var(--muted)}
+.viewsw button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.viewsw button:focus-visible{outline:3px solid var(--focus);outline-offset:0}
+.status-line{color:var(--muted);font-size:15px}
+.clear{margin-left:6px}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--rule);transition:border-color .15s var(--ease)}
+.card:hover{border-color:var(--navy)}
+.card .band{height:6px;background:var(--nc)}
+.card .ph{aspect-ratio:4/4.4;background:var(--mist);overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 34%;display:block}
+.card .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px}
+.card h3{font-stretch:112%;font-weight:800;font-size:20px;line-height:1.15}
+.card h3 a{color:var(--ink);text-decoration:none}
+.card h3 a::after{content:"";position:absolute;inset:0}
+.card h3 a:focus-visible{outline:none}
+.card:has(a:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+.card .no{font-family:var(--mono);font-size:14px;color:var(--muted)}
+.card .meta{font-size:14.5px;color:var(--muted)}
+.ntag{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--ni);background:var(--nt);padding:3px 9px 3px 8px;align-self:flex-start;margin-top:8px;border-radius:2px}
+.ntag i{width:9px;height:9px;background:var(--nc);display:inline-block}
+.tbl-box{overflow-x:auto;border-top:2px solid var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{text-align:left;font-size:14px;font-weight:700;color:var(--muted);padding:12px 18px 12px 0;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:12px 18px 12px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+td .thumb{width:40px;height:48px;object-fit:cover;object-position:50% 32%;background:var(--mist);display:block}
+td a{font-weight:700;color:var(--ink)}
+.empty{padding:40px 0;color:var(--muted)}
+
+/* steps */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:s;position:relative}
+.steps li{counter-increment:s;padding:0 18px 0 0;position:relative}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;position:relative;z-index:1;margin-bottom:14px}
+.steps li::after{content:"";position:absolute;top:20px;left:40px;right:0;height:2px;background:var(--rule)}
+.steps li:last-child::after{display:none}
+.steps h3{font-stretch:112%;font-size:18px;font-weight:800;margin-bottom:4px}
+.steps p{color:var(--muted);font-size:15.5px}
+@media (max-width:900px){.steps{grid-template-columns:minmax(0,1fr);gap:4px}.steps li{padding:0 0 22px 58px}.steps li::before{position:absolute;left:0;top:0;margin:0}.steps li::after{top:42px;left:19px;width:2px;height:auto;bottom:0;right:auto}}
+
+/* services */
+.svc{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px}
+@media (max-width:860px){.svc{grid-template-columns:minmax(0,1fr)}}
+.svc > div{padding:32px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.svc .a{background:var(--navy);color:#fff}
+.svc .a p{color:var(--on-navy-2)}
+.svc .b{background:var(--mist);border-top:5px solid var(--r)}
+.svc h3{font-stretch:118%;font-weight:800;font-size:26px;line-height:1.1}
+.svc .time{font-size:14.5px;font-weight:600}
+
+/* record */
+.rec-top{border-top:8px solid var(--nc);background:var(--mist)}
+.crumbs{display:flex;flex-wrap:wrap;list-style:none;margin:0;padding:18px 0 0;gap:4px 10px;font-size:15px}
+.crumbs li+li::before{content:"/";color:var(--muted);margin-right:10px}
+.rec-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:20px 28px;align-items:end;padding-block:24px 32px}
+@media (max-width:1100px){.rec-head{grid-template-columns:auto minmax(0,1fr)}.rec-head .acts{grid-column:1/-1}}
+.rec-photo{width:132px;aspect-ratio:4/5;object-fit:cover;object-position:50% 32%;background:#fff;border:1px solid var(--rule);display:block}
+@media (max-width:520px){.rec-photo{width:92px}}
+.rec-head h1{font-stretch:122%;font-weight:850;font-size:clamp(34px,5vw,64px);line-height:.98;letter-spacing:-.015em}
+.rec-head .no{font-family:var(--mono);font-size:16px;color:var(--muted);margin-bottom:8px;display:block}
+.acts{display:flex;flex-wrap:wrap;gap:10px}
+.rec-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px 48px;padding-block:36px 8px;align-items:start}
+@media (max-width:980px){.rec-grid{grid-template-columns:minmax(0,1fr)}}
+.rec-stage{background:var(--navy);padding:0 12px 12px;max-width:100%}
+.rec-stage .viewer{aspect-ratio:1.3}
+.dl{margin:0;border-top:2px solid var(--ink)}
+.dl div{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr);gap:2px 18px;padding:11px 0;border-bottom:1px solid var(--rule)}
+@media (max-width:480px){.dl div{grid-template-columns:minmax(0,1fr)}}
+.dl dt{color:var(--muted);font-size:15px}
+.dl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.notice-box{display:flex;gap:14px;padding:16px 18px;background:var(--nt);border-left:6px solid var(--nc);margin-top:20px}
+.notice-box b{display:block;color:var(--ni);font-stretch:112%}
+.tabs{margin-top:44px}
+.tablist{display:flex;flex-wrap:wrap;border-bottom:2px solid var(--ink);gap:4px}
+.tablist button{all:unset;cursor:pointer;padding:12px 18px;font-weight:700;color:var(--muted);box-shadow:inset 0 -4px 0 transparent;margin-bottom:-2px}
+.tablist button:hover{color:var(--ink)}
+.tablist button[aria-selected="true"]{color:var(--ink);box-shadow:inset 0 -4px 0 var(--navy)}
+.tablist button:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.panel{padding-top:24px;min-height:180px}
+.checks{list-style:none;margin:0 0 20px;padding:0;max-width:760px}
+.checks li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--rule);color:var(--muted)}
+.checks li.done{color:var(--ink)}
+.checks .mk{width:24px;height:24px;border-radius:50%;border:2px solid var(--rule);display:grid;place-items:center;font-size:13px;font-weight:800;color:#fff}
+.checks li.run .mk{border-color:var(--navy);border-right-color:transparent;animation:spin .7s linear infinite}
+.checks li.ok .mk{background:var(--g);border-color:var(--g)} .checks li.warn .mk{background:var(--y);border-color:var(--y);color:var(--ink)} .checks li.bad .mk{background:var(--r);border-color:var(--r)}
+.checks .d{font-family:var(--mono);font-size:14px;color:var(--muted);text-align:right;overflow-wrap:anywhere}
+@keyframes spin{to{transform:rotate(360deg)}}
+.verdict{padding:16px 18px;border-left:6px solid var(--nc);background:var(--nt);font-weight:700;max-width:760px;margin-bottom:20px;color:var(--ni)}
+.hist{margin:0;max-width:760px}
+.hist div{display:grid;grid-template-columns:140px minmax(0,1fr);gap:4px 20px;padding:12px 0;border-bottom:1px solid var(--rule)}
+@media (max-width:480px){.hist div{grid-template-columns:minmax(0,1fr)}}
+.hist dt{font-family:var(--mono);font-size:14px;color:var(--muted);padding-top:2px}
+.hist dd{margin:0}
+.risk{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--rule);max-width:760px}
+.risk .ex{flex:0 0 28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:900}
+.pager{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--rule);margin-top:56px;padding-top:20px}
+.pager a{display:flex;flex-direction:column;text-decoration:none;color:var(--ink);font-weight:700;min-width:0}
+.pager a span{color:var(--muted);font-weight:400;font-size:14.5px}
+.pager a:hover b{text-decoration:underline}
+.pager .nx{text-align:right;margin-left:auto}
+
+/* forms */
+.formwrap{max-width:720px;padding-block:28px 72px}
+.progress{display:flex;gap:6px;margin:16px 0 28px}
+.progress span{flex:1 1 0;height:6px;background:var(--mist-2)}
+.progress span.on{background:var(--navy)}
+.cap{color:var(--muted);font-weight:600;font-size:15.5px;display:block;margin-bottom:6px}
+.fh1{font-stretch:118%;font-weight:850;font-size:clamp(30px,4vw,46px);line-height:1.04;letter-spacing:-.01em}
+.form{display:flex;flex-direction:column;gap:28px;margin-top:28px}
+.fg{display:flex;flex-direction:column;gap:6px;border:0;margin:0;padding:0;min-width:0}
+.fg label,.fg legend{font-weight:700;padding:0}
+.fg .hint{color:var(--muted);font-size:15.5px}
+.fg.err{border-left:4px solid var(--r);padding-left:16px}
+.fg .emsg{color:var(--r);font-weight:700;font-size:15.5px}
+.in{min-height:50px;padding:0 14px;border:2px solid var(--ink);border-radius:2px;background:#fff;width:100%;max-width:100%}
+textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
+.in:focus{outline:3px solid var(--focus);outline-offset:0}
+.in.err{border-color:var(--r)}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.opt{display:flex;align-items:flex-start;gap:12px;cursor:pointer;line-height:1.4}
+.opt input{appearance:none;flex:0 0 auto;width:32px;height:32px;margin:0;border:2px solid var(--ink);background:#fff;display:grid;place-items:center;cursor:pointer}
+.opt input[type="radio"]{border-radius:50%}
+.opt input[type="radio"]::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--ink);transform:scale(0);transition:transform .12s var(--ease)}
+.opt input[type="checkbox"]::before{content:"";width:14px;height:8px;border:solid var(--ink);border-width:0 0 3px 3px;transform:rotate(-45deg) scale(0);margin-top:-4px;transition:transform .12s var(--ease)}
+.opt input:checked::before{transform:scale(1)}
+.opt input[type="checkbox"]:checked::before{transform:rotate(-45deg) scale(1)}
+.opt input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.opt span{padding-top:4px}
+.opt small{display:block;color:var(--muted);font-size:14.5px}
+.esum{border:4px solid var(--r);padding:20px 22px;margin-top:24px}
+.esum h2{font-stretch:112%;font-size:22px;margin-bottom:10px}
+.esum ul{margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:6px}
+.esum a{color:var(--r);font-weight:700}
+.rowbtns{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px}
+.saved{font-size:14.5px;color:var(--muted)}
+.review{margin:0;border-top:2px solid var(--ink)}
+.review div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr) auto;gap:4px 18px;padding:12px 0;border-bottom:1px solid var(--rule)}
+@media (max-width:560px){.review div{grid-template-columns:minmax(0,1fr) auto}.review dt{grid-column:1;grid-row:1}.review .ra{grid-column:2;grid-row:1}.review .rv{grid-column:1/-1;grid-row:2}}
+.review dt{font-weight:700}
+.review dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.done{background:var(--g);color:#fff;padding:36px 28px;text-align:center}
+.done h1{font-stretch:118%;font-size:clamp(30px,4vw,44px);font-weight:850}
+.done .ref{font-family:var(--mono);font-size:28px;display:block;margin-top:8px}
+
+/* palette */
+.pal-bg{position:fixed;inset:0;background:rgba(7,26,58,.55);z-index:70;display:flex;align-items:flex-start;justify-content:center;padding:calc(10vh + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.pal{width:100%;max-width:640px;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);border-top:5px solid var(--navy)}
+.pal input{width:100%;min-height:60px;border:0;border-bottom:1px solid var(--rule);padding:0 18px;font-size:19px}
+.pal input:focus{outline:none}
+.pal ul{list-style:none;margin:0;padding:6px;max-height:min(56vh,440px);overflow:auto}
+.pal li{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer}
+.pal li[aria-selected="true"]{background:var(--mist)}
+.pal li img{width:34px;height:40px;object-fit:cover;object-position:50% 32%;background:var(--mist)}
+.pal li .sw{width:10px;height:10px;background:var(--nc)}
+.pal li .t{flex:1 1 auto;min-width:0}
+.pal li .t span{display:block;color:var(--muted);font-size:14px}
+.pal .grp{padding:10px 12px 4px;font-size:13px;font-weight:700;color:var(--muted)}
+.pal .foot{display:flex;gap:16px;padding:10px 18px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+
+footer{background:var(--navy-deep);color:var(--on-navy-2);font-size:15px}
+footer .wrap{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px 48px;padding-block:44px 52px}
+@media (max-width:760px){footer .wrap{grid-template-columns:minmax(0,1fr)}}
+footer a{color:#fff}
+footer ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);opacity:0;background:var(--ink);color:#fff;padding:12px 18px;font-size:15px;z-index:80;transition:opacity .2s var(--ease),transform .2s var(--ease);pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- responsive pass ---------- */
+html{-webkit-text-size-adjust:100%}
+.u-short{display:none}
+.hbtns{display:none;gap:6px;align-items:center}
+.ibtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;padding:0 10px;background:transparent;border:1px solid var(--navy-line);border-radius:2px;color:#fff;cursor:pointer;font-weight:700;font-size:15px}
+.ibtn:hover{border-color:var(--on-navy-2)}
+.fbrand{display:flex;gap:16px;align-items:flex-start}
+.fbrand svg{flex:0 0 auto}
+footer li a{display:inline-flex;align-items:center;min-height:44px}
+.crumbs a{display:inline-flex;align-items:center;min-height:44px}
+.crumbs{padding-top:8px;align-items:center}
+.crumbs li{display:flex;align-items:center}
+.try button{display:inline-flex;align-items:center;min-height:44px;padding:0 2px}
+.tlink{display:inline-flex;align-items:center;min-height:44px}
+h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
+.tablist{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tablist::-webkit-scrollbar{display:none}
+.tablist button{white-space:nowrap;flex:0 0 auto}
+@media (hover:none),(pointer:coarse){.pal .foot,.kbtn .kbd{display:none}}
+
+@media (max-width:900px){
+  .hdr .wrap{flex-wrap:nowrap;padding-block:8px}
+  .brand{min-height:44px;gap:10px}
+  .brand svg{width:40px;height:40px}
+  .brand .wm b{font-size:21px}
+  .brand .wm small{font-size:10px;margin-top:4px}
+  .hbtns{display:flex}
+  .nav{display:none;position:absolute;left:0;right:0;top:100%;background:var(--navy);border-top:1px solid var(--navy-line);box-shadow:0 18px 30px -12px rgba(7,26,58,.5);flex-direction:column;align-items:stretch;gap:0;padding:6px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px))}
+  .nav.open{display:flex}
+  .nav a{min-height:54px;font-size:18px;padding:0;border-bottom:1px solid var(--navy-line);box-shadow:none}
+  .nav a[aria-current="page"]{box-shadow:inset 4px 0 0 #fff;padding-left:14px}
+  .nav .kbtn{display:none}
+  .hero .wrap{padding-block:36px 44px;gap:28px}
+  .sec{padding-block:52px}
+}
+@media (max-width:640px){
+  body{font-size:16.5px}
+  .u-long{display:none}.u-short{display:inline}
+  .util .wrap > span:last-child{display:none}
+  .util .wrap{flex-wrap:nowrap;font-size:12.5px}
+  .brand .wm small{display:none}
+  .hero h1{font-size:clamp(32px,9.4vw,40px);font-stretch:112%}
+  .hero .lede{font-size:17px;margin-top:14px}
+  .verify{margin-top:24px}
+  .verify input{min-height:54px;font-size:16px}
+  .verify .btn{min-height:54px;padding:0 18px}
+  .vres{flex-wrap:wrap}
+  .vres .t{flex:1 1 calc(100% - 64px)}
+  .vres .btn{flex:1 1 100%}
+  .stage .viewer{aspect-ratio:1.22}
+  .stage .globe{inset:0 -30% 0 -30%}
+  .vctl .hint{font-size:13px}
+  .h2{font-size:clamp(26px,7.4vw,32px)}
+  .sec-h{margin-bottom:20px}
+  .key{grid-template-columns:minmax(0,1fr)!important;border-top:0}
+  .key button{border-left:0!important;border-top:1px solid var(--rule)!important;padding:12px 14px 12px 20px;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+  .key button::before{top:0;bottom:0;left:0;right:auto;width:5px;height:auto}
+  .key .nm{flex:1 1 100%}
+  .key .ad{font-size:14.5px}
+  .tools .l{flex:1 1 100%}
+  .field-in{flex:1 1 100%;max-width:none}
+  .tools .l .sel{flex:1 1 auto}
+  .tools{gap:10px}
+  .tools .viewsw{flex:0 0 auto}
+  .grid{grid-template-columns:minmax(0,1fr);gap:12px}
+  .card{display:grid;grid-template-columns:104px minmax(0,1fr);border-left:5px solid var(--nc)}
+  .card .band{display:none}
+  .card .ph{aspect-ratio:auto;height:100%;min-height:124px}
+  .card .bd{padding:10px 12px 12px;gap:2px}
+  .card h3{font-size:18px}
+  .card .meta{font-size:14px}
+  .card .meta + .meta{display:none}
+  .ntag{margin-top:6px}
+  .tbl-box table{font-size:15px}
+  .steps h3{font-size:17px}
+  .svc > div{padding:24px 20px}
+  .svc h3{font-size:22px}
+  .rec-head{grid-template-columns:88px minmax(0,1fr);gap:14px 16px;padding-block:14px 22px;align-items:center}
+  .rec-photo{width:88px}
+  .rec-head h1{font-size:clamp(30px,9vw,40px)}
+  .rec-head .no{font-size:14px;margin-bottom:4px}
+  .acts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .acts .btn:first-child{grid-column:1/-1}
+  .acts .btn{padding:0 10px;font-size:15.5px}
+  .rec-grid{padding-block:20px 0;gap:24px}
+  .rec-stage{padding:0 8px 8px}
+  .rec-stage .viewer{aspect-ratio:1.22}
+  .tabs{margin-top:32px}
+  .tablist button{padding:12px 14px}
+  .checks li{grid-template-columns:28px minmax(0,1fr);row-gap:2px}
+  .checks .d{grid-column:2;text-align:left}
+  .pager{margin-top:40px}
+  .formwrap{padding-block:16px 56px}
+  .fh1{font-size:clamp(28px,8vw,36px)}
+  .form{gap:24px}
+  .progress{margin:8px 0 20px}
+  .done{padding:28px 18px}
+  .done .ref{font-size:22px;overflow-wrap:anywhere}
+  .rowbtns .btn{flex:1 1 100%}
+  .esum{padding:16px}
+  .pal-bg{padding:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;align-items:stretch}
+  .pal{display:flex;flex-direction:column;max-height:100%}
+  .pal ul{max-height:none;flex:1 1 auto}
+  footer .wrap{padding-block:32px 40px}
+  footer ul{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .toast{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+}
+@media (max-width:380px){
+  .brand .wm b{font-size:19px}
+  .ibtn.menu span{display:none}
+  .acts .btn{font-size:14.5px}
+}
+
+::view-transition-old(root),::view-transition-new(root){animation-duration:.22s}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<noscript><p style="padding:24px">The registry needs JavaScript to show notices and passports.</p></noscript>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+const html = htm.bind(React.createElement);
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* ---------- register data (demonstration entries) ---------- */
+const LEVELS = ['Declared','Evidence-backed','Reviewed','Controlled creation'];
+const G='#1E6B47', B='#2C3A8C', A='#A3570A', R='#9A2F2B';
+const PEOPLE = [
+  { id:'PP-AZ-0001', surname:'FIDAN', given:'', name:'Fidan', handle:'@fidan.sings', nature:'Fully synthetic', lang:'Azerbaijani', code:'AZE', role:'Vocalist', holder:'Ruslan M.', level:'Evidence-backed', status:'Valid', note:'', issued:'12 Oct 2026', expires:'12 Oct 2031', created:'261012', exp:'311012', record:'a91f7c02', sort:20261012,
+    stamps:[{t:'Identity root',v:'EVIDENCE-BACKED',c:G,k:'rect',r:-5},{t:'Model lineage',v:'DECLARED',sub:'upstream unknown',c:B,k:'round',r:4},{t:'Voice and music',v:'OPEN RISK',c:A,k:'double',r:-3},{t:'TikTok channel',v:'OWNER VERIFIED',c:G,k:'pill',r:6},{t:'Content credentials',v:'10 FILES SIGNED',c:B,k:'dash',r:-2}],
+    history:[{d:'12 Oct 2026',e:'Passport issued and published'},{d:'10 Oct 2026',e:'TikTok channel ownership verified'},{d:'02 Oct 2026',e:'Application received'}],
+    risks:['Voice made on a hosted service. Its commercial terms are not archived yet.','The base model publisher has not disclosed its training data.'] },
+  { id:'PP-TR-0004', surname:'KAYA', given:'LEYLA', name:'Leyla Kaya', handle:'@leyla.kaya', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Fashion host', holder:'Studio Nur', level:'Reviewed', status:'Valid', note:'', issued:'03 Sep 2026', expires:'03 Sep 2031', created:'260903', exp:'310903', record:'3be041d9', sort:20260903,
+    stamps:[{t:'Identity root',v:'REVIEWED',c:G,k:'round',r:-4},{t:'Model lineage',v:'EVIDENCE-BACKED',c:G,k:'rect',r:3},{t:'Voice',v:'LICENSED',c:G,k:'pill',r:-2},{t:'Instagram',v:'OWNER VERIFIED',c:B,k:'double',r:4}],
+    history:[{d:'03 Sep 2026',e:'Passport issued after examiner review'},{d:'01 Sep 2026',e:'Examiner review completed'},{d:'18 Aug 2026',e:'Application received'}],
+    risks:[] },
+  { id:'PP-ES-0011', surname:'SOL', given:'MIRA', name:'Mira Sol', handle:'@mira.moves', nature:'Licensed likeness', lang:'Spanish', code:'ESP', role:'Fitness coach', holder:'Ola Media', level:'Evidence-backed', status:'Under review', note:'Consent renewal pending', issued:'28 Jul 2026', expires:'28 Jul 2031', created:'260728', exp:'310728', record:'c47a09e1', sort:20260728,
+    stamps:[{t:'Likeness consent',v:'ON FILE',c:G,k:'rect',r:-3},{t:'Model lineage',v:'DECLARED',c:B,k:'round',r:5},{t:'Annual review',v:'PENDING',c:A,k:'double',r:-2}],
+    history:[{d:'10 Oct 2026',e:'Annual review opened'},{d:'28 Jul 2026',e:'Passport issued'},{d:'15 Jul 2026',e:'Signed likeness consent filed'}],
+    risks:['The model’s likeness consent expires on 30 Nov 2026.'] },
+  { id:'PP-JP-0016', surname:'MORI', given:'AIKO', name:'Aiko Mori', handle:'@aiko.plays', nature:'Fully synthetic', lang:'Japanese', code:'JPN', role:'Game streamer', holder:'Kumo Labs', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261014', exp:'000000', record:'5d12ee70', sort:20261014,
+    stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'round',r:3},{t:'Examiner',v:'EVIDENCE REQUESTED',c:A,k:'double',r:-4}],
+    history:[{d:'16 Oct 2026',e:'Examiner requested model files and licences'},{d:'14 Oct 2026',e:'Application received'}],
+    risks:['Model files have not been hashed.','No licence snapshots on file.'] },
+  { id:'PP-MX-0019', surname:'REYES', given:'NOVA', name:'Nova Reyes', handle:'@novareyes', nature:'Fully synthetic', lang:'Spanish', code:'MEX', role:'Lifestyle', holder:'Brightline', level:'Evidence-backed', status:'Suspended', note:'Undisclosed sponsored posts', issued:'19 May 2026', expires:'19 May 2031', created:'260519', exp:'310519', record:'88c31a4b', sort:20260519,
+    stamps:[{t:'Identity root',v:'EVIDENCE-BACKED',c:G,k:'rect',r:-3},{t:'Status',v:'SUSPENDED',c:R,k:'double',r:7}],
+    history:[{d:'02 Oct 2026',e:'Suspended for sponsored posts without an AI or ad label'},{d:'19 May 2026',e:'Passport issued'}],
+    risks:['Sponsored posts without disclosure on three channels.'] },
+  { id:'PP-SE-0023', surname:'BERG', given:'ELIN', name:'Elin Berg', handle:'@elin.berg', nature:'Claimed synthetic', lang:'Swedish', code:'SWE', role:'Travel', holder:'North Pixel', level:'Declared', status:'Revoked', note:'Close match to a real person', issued:'02 Apr 2026', expires:'Revoked', created:'260402', exp:'000000', record:'0f6db52c', sort:20260402,
+    stamps:[{t:'Face comparison',v:'MATCH FOUND',c:R,k:'rect',r:-5},{t:'Status',v:'REVOKED',c:R,k:'double',r:5}],
+    history:[{d:'24 Sep 2026',e:'Passport revoked'},{d:'21 Sep 2026',e:'Face comparison found a close match to a real person'},{d:'02 Apr 2026',e:'Passport issued'}],
+    risks:['Revoked. The persona’s face could not be cleared.'] }
+];
+const PHOTOS = Object.fromEntries(PEOPLE.map(p => [p.id, '../assets/portraits/' + p.id + '.png']));
+PEOPLE.forEach(p=>{p.src=PHOTOS[p.id];});
+function loadPhotos(){return Promise.all(PEOPLE.map(p=>new Promise(res=>{if(p.photo&&p.photo.complete)return res();const im=new Image();im.onload=im.onerror=()=>res();im.src=p.src;p.photo=im;})));}
+const STATUS = {
+  'Valid':{cls:'ok', line:'In force and cleared to appear as itself.'},
+  'Under review':{cls:'warn', line:'An examiner is checking new evidence.'},
+  'Suspended':{cls:'bad', line:'Suspended until the rights holder resolves a breach.'},
+  'Revoked':{cls:'off', line:'Revoked and no longer valid.'}
+};
+const displayName = p => p.given ? p.surname + ' / ' + p.given.charAt(0) + p.given.slice(1).toLowerCase() : p.name;
+const mrz = p => {
+  const pad=(s,n)=>(s+'<'.repeat(n)).slice(0,n);
+  const nm = p.given ? p.surname+'<<'+p.given : p.surname;
+  return [pad('P<'+p.code+nm,44), pad(p.id.replace(/-/g,'')+'7'+p.code+p.created+'4<'+p.exp+'2SYN',42)+'06'];
+};
+function hashStr(s){let h=2166136261>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return h;}
+function rng(seed){let s=seed>>>0||1;return()=>((s=(Math.imul(s,1664525)+1013904223)>>>0)/4294967296);}
+
+
+/* ---------- registry emblem: globe, laurel, star (own design) ---------- */
+const EMB=(function(){
+  const cx=50,cy=47,gr=22,lr=31;
+  const leaves=[];
+  for(let side=-1;side<=1;side+=2){
+    for(let i=0;i<8;i++){
+      const deg=side<0?(114+i*14.5):(66-i*14.5), t=deg*Math.PI/180, s=1-i*.05;
+      const bx=cx+lr*Math.cos(t), by=cy+lr*Math.sin(t);
+      const dx=side<0?-Math.sin(t):Math.sin(t), dy=side<0?Math.cos(t):-Math.cos(t);
+      const nx=Math.cos(t), ny=Math.sin(t);
+      for(let k=-1;k<=1;k+=2){
+        let vx=dx+nx*k*.62, vy=dy+ny*k*.62; const m=Math.hypot(vx,vy); vx/=m; vy/=m;
+        leaves.push({x:bx+vx*3.6*s, y:by+vy*3.6*s, rot:Math.atan2(vy,vx)*180/Math.PI, s});
+      }
+    }
+    const tt=(side<0?230:-50)*Math.PI/180, tdx=side<0?-Math.sin(tt):Math.sin(tt), tdy=side<0?Math.cos(tt):-Math.cos(tt);
+    leaves.push({x:cx+lr*Math.cos(tt)+tdx*3.2, y:cy+lr*Math.sin(tt)+tdy*3.2, rot:Math.atan2(tdy,tdx)*180/Math.PI, s:.72});
+  }
+  const stemL='M '+(cx+lr*Math.cos(108*Math.PI/180)).toFixed(2)+' '+(cy+lr*Math.sin(108*Math.PI/180)).toFixed(2)+' A '+lr+' '+lr+' 0 0 1 '+(cx+lr*Math.cos(228*Math.PI/180)).toFixed(2)+' '+(cy+lr*Math.sin(228*Math.PI/180)).toFixed(2);
+  const stemR='M '+(cx+lr*Math.cos(72*Math.PI/180)).toFixed(2)+' '+(cy+lr*Math.sin(72*Math.PI/180)).toFixed(2)+' A '+lr+' '+lr+' 0 0 0 '+(cx+lr*Math.cos(-48*Math.PI/180)).toFixed(2)+' '+(cy+lr*Math.sin(-48*Math.PI/180)).toFixed(2);
+  return {cx,cy,gr,lr,leaves,stemL,stemR};
+})();
+function emblemCanvas(x,ox,oy,scale,ink){
+  const E=EMB;x.save();x.translate(ox-50*scale,oy-50*scale);x.scale(scale,scale);
+  x.strokeStyle=ink;x.fillStyle=ink;x.lineWidth=1.3;
+  x.beginPath();x.arc(E.cx,E.cy,E.gr,0,Math.PI*2);x.stroke();
+  x.save();x.beginPath();x.arc(E.cx,E.cy,E.gr,0,Math.PI*2);x.clip();
+  x.lineWidth=.8;[0.5,0.87].forEach(k=>{x.beginPath();x.ellipse(E.cx,E.cy,E.gr*k,E.gr,0,0,Math.PI*2);x.stroke();});
+  x.beginPath();x.moveTo(E.cx,E.cy-E.gr);x.lineTo(E.cx,E.cy+E.gr);x.stroke();
+  [-.5,0,.5].forEach(k=>{x.beginPath();x.moveTo(E.cx-E.gr,E.cy+E.gr*k);x.lineTo(E.cx+E.gr,E.cy+E.gr*k);x.stroke();});
+  x.restore();
+  x.lineWidth=1.1;x.stroke(new Path2D(E.stemL));x.stroke(new Path2D(E.stemR));
+  E.leaves.forEach(l=>{x.save();x.translate(l.x,l.y);x.rotate(l.rot*Math.PI/180);x.beginPath();x.ellipse(0,0,4.4*l.s,1.75*l.s,0,0,Math.PI*2);x.fill();x.restore();});
+  x.beginPath();const sx=E.cx,sy=E.cy-E.gr-8;for(let i=0;i<8;i++){const r=i%2?1.5:4.4,a=-Math.PI/2+i*Math.PI/4;x.lineTo(sx+r*Math.cos(a),sy+r*Math.sin(a));}x.closePath();x.fill();
+  x.restore();
+}
+/* ---------- printed pages, drawn on canvas ---------- */
+const PW=900, PH=1280;
+const TEX = (function(){
+  const mk=(w=PW,h=PH)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+  function paper(x,tint,seed){
+    x.fillStyle=tint;x.fillRect(0,0,PW,PH);
+    const r=rng(seed);
+    x.save();x.lineWidth=1.1;
+    for(let i=0;i<92;i++){
+      x.strokeStyle=i%3===0?'rgba(30,107,71,.16)':'rgba(44,58,140,.14)';
+      x.beginPath();
+      const ph=r()*6, base=i*(PH/88);
+      for(let px=0;px<=PW;px+=5){const y=base+Math.sin(px/64+i*.31+ph)*16+Math.sin(px/21+i*.9)*3.5;px===0?x.moveTo(px,y):x.lineTo(px,y);}
+      x.stroke();
+    }
+    x.restore();
+    for(let i=0;i<5000;i++){x.fillStyle=r()>.5?'rgba(0,0,0,.025)':'rgba(255,255,255,.05)';x.fillRect(r()*PW,r()*PH,1.5,1.5);}
+  }
+  function spiro(x,cx,cy,R,color,alpha,lw){
+    x.save();x.globalAlpha=alpha;x.strokeStyle=color;x.lineWidth=lw||1.2;x.beginPath();
+    const a=1,b=.3125,d=.62;
+    for(let t=0;t<=Math.PI*2*5+.01;t+=.012){
+      const px=cx+R*((a-b)*Math.cos(t)+d*Math.cos((a-b)/b*t));
+      const py=cy+R*((a-b)*Math.sin(t)-d*Math.sin((a-b)/b*t));
+      t===0?x.moveTo(px,py):x.lineTo(px,py);
+    }
+    x.stroke();x.restore();
+  }
+  function field(x,label,value,px,py,opt){
+    opt=opt||{};
+    x.font='400 21px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#5A6378';x.fillText(label,px,py);
+    x.font=opt.font||'600 31px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle=opt.color||'#18202E';x.fillText(value,px,py+38,opt.max||260);
+  }
+  function portrait(x,px,py,w,h,p,ghost){
+    x.save();x.beginPath();x.rect(px,py,w,h);x.clip();
+    const g=x.createLinearGradient(0,py,0,py+h);g.addColorStop(0,ghost?'rgba(220,225,232,.0)':'#DCE2EA');g.addColorStop(1,ghost?'rgba(196,203,214,.0)':'#BFC7D3');
+    x.fillStyle=g;x.fillRect(px,py,w,h);
+    if(p.photo&&p.photo.complete&&p.photo.naturalWidth){const iw=p.photo.naturalWidth,ih=p.photo.naturalHeight,sw=iw*.62,sh=Math.min(ih*.86,sw*h/w),sx=(iw-sw)/2,sy=ih*.1;x.filter=ghost?'grayscale(1) contrast(1.4)':'grayscale(1) contrast(1.18) brightness(1.04)';if(ghost)x.globalAlpha=.22;x.drawImage(p.photo,sx,sy,sw,sh,px,py,w,h);x.filter='none';x.globalAlpha=1;}else{
+      const cx=px+w/2, s=w/280;
+      const tone=ghost?'rgba(60,70,90,.22)':'#8E98A8', hair=ghost?'rgba(40,48,66,.26)':'#4F5767';
+      x.fillStyle=hair;x.beginPath();x.ellipse(cx,py+150*s,78*s,92*s,0,0,Math.PI*2);x.fill();
+      x.fillRect(cx-78*s,py+150*s,156*s,150*s);
+      x.fillStyle=tone;
+      x.beginPath();x.moveTo(px-10,py+h);x.bezierCurveTo(px+20*s,py+290*s,cx-70*s,py+262*s,cx-34*s,py+250*s);x.lineTo(cx+34*s,py+250*s);x.bezierCurveTo(cx+70*s,py+262*s,px+w-20*s,py+290*s,px+w+10,py+h);x.closePath();x.fill();
+      x.fillRect(cx-26*s,py+200*s,52*s,60*s);
+      x.beginPath();x.ellipse(cx,py+165*s,58*s,72*s,0,0,Math.PI*2);x.fill();
+      x.fillStyle=hair;x.beginPath();x.ellipse(cx,py+112*s,64*s,40*s,0,Math.PI,Math.PI*2);x.fill();
+    }
+    x.restore();
+    if(!ghost){x.strokeStyle='rgba(24,32,46,.35)';x.lineWidth=2;x.strokeRect(px,py,w,h);}
+  }
+  function arcText(x,str,cx,cy,rad){
+    const ch=[...str], step=Math.PI*2/ch.length;
+    x.save();x.translate(cx,cy);x.textAlign='center';
+    ch.forEach((c,i)=>{x.save();x.rotate(i*step);x.translate(0,-rad);x.fillText(c,0,0);x.restore();});
+    x.restore();
+  }
+  function seal(x,cx,cy,r,year){
+    x.save();x.translate(cx,cy);x.rotate(-.24);x.translate(-cx,-cy);
+    x.globalAlpha=.78;x.strokeStyle='#2C3A8C';x.fillStyle='#2C3A8C';
+    x.lineWidth=3.5;x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.stroke();
+    x.lineWidth=1.6;x.beginPath();x.arc(cx,cy,r-8,0,Math.PI*2);x.stroke();
+    x.beginPath();x.arc(cx,cy,r*.56,0,Math.PI*2);x.stroke();
+    x.font='700 15px Archivo, "Helvetica Neue", Arial, sans-serif';arcText(x,'SYNTHETIC PERSONA REGISTRY ✦ SEALED ✦ ',cx,cy,r-22);
+    x.textAlign='center';x.font='700 28px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillText('SPR',cx,cy+4);
+    x.font='600 14px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillText(year,cx,cy+24);
+    x.restore();
+  }
+  function mrzDraw(x,lines,y0){
+    x.fillStyle='rgba(255,255,255,.62)';x.fillRect(30,y0-58,PW-60,170);
+    x.fillStyle='#18202E';x.font='500 32px "IBM Plex Mono", monospace';x.textAlign='center';
+    const cw=(PW-104)/44;
+    lines.forEach((ln,li)=>{[...ln].forEach((c,i)=>x.fillText(c,52+cw*i+cw/2,y0+li*58));});
+    x.textAlign='left';
+  }
+  function dataPage(p){
+    const c=mk(),x=c.getContext('2d');
+    paper(x,'#EEF0EA',hashStr(p.id));
+    spiro(x,640,560,300,'#2C3A8C',.18,1.1);
+    spiro(x,640,560,180,'#1E6B47',.14,1);
+    x.strokeStyle='rgba(44,58,140,.4)';x.lineWidth=2;x.strokeRect(26,26,PW-52,PH-52);
+    x.font='600 34px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#14213D';x.fillText('Synthetic Persona Registry',56,92);
+    x.font='italic 400 30px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#4A5368';x.textAlign='right';x.fillText('Passport',PW-56,92);x.textAlign='left';
+    x.fillStyle='rgba(20,33,61,.45)';x.fillRect(56,114,PW-112,2);
+    field(x,'Type','P-SYN',56,162);field(x,'Code',p.code,250,162);field(x,'Passport no.',p.id,450,162,{color:'#8E1E2A',font:'700 33px "IBM Plex Mono", monospace',max:400});
+    portrait(x,56,236,280,364,p,false);
+    seal(x,316,584,78,'2026');
+    const fx=372;
+    field(x,'Surname / Given names',displayName(p),fx,256,{font:'700 48px Archivo, "Helvetica Neue", Arial, sans-serif',color:'#14213D',max:470});
+    field(x,'Nature',p.nature,fx,356);field(x,'Language',p.lang,fx+250,356,{max:220});
+    field(x,'Occupation',p.role,fx,446);field(x,'Rights holder',p.holder,fx+250,446,{max:220});
+    field(x,'Date of issue',p.issued,fx,536);field(x,'Date of expiry',p.expires,fx+250,536,{max:220});
+    field(x,'Level of proof',p.level,fx,626,{color:'#1E6B47'});
+    x.font='88px "Mrs Saint Delafield", cursive';x.fillStyle='#1F2A55';x.fillText(p.name,74,742,420);
+    x.fillStyle='rgba(24,32,46,.5)';x.fillRect(66,764,380,1.5);
+    x.font='400 20px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#5A6378';x.fillText('Signature of rights holder',66,792);
+    portrait(x,PW-56-130,666,130,170,p,true);
+    x.font='400 20px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#5A6378';x.fillText('Authority',530,742);
+    x.font='600 27px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#18202E';x.fillText('SPR Registrar',530,776);
+    x.font='400 15px "IBM Plex Mono", monospace';x.fillStyle='rgba(44,58,140,.55)';
+    const micro=('SYNTHETICPERSONAREGISTRY'+p.id.replace(/-/g,'')).repeat(8);
+    x.fillText(micro.slice(0,96),56,860);x.fillText(micro.slice(5,101),56,880);
+    mrzDraw(x,mrz(p),PH-150);
+    return c;
+  }
+  function stampDraw(x,s,cx,cy,date){
+    x.save();x.translate(cx,cy);x.rotate(s.r*Math.PI/180);
+    x.strokeStyle=s.c;x.fillStyle=s.c;x.textAlign='center';
+    x.font='800 36px Archivo, "Helvetica Neue", Arial, sans-serif';const vw=x.measureText(s.v).width;
+    x.font='600 22px Archivo, "Helvetica Neue", Arial, sans-serif';const tw=x.measureText(s.t).width;
+    if(s.k==='round'){
+      const rad=Math.max(118,Math.min(150,vw/2+34));
+      x.lineWidth=5;x.beginPath();x.arc(0,0,rad,0,Math.PI*2);x.stroke();
+      x.lineWidth=2;x.beginPath();x.arc(0,0,rad-12,0,Math.PI*2);x.stroke();
+      x.font='600 22px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillText(s.t,0,-30,rad*1.6);
+      x.font='800 34px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillText(s.v,0,12,rad*1.7);
+      if(s.sub){x.font='600 19px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillText(s.sub,0,42,rad*1.6);}
+      x.font='600 17px "IBM Plex Mono", monospace';x.fillText(date,0,s.sub?72:50);
+    }else{
+      const w=Math.max(vw,tw)+60, h=s.sub?150:128;
+      x.lineWidth=5;
+      const rr=s.k==='pill'?h/2:(s.k==='double'?2:8);
+      const box=(ww,hh,r)=>{x.beginPath();x.roundRect?x.roundRect(-ww/2,-hh/2,ww,hh,r):x.rect(-ww/2,-hh/2,ww,hh);x.stroke();};
+      if(s.k==='dash'){x.setLineDash([14,9]);}
+      box(w,h,rr);x.setLineDash([]);
+      if(s.k==='double'){x.lineWidth=2.5;box(w-18,h-18,rr);}
+      x.font='600 22px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillText(s.t,0,-h/2+40);
+      x.font='800 36px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillText(s.v,0,8);
+      x.font='600 17px "IBM Plex Mono", monospace';x.fillText(date,0,h/2-24);
+    }
+    x.restore();
+  }
+  function endorsements(p){
+    const c=mk(),x=c.getContext('2d');
+    paper(x,'#EDEEE6',hashStr(p.id+'e'));
+    spiro(x,260,620,260,'#2C3A8C',.12,1);
+    x.strokeStyle='rgba(44,58,140,.4)';x.lineWidth=2;x.strokeRect(26,26,PW-52,PH-52);
+    x.font='italic 400 32px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#14213D';x.fillText('Endorsements',56,92);
+    x.font='400 22px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#5A6378';x.textAlign='right';x.fillText('Page 4',PW-56,92);x.textAlign='left';
+    x.fillStyle='rgba(20,33,61,.45)';x.fillRect(56,114,PW-112,2);
+    const sc=mk(),s=sc.getContext('2d');
+    const spots=[[245,300],[640,330],[260,610],[655,640],[440,880]];
+    const date=(p.history[0]&&p.history[0].d||'').toUpperCase();
+    p.stamps.forEach((st,i)=>stampDraw(s,st,spots[i][0],spots[i][1],date));
+    const r=rng(hashStr(p.id+'w'));
+    s.globalCompositeOperation='destination-out';
+    for(let i=0;i<2600;i++){s.globalAlpha=.35+r()*.6;s.beginPath();s.arc(r()*PW,r()*PH*.8+60,.6+r()*2.2,0,Math.PI*2);s.fill();}
+    s.globalCompositeOperation='source-over';s.globalAlpha=1;
+    x.save();x.globalAlpha=.9;x.globalCompositeOperation='multiply';x.drawImage(sc,0,0);x.restore();
+    x.save();x.strokeStyle='#1F2A55';x.lineWidth=3;x.lineCap='round';x.beginPath();
+    x.moveTo(70,1062);x.bezierCurveTo(110,990,140,1100,175,1040);x.bezierCurveTo(205,995,220,1080,250,1050);x.bezierCurveTo(280,1020,300,990,312,1060);x.bezierCurveTo(330,1100,370,1020,420,1044);x.bezierCurveTo(450,1056,470,1040,488,1030);x.stroke();
+    x.lineWidth=1.6;x.beginPath();x.moveTo(110,1080);x.bezierCurveTo(220,1072,360,1076,470,1068);x.stroke();x.restore();
+    x.fillStyle='rgba(24,32,46,.5)';x.fillRect(66,1094,400,1.5);
+    x.font='400 20px Archivo, "Helvetica Neue", Arial, sans-serif';x.fillStyle='#5A6378';x.fillText('Registrar, E. Halvorsen',66,1122);
+    x.textAlign='right';x.fillText('Record',PW-56,1052);
+    x.font='500 26px "IBM Plex Mono", monospace';x.fillStyle='#18202E';x.fillText(p.record.slice(0,4)+'-'+p.record.slice(4),PW-56,1086);x.textAlign='left';
+    const br=rng(hashStr(p.record));let bx=56;x.fillStyle='#18202E';
+    while(bx<PW-56){const w=1+Math.floor(br()*5);if(br()>.42)x.fillRect(bx,1150,w,74);bx+=w+1+Math.floor(br()*3);}
+    return c;
+  }
+  function coverArt(x,fill,emboss){
+    const ink=fill;
+    const txt=(t,y,font,ls)=>{x.font=font;if('letterSpacing' in x)x.letterSpacing=ls+'px';x.textAlign='center';
+      if(emboss){x.fillStyle='rgba(0,0,0,.55)';x.fillText(t,PW/2+2,y+3);}x.fillStyle=ink;x.fillText(t,PW/2,y);if('letterSpacing' in x)x.letterSpacing='0px';};
+    txt('SYNTHETIC PERSONA',200,'600 50px Archivo, "Helvetica Neue", Arial, sans-serif',10);
+    txt('REGISTRY',266,'600 50px Archivo, "Helvetica Neue", Arial, sans-serif',10);
+    const cx=PW/2,cy=600;
+    x.save();if(emboss){x.shadowColor='rgba(0,0,0,.6)';x.shadowOffsetX=2;x.shadowOffsetY=3;}
+    emblemCanvas(x,cx,cy-10,6.2,ink);
+    x.restore();
+    txt('PASSPORT',1010,'600 66px Archivo, "Helvetica Neue", Arial, sans-serif',24);
+    x.save();x.strokeStyle=ink;x.lineWidth=4;
+    const cxx=PW/2,cyy=1110;x.beginPath();x.roundRect?x.roundRect(cxx-62,cyy-38,124,76,8):x.rect(cxx-62,cyy-38,124,76);x.stroke();
+    x.beginPath();x.arc(cxx,cyy,22,0,Math.PI*2);x.stroke();x.beginPath();x.moveTo(cxx-62,cyy);x.lineTo(cxx-22,cyy);x.moveTo(cxx+22,cyy);x.lineTo(cxx+62,cyy);x.stroke();
+    x.restore();
+  }
+  function cover(){
+    const c=mk(),x=c.getContext('2d');
+    const g=x.createRadialGradient(PW*.3,PH*.25,40,PW*.5,PH*.5,PH*.8);g.addColorStop(0,'#1D3A70');g.addColorStop(.55,'#12285A');g.addColorStop(1,'#0A1A3D');
+    x.fillStyle=g;x.fillRect(0,0,PW,PH);
+    const r=rng(77);for(let i=0;i<60000;i++){x.fillStyle=r()>.5?'rgba(255,255,255,.035)':'rgba(0,0,0,.08)';x.fillRect(r()*PW,r()*PH,1.6,1.6);}
+    const gold=x.createLinearGradient(0,0,PW,PH);gold.addColorStop(0,'#8D97A6');gold.addColorStop(.3,'#F1F4F8');gold.addColorStop(.5,'#A7B1C0');gold.addColorStop(.72,'#FFFFFF');gold.addColorStop(1,'#7C8796');
+    coverArt(x,gold,true);
+    return c;
+  }
+  function coverMask(metal){
+    const c=mk(),x=c.getContext('2d');
+    x.fillStyle=metal?'#000':'#B4B4B4';x.fillRect(0,0,PW,PH);
+    coverArt(x,metal?'#fff':'#3A3A3A',false);
+    return c;
+  }
+  function holoMask(){
+    const c=mk(512,728),x=c.getContext('2d');
+    x.fillStyle='#000';x.fillRect(0,0,512,728);
+    if('filter' in x)x.filter='blur(1.2px)';
+    x.strokeStyle='#fff';x.lineWidth=1.6;
+    for(let i=0;i<14;i++){x.beginPath();x.ellipse(360,300,130,40,i*Math.PI/14,0,Math.PI*2);x.stroke();}
+    x.lineWidth=1;for(let k=0;k<3;k++){x.beginPath();x.arc(360,300,90+k*8,0,Math.PI*2);x.stroke();}
+    x.font='700 18px sans-serif';x.fillStyle='rgba(255,255,255,.4)';
+    for(let row=0;row<4;row++)for(let col=0;col<6;col++)x.fillText('SPR',col*92+(row%2)*46,470+row*30);
+    x.lineWidth=1.2;for(let i=0;i<8;i++){x.beginPath();for(let px=0;px<=512;px+=4){const y=600+i*12+Math.sin(px/30+i)*6;px?x.lineTo(px,y):x.moveTo(px,y);}x.stroke();}
+    return c;
+  }
+  return {dataPage,endorsements,cover,coverMask,holoMask};
+})();
+
+async function fontsReady(){
+  if(!document.fonts) return;
+  const want=['400 21px Archivo','600 31px Archivo','700 34px Archivo','800 36px Archivo','italic 400 30px Archivo','500 32px "IBM Plex Mono"','88px "Mrs Saint Delafield"'];
+  try{await Promise.race([Promise.all(want.map(f=>document.fonts.load(f))),new Promise(r=>setTimeout(r,3000))]);}catch(e){}
+}
+
+/* ---------- three.js passport ---------- */
+function createViewer(el){
+  const T=window.THREE; if(!T) throw new Error('3D library unavailable');
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputColorSpace=T.SRGBColorSpace;
+  renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;
+  el.appendChild(renderer.domElement);
+  renderer.domElement.setAttribute('aria-hidden','true');
+  const maxAniso=renderer.capabilities.getMaxAnisotropy();
+  const tex=(c,srgb)=>{const t=new T.CanvasTexture(c);if(srgb!==false)t.colorSpace=T.SRGBColorSpace;t.anisotropy=maxAniso;return t;};
+
+  const scene=new T.Scene();
+  const camera=new T.PerspectiveCamera(28,1,.1,60);
+  const pm=new T.PMREMGenerator(renderer);
+  const env=new T.Scene();
+  env.add(new T.Mesh(new T.BoxGeometry(14,14,14),new T.MeshBasicMaterial({color:0x8d8a83,side:T.BackSide})));
+  const panel=(w,h,p,rot,c)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color:c,side:T.DoubleSide}));m.position.set(...p);m.rotation.set(...rot);env.add(m);};
+  panel(7,2.4,[0,5,2],[Math.PI/2,0,0],0xffffff);
+  panel(3,4,[-6,1,2],[0,Math.PI/2,0],0xffe0b0);
+  panel(3,4,[6,0,3],[0,-Math.PI/2,0],0xb8ccff);
+  panel(10,1.2,[0,-1.5,6.5],[0,0,0],0xffffff);
+  scene.environment=pm.fromScene(env,.04).texture;
+  scene.add(new T.HemisphereLight(0xffffff,0x8a8678,.75));
+  const key=new T.DirectionalLight(0xffffff,1.5);key.position.set(2.5,3.2,5);scene.add(key);
+  const rim=new T.DirectionalLight(0xffd59a,.55);rim.position.set(-4,-1.5,2.5);scene.add(rim);
+
+  const W=1,H=1.42,TH=.07,CT=.022;
+  const root=new T.Group();scene.add(root);
+  const book=new T.Group();root.add(book);
+  const paperEdge=new T.MeshStandardMaterial({color:0xe9e5d6,roughness:.95});
+  const navy=new T.MeshStandardMaterial({color:0x12285a,roughness:.62});
+  const blank=new T.MeshStandardMaterial({color:0xe9e7dd,roughness:.92});
+  const dataMat=new T.MeshStandardMaterial({roughness:.8,metalness:0});
+  const rightGeo=new T.BoxGeometry(W,H,TH);rightGeo.translate(W/2,0,-TH/2);
+  book.add(new T.Mesh(rightGeo,[paperEdge,navy,paperEdge,paperEdge,dataMat,navy]));
+
+  const holoMat=new T.ShaderMaterial({
+    uniforms:{mask:{value:tex(TEX.holoMask(),false)},uTime:{value:0},uTilt:{value:new T.Vector2()}},
+    vertexShader:'varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=uv;vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.0);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform sampler2D mask;uniform float uTime;uniform vec2 uTilt;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){float f=clamp(dot(normalize(vN),normalize(vV)),0.0,1.0);float t=vUv.x*1.3+vUv.y*.7+(1.0-f)*3.2+uTilt.x*2.2+uTilt.y*1.4+uTime*.025;vec3 col=.5+.5*cos(6.28318*(t+vec3(0.0,.33,.67)));float m=texture2D(mask,vUv).r;float a=m*(.05+.30*(1.0-f)+.12*abs(uTilt.x));a=min(a,.32);gl_FragColor=vec4(mix(col,vec3(.62,.72,.95),.25),a);}',
+    transparent:true,depthWrite:false,blending:T.NormalBlending});
+  const holo=new T.Mesh(new T.PlaneGeometry(W*.97,H*.97),holoMat);holo.position.set(W/2,0,.0016);book.add(holo);
+
+  const coverPivot=new T.Group();coverPivot.position.set(0,0,.0004);book.add(coverPivot);
+  const coverGeo=new T.BoxGeometry(W+.012,H+.014,CT);coverGeo.translate(W/2+.006,0,CT/2);
+  const coverOut=new T.MeshStandardMaterial({map:tex(TEX.cover()),metalnessMap:tex(TEX.coverMask(true),false),roughnessMap:tex(TEX.coverMask(false),false),metalness:1,roughness:1,color:0xffffff});
+  const coverIn=new T.MeshStandardMaterial({roughness:.82});
+  coverPivot.add(new T.Mesh(coverGeo,[navy,navy,navy,navy,coverOut,coverIn]));
+
+  const PN=36, PGW=W, PGH=H, seg=PGW/PN;
+  const pageGeoF=new T.PlaneGeometry(PGW,PGH,PN,1), pageGeoB=pageGeoF.clone();
+  { const uv=pageGeoB.attributes.uv; for(let i=0;i<uv.count;i++) uv.setX(i,1-uv.getX(i)); uv.needsUpdate=true; }
+  const flipFront=new T.MeshStandardMaterial({roughness:.8,side:T.FrontSide}), flipBack=new T.MeshStandardMaterial({roughness:.82,side:T.BackSide});
+  const flip=new T.Group();
+  flip.add(new T.Mesh(pageGeoF,flipFront));flip.add(new T.Mesh(pageGeoB,flipBack));
+  flip.visible=false;book.add(flip);
+  const pxA=new Float32Array(PN+1), pzA=new Float32Array(PN+1);
+  function bend(p){
+    pxA[0]=0;pzA[0]=0;
+    for(let i=0;i<PN;i++){
+      let t=p*1.5-.5*((i+.5)/PN); t=t<0?0:t>1?1:t; t=t*t*(3-2*t);
+      const th=Math.PI*t; pxA[i+1]=pxA[i]+seg*Math.cos(th); pzA[i+1]=pzA[i]+seg*Math.sin(th);
+    }
+    const lift=.0034+Math.sin(p*Math.PI)*.014;
+    [pageGeoF,pageGeoB].forEach(g=>{const pos=g.attributes.position;for(let r=0;r<2;r++)for(let c=0;c<=PN;c++){const i=r*(PN+1)+c;pos.setX(i,pxA[c]);pos.setZ(i,pzA[c]+lift);}pos.needsUpdate=true;g.computeVertexNormals();});
+  }
+  bend(0);
+
+  const sh=document.createElement('canvas');sh.width=sh.height=256;const sx=sh.getContext('2d');
+  const sg=sx.createRadialGradient(128,128,10,128,128,128);sg.addColorStop(0,'rgba(0,4,16,.55)');sg.addColorStop(1,'rgba(0,0,0,0)');sx.fillStyle=sg;sx.fillRect(0,0,256,256);
+  const shadow=new T.Mesh(new T.PlaneGeometry(3.4,2.6),new T.MeshBasicMaterial({map:tex(sh),transparent:true,depthWrite:false}));
+  shadow.position.set(.06,-.12,-.45);root.add(shadow);
+
+  const cache=new Map();
+  const getTex=(k,fn)=>{if(!cache.has(k))cache.set(k,tex(fn()));return cache.get(k);};
+
+  let openP=0, tweens=[], current=null, opening=null, turning=null, pending=null;
+  const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const easeIO=t=>-(Math.cos(Math.PI*t)-1)/2;
+  const tween=(dur,fn,done)=>{const tw={s:performance.now(),dur,fn,done};tweens.push(tw);return tw;};
+  function applyOpen(){
+    const e=ease(openP);
+    coverPivot.rotation.y=-Math.PI*e;
+    coverPivot.position.z=.0004+Math.sin(e*Math.PI)*.02;
+    book.position.x=(-W/2)*(1-e);
+  }
+  function setOpen(want,instant){
+    const from=openP,to=want?1:0;
+    if(opening){tweens=tweens.filter(t=>t!==opening);opening=null;}
+    if(instant||REDUCED||from===to){openP=to;applyOpen();flush();return;}
+    opening=tween(1800*Math.abs(to-from),t=>{openP=from+(to-from)*t;applyOpen();},()=>{opening=null;flush();});
+  }
+  const texFor=p=>[getTex('d'+p.id,()=>TEX.dataPage(p)),getTex('e'+p.id,()=>TEX.endorsements(p))];
+  function swapNow(p){const [dT,eT]=texFor(p);dataMat.map=dT;coverIn.map=eT;dataMat.needsUpdate=coverIn.needsUpdate=true;current=p;}
+  function turnTo(p){
+    const [dT,eT]=texFor(p);
+    const n=PEOPLE.length, d=(PEOPLE.indexOf(p)-PEOPLE.indexOf(current)+n)%n, fwd=d<=n/2;
+    if(fwd){
+      flipFront.map=dataMat.map;flipBack.map=eT;
+      dataMat.map=dT;
+    }else{
+      flipFront.map=dT;flipBack.map=coverIn.map;
+      coverIn.map=eT;
+    }
+    flipFront.needsUpdate=flipBack.needsUpdate=dataMat.needsUpdate=coverIn.needsUpdate=true;
+    bend(fwd?0:1);flip.visible=true;current=p;
+    turning=tween(1150,t=>bend(fwd?easeIO(t):1-easeIO(t)),()=>{
+      if(fwd){coverIn.map=eT;coverIn.needsUpdate=true;}else{dataMat.map=dT;dataMat.needsUpdate=true;}
+      flip.visible=false;turning=null;flush();
+    });
+  }
+  function flush(){
+    if(!pending||turning||opening)return;
+    const p=pending;pending=null;
+    if(current&&p.id===current.id)return;
+    if(openP>=1&&!REDUCED&&current)turnTo(p);else swapNow(p);
+  }
+  function setPersona(p,animate){
+    if(!current||!animate){swapNow(p);return;}
+    pending=p;flush();
+  }
+
+  const base={x:-.26,y:-.16};
+  let hover={x:0,y:0},drag={x:0,y:0},dragging=null;
+  const rot={x:base.x,y:base.y};
+  const dom=renderer.domElement;
+  const onMove=e=>{
+    const r=dom.getBoundingClientRect();
+    const nx=(e.clientX-r.left)/r.width-.5, ny=(e.clientY-r.top)/r.height-.5;
+    if(dragging){drag.y=Math.max(-.95,Math.min(.95,dragging.dy+(e.clientX-dragging.x)/r.width*2.4));drag.x=Math.max(-.45,Math.min(.45,dragging.dx+(e.clientY-dragging.y)/r.height*1.4));}
+    else if(e.pointerType==='mouse'){hover.x=ny*.22;hover.y=nx*.34;}
+  };
+  const onDown=e=>{dragging={x:e.clientX,y:e.clientY,dx:drag.x,dy:drag.y};try{dom.setPointerCapture(e.pointerId);}catch(_){}};
+  const onUp=e=>{dragging=null;try{dom.releasePointerCapture(e.pointerId);}catch(_){}};
+  const onLeave=()=>{hover.x=hover.y=0;};
+  dom.addEventListener('pointermove',onMove);dom.addEventListener('pointerdown',onDown);
+  dom.addEventListener('pointerup',onUp);dom.addEventListener('pointercancel',onUp);dom.addEventListener('pointerleave',onLeave);
+  dom.addEventListener('dblclick',()=>{drag.x=drag.y=0;});
+
+  let camD=0, camTarget=0;
+  function fit(){
+    const w=el.clientWidth||600,h=el.clientHeight||400;
+    renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    const vf=camera.fov*Math.PI/180, hf=2*Math.atan(Math.tan(vf/2)*camera.aspect);
+    camTarget=Math.max(1.12/Math.tan(hf/2),.98/Math.tan(vf/2));
+    if(!camD)camD=camTarget;
+  }
+  const ro=new ResizeObserver(fit);ro.observe(el);fit();
+  let visible=true;
+  const io=new IntersectionObserver(es=>{visible=es[0].isIntersecting;});io.observe(el);
+
+  let raf=0,last=performance.now(),alive=true;
+  function frame(now){
+    if(!alive)return;raf=requestAnimationFrame(frame);
+    const dt=Math.min(.05,(now-last)/1000);last=now;
+    tweens=tweens.filter(tw=>{let t=(now-tw.s)/tw.dur;if(t>=1){tw.fn(1);tw.done&&tw.done();return false;}tw.fn(tw.linear?t:t);return true;});
+    if(!visible||document.hidden)return;
+    const k=1-Math.pow(.0015,dt);
+    const idle=REDUCED?0:Math.sin(now/2400)*.025;
+    rot.x+=(base.x+hover.x+drag.x-rot.x)*k;rot.y+=(base.y+hover.y+drag.y+idle-rot.y)*k;
+    root.rotation.set(rot.x,rot.y,0);
+    camD+=(camTarget-camD)*(1-Math.pow(.02,dt));
+    camera.position.set(0,-.18,camD);camera.lookAt(0,0,0);
+    holoMat.uniforms.uTime.value=now/1000;holoMat.uniforms.uTilt.value.set(rot.y-base.y,rot.x-base.x);
+    renderer.render(scene,camera);
+    if(!shown){shown=true;requestAnimationFrame(()=>{dom.style.opacity='1';});}
+  }
+  let shown=false;
+  dom.style.opacity='0';dom.style.transition=REDUCED?'none':'opacity .5s ease';
+  raf=requestAnimationFrame(frame);
+  applyOpen();
+  return {
+    setPersona,setOpen,
+    isOpen:()=>openP>.5,
+    reset:()=>{drag.x=drag.y=0;},
+    nudge:(dx,dy)=>{drag.y=Math.max(-.95,Math.min(.95,drag.y+dx));drag.x=Math.max(-.45,Math.min(.45,drag.x+dy));},
+    dispose:()=>{alive=false;cancelAnimationFrame(raf);ro.disconnect();io.disconnect();renderer.dispose();el.removeChild(dom);}
+  };
+}
+
+/* ---------- notices: the registry's colour language ---------- */
+const NOTICE = {
+  'Valid':       {name:'Green notice',  key:'green',  nc:'var(--g)', nt:'var(--g-tint)', ni:'var(--g-ink)', meaning:'Valid passport', advice:'Safe to work with.'},
+  'Under review':{name:'Yellow notice', key:'yellow', nc:'var(--y)', nt:'var(--y-tint)', ni:'var(--y-ink)', meaning:'Under review', advice:'Wait until the review is finished.'},
+  'Suspended':   {name:'Orange notice', key:'orange', nc:'var(--o)', nt:'var(--o-tint)', ni:'var(--o-ink)', meaning:'Suspended', advice:'Do not run campaigns until it is lifted.'},
+  'Revoked':     {name:'Red notice',    key:'red',    nc:'var(--r)', nt:'var(--r-tint)', ni:'var(--r-ink)', meaning:'Revoked', advice:'Do not use. Report any copies you find.'}
+};
+const ORDER = ['Valid','Under review','Suspended','Revoked'];
+const nvars = s => ({'--nc':NOTICE[s].nc,'--nt':NOTICE[s].nt,'--ni':NOTICE[s].ni});
+const byId = id => PEOPLE.find(p => p.id === id);
+const hay = p => (p.name+' '+p.handle+' '+p.id+' '+p.holder+' '+p.lang).toLowerCase();
+const find = q => { q = q.trim().toLowerCase(); if(!q) return []; const exact = PEOPLE.filter(p => p.id.toLowerCase()===q || p.handle.toLowerCase()===q || p.handle.toLowerCase()==='@'+q); return exact.length ? exact : PEOPLE.filter(p => hay(p).includes(q)); };
+const navigate = token => { if(('#'+token)===location.hash){ window.dispatchEvent(new HashChangeEvent('hashchange')); } else { location.hash = token; } };
+const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }, del(k){ try{ localStorage.removeItem(k); }catch(e){} } };
+async function submitToRegistry(path, data){
+  if(location.protocol==='file:') return {id:'DEMO-' + (Math.random().toString(36).slice(2,10)).toUpperCase(), demo:true};
+  const response = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+  const result = await response.json().catch(() => ({}));
+  if(!response.ok) throw new Error(result.error || 'The registry could not save this submission. Please try again.');
+  return result;
+}
+
+/* ---------- marks ---------- */
+let embN = 0;
+function Emblem({size, color}){
+  const E = EMB; const id = useMemo(() => 'emb' + (++embN), []);
+  const star = []; for(let i=0;i<8;i++){ const r=i%2?1.5:4.4, a=-Math.PI/2+i*Math.PI/4; star.push((E.cx+r*Math.cos(a)).toFixed(2)+','+(E.cy-E.gr-8+r*Math.sin(a)).toFixed(2)); }
+  return html`<svg width=${size} height=${size} viewBox="0 0 100 100" aria-hidden="true">
+    <defs><clipPath id=${id}><circle cx=${E.cx} cy=${E.cy} r=${E.gr}></circle></clipPath></defs>
+    <g fill="none" stroke=${color} strokeWidth="1.5">
+      <circle cx=${E.cx} cy=${E.cy} r=${E.gr}></circle>
+      <g clipPath=${'url(#'+id+')'} strokeWidth="0.9">
+        <ellipse cx=${E.cx} cy=${E.cy} rx=${E.gr*.5} ry=${E.gr}></ellipse>
+        <ellipse cx=${E.cx} cy=${E.cy} rx=${E.gr*.87} ry=${E.gr}></ellipse>
+        <line x1=${E.cx} y1=${E.cy-E.gr} x2=${E.cx} y2=${E.cy+E.gr}></line>
+        ${[-.5,0,.5].map(k => html`<line key=${k} x1=${E.cx-E.gr} y1=${E.cy+E.gr*k} x2=${E.cx+E.gr} y2=${E.cy+E.gr*k}></line>`)}
+      </g>
+      <path d=${E.stemL} strokeWidth="1.1"></path><path d=${E.stemR} strokeWidth="1.1"></path>
+    </g>
+    <g fill=${color}>
+      ${E.leaves.map((l,i) => html`<ellipse key=${i} cx="0" cy="0" rx=${4.4*l.s} ry=${1.75*l.s} transform=${'translate('+l.x.toFixed(2)+' '+l.y.toFixed(2)+') rotate('+l.rot.toFixed(1)+')'}></ellipse>`)}
+      <polygon points=${star.join(' ')}></polygon>
+    </g>
+  </svg>`;
+}
+function Globe(){
+  const R = 48, c = 50, mer = [.18,.42,.64,.82,.95], par = [-.75,-.5,-.25,0,.25,.5,.75];
+  return html`<svg className="globe" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g fill="none" stroke="#fff" strokeWidth="0.18">
+      <circle cx=${c} cy=${c} r=${R}></circle>
+      ${mer.map(k => html`<ellipse key=${k} cx=${c} cy=${c} rx=${R*k} ry=${R}></ellipse>`)}
+      <line x1=${c} y1=${c-R} x2=${c} y2=${c+R}></line>
+      ${par.map(k => { const y = c + R*k, w = R*Math.sqrt(1-k*k); return html`<line key=${k} x1=${c-w} y1=${y} x2=${c+w} y2=${y}></line>`; })}
+    </g>
+  </svg>`;
+}
+const NTag = ({status}) => html`<span className="ntag" style=${nvars(status)}><i aria-hidden="true"></i>${NOTICE[status].name}</span>`;
+
+/* ---------- toast ---------- */
+function useToast(){
+  const [msg,setMsg] = useState(''); const t = useRef(0);
+  const show = useCallback(m => { setMsg(m); clearTimeout(t.current); t.current = setTimeout(() => setMsg(''), 2600); }, []);
+  return [msg, show];
+}
+async function copy(text, label, toast){
+  try{ await navigator.clipboard.writeText(text); toast(label + ' copied'); }
+  catch(e){ toast('Copying is blocked here. Select it by hand: ' + text); }
+}
+
+/* ---------- 3D passport ---------- */
+function Viewer({person, label}){
+  const box = useRef(null), api = useRef(null);
+  const [state,setState] = useState('loading'); const [open,setOpen] = useState(true); const [fb,setFb] = useState('');
+  useEffect(() => { let dead = false;
+    (async () => { await Promise.all([fontsReady(), loadPhotos()]); if(dead) return;
+      try{ api.current = createViewer(box.current); api.current.setPersona(person, false); setState('ready');
+        setTimeout(() => { api.current && api.current.setOpen(true); }, REDUCED ? 0 : 450); }
+      catch(e){ setFb(TEX.dataPage(person).toDataURL('image/jpeg', .9)); setState('fallback'); } })();
+    return () => { dead = true; api.current && api.current.dispose(); api.current = null; };
+  }, []);
+  useEffect(() => { if(api.current) api.current.setPersona(person, true); else if(state==='fallback') setFb(TEX.dataPage(person).toDataURL('image/jpeg', .9)); }, [person.id]);
+  const toggle = () => { const w = !open; setOpen(w); api.current && api.current.setOpen(w); };
+  const key = e => { if(!api.current) return; const m = {ArrowLeft:[-.12,0],ArrowRight:[.12,0],ArrowUp:[0,-.08],ArrowDown:[0,.08]}[e.key]; if(m){ e.preventDefault(); api.current.nudge(m[0], m[1]); } };
+  return html`<div className="vbox"><div className="viewer" ref=${box} tabIndex="0" role="img" onKeyDown=${key} aria-label=${label || ('Passport ' + person.id + ' of ' + person.name + '. Arrow keys turn it.')}>
+    ${state==='loading' && html`<div className="vmsg">Loading the passport</div>`}
+    ${state==='fallback' && html`<div className="vmsg"><img src=${fb} alt=${'Data page of passport ' + person.id} /></div>`}
+    </div>
+    <div className="vctl">
+      <span className="hint">${state==='fallback' ? '3D is not available in this browser.' : (window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches ? 'Swipe sideways to turn.' : 'Drag to turn. Double-click to straighten.')}</span>
+      ${state==='ready' && html`<span className="vbtns">
+        <button type="button" className="vbtn" onClick=${toggle}>${open ? 'Close passport' : 'Open passport'}</button>
+        <button type="button" className="vbtn" onClick=${() => api.current && api.current.reset()}>Straighten</button></span>`}
+    </div>
+  </div>`;
+}
+
+/* ---------- command palette ---------- */
+function Palette({onClose}){
+  const [q,setQ] = useState(''); const [act,setAct] = useState(0); const inp = useRef(null); const prev = useRef(document.activeElement);
+  useEffect(() => { inp.current && inp.current.focus(); return () => { prev.current && prev.current.focus && prev.current.focus(); }; }, []);
+  const people = q.trim() ? find(q) : PEOPLE;
+  const actions = [['Browse all notices','notices'],['Register a persona','apply'],['Report a persona','report'],['Registry home','home']].filter(a => !q.trim() || a[0].toLowerCase().includes(q.trim().toLowerCase()));
+  const items = [...people.map(p => ({k:p.id, go:p.id, p})), ...actions.map(a => ({k:a[1], go:a[1], label:a[0]}))];
+  const go = it => { onClose(); navigate(it.go); };
+  const key = e => {
+    if(e.key==='ArrowDown'){ e.preventDefault(); setAct(a => Math.min(a+1, items.length-1)); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); setAct(a => Math.max(a-1, 0)); }
+    else if(e.key==='Enter'){ e.preventDefault(); items[act] && go(items[act]); }
+    else if(e.key==='Escape'){ e.preventDefault(); onClose(); }
+    else if(e.key==='Tab'){ e.preventDefault(); }
+  };
+  let idx = -1;
+  const row = it => { idx++; const i = idx; const sel = i===act;
+    return it.p ? html`<li key=${it.k} id=${'pi-'+it.k} role="option" aria-selected=${sel?'true':'false'} onMouseMove=${() => setAct(i)} onMouseDown=${e => { e.preventDefault(); go(it); }} style=${nvars(it.p.status)}>
+        <img src=${it.p.src} alt="" /><span className="t"><b>${it.p.name}</b><span className="mono">${it.p.id}  ${it.p.handle}</span></span><span className="sw" aria-hidden="true"></span><span className="sr">${NOTICE[it.p.status].name}</span></li>`
+      : html`<li key=${it.k} id=${'pi-'+it.k} role="option" aria-selected=${sel?'true':'false'} onMouseMove=${() => setAct(i)} onMouseDown=${e => { e.preventDefault(); go(it); }}><span className="t"><b>${it.label}</b></span></li>`; };
+  return html`<div className="pal-bg" onMouseDown=${e => { if(e.target===e.currentTarget) onClose(); }}>
+    <div className="pal" role="dialog" aria-modal="true" aria-label="Search the registry">
+      <input ref=${inp} value=${q} onChange=${e => { setQ(e.target.value); setAct(0); }} onKeyDown=${key} placeholder="Name, handle, passport number or a page"
+        role="combobox" aria-expanded="true" aria-controls="pal-list" aria-activedescendant=${items[act] ? 'pi-'+items[act].k : undefined} aria-label="Search the registry" />
+      <ul id="pal-list" role="listbox" aria-label="Results">
+        ${people.length > 0 && html`<li className="grp" role="presentation">Personas</li>`}
+        ${items.filter(i => i.p).map(row)}
+        ${actions.length > 0 && html`<li className="grp" role="presentation">Pages</li>`}
+        ${items.filter(i => !i.p).map(row)}
+        ${!items.length && html`<li className="grp" role="presentation">Nothing matches “${q}”. Try a passport number like PP-AZ-0001.</li>`}
+      </ul>
+      <div className="foot"><span><span className="kbd">↑</span> <span className="kbd">↓</span> to move</span><span><span className="kbd">Enter</span> to open</span><span><span className="kbd">Esc</span> to close</span></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- home ---------- */
+function Hero(){
+  const [q,setQ] = useState(''); const res = find(q); const top = res[0];
+  const featured = PEOPLE[0];
+  const submit = e => { e.preventDefault(); if(top) navigate(top.id); };
+  return html`<section className="hero" aria-labelledby="h1"><div className="wrap">
+    <div>
+      <h1 id="h1" tabIndex="-1">Check an AI persona before you work with it.</h1>
+      <p className="lede">The registry records who owns each AI persona, what it was built from, and whether its passport is valid.</p>
+      <form className="verify" role="search" onSubmit=${submit}>
+        <label htmlFor="vq">Passport number, handle or name</label>
+        <div className="row">
+          <input id="vq" type="text" autoComplete="off" spellCheck="false" placeholder="PP-AZ-0001" value=${q} onChange=${e => setQ(e.target.value)} aria-describedby="vres" />
+          <button className="btn" type="submit">Check</button>
+        </div>
+        <div className="try"><span>Try</span>${['PP-AZ-0001','@leyla.kaya','Elin Berg'].map(t => html`<button key=${t} type="button" onClick=${() => setQ(t)}>${t}</button>`)}</div>
+        <div id="vres" aria-live="polite">
+          ${q.trim() && (top ? html`<div className="vres" style=${{'--nc':NOTICE[top.status].nc}}>
+              <img src=${top.src} alt="" /><div className="t"><b>${top.name}</b><span>${NOTICE[top.status].name}. ${NOTICE[top.status].advice}${res.length > 1 ? ' ' + (res.length - 1) + ' more match.' : ''}</span></div>
+              <a className="btn light" href=${'#'+top.id}>Open record</a></div>`
+            : html`<div className="vres" style=${{'--nc':'#fff'}}><div className="t"><b>No passport found</b><span>No persona matches “${q.trim()}”. Unregistered personas have no passport. Check the spelling or the number.</span></div></div>`)}
+        </div>
+      </form>
+    </div>
+    <div className="stage"><${Globe} /><${Viewer} person=${featured} label=${'Sample passport ' + featured.id + ' of ' + featured.name + '. Arrow keys turn it.'} /></div>
+  </div></section>`;
+}
+
+function Notices(){
+  const saved = store.get('spr-view') || {};
+  const [notice,setNotice] = useState('All'); const [q,setQ] = useState(''); const [sort,setSort] = useState('recent'); const [view,setView] = useState(saved.view || 'grid');
+  useEffect(() => { store.set('spr-view', {view}); }, [view]);
+  const counts = {}; PEOPLE.forEach(p => { counts[p.status] = (counts[p.status] || 0) + 1; });
+  const rows = useMemo(() => {
+    const ql = q.trim().toLowerCase();
+    let r = PEOPLE.filter(p => (notice==='All' || p.status===notice) && (!ql || hay(p).includes(ql)));
+    const cmp = { recent:(a,b) => b.sort-a.sort, name:(a,b) => a.name.localeCompare(b.name), notice:(a,b) => ORDER.indexOf(a.status)-ORDER.indexOf(b.status) || b.sort-a.sort }[sort];
+    return r.slice().sort(cmp);
+  }, [notice, q, sort]);
+  const filtered = notice!=='All' || q.trim();
+  return html`<section id="notices" className="sec" aria-labelledby="n-h"><div className="wrap">
+    <div className="sec-h"><div>
+      <h2 className="h2" id="n-h">Notices</h2>
+      <p className="sub">Every persona in the register carries a notice. Its colour tells you what you can do with that persona. Select a colour to filter.</p>
+    </div></div>
+    <div className="key" role="group" aria-label="Filter by notice">
+      ${ORDER.map(s => html`<button key=${s} type="button" style=${nvars(s)} aria-pressed=${notice===s?'true':'false'} onClick=${() => setNotice(n => n===s ? 'All' : s)}>
+        <span className="nm"><span>${NOTICE[s].name}</span><span className="ct">${counts[s] || 0}</span></span>
+        <span className="ad">${NOTICE[s].meaning}. ${NOTICE[s].advice}</span></button>`)}
+    </div>
+    <div className="tools">
+      <div className="l">
+        <label htmlFor="nq" className="sr">Filter notices</label>
+        <input id="nq" className="field-in" type="search" placeholder="Filter by name, handle or rights holder" value=${q} onChange=${e => setQ(e.target.value)} />
+        <label htmlFor="ns" className="sr">Sort by</label>
+        <select id="ns" className="sel" value=${sort} onChange=${e => setSort(e.target.value)}>
+          <option value="recent">Newest first</option><option value="name">Name A to Z</option><option value="notice">Notice colour</option>
+        </select>
+      </div>
+      <div className="viewsw" role="group" aria-label="Layout">
+        <button type="button" aria-pressed=${view==='grid'?'true':'false'} onClick=${() => setView('grid')}>Cards</button>
+        <button type="button" aria-pressed=${view==='list'?'true':'false'} onClick=${() => setView('list')}>Table</button>
+      </div>
+    </div>
+    <p className="status-line" aria-live="polite" style=${{marginBottom:'16px'}}>
+      ${rows.length} of ${PEOPLE.length} personas${notice!=='All' ? ' with a ' + NOTICE[notice].name.toLowerCase() : ''}${q.trim() ? ' matching “' + q.trim() + '”' : ''}.
+      ${filtered && html`<button type="button" className="tlink clear" onClick=${() => { setNotice('All'); setQ(''); }}>Clear filters</button>`}
+    </p>
+    ${!rows.length && html`<p className="empty">No persona matches these filters. <button type="button" className="tlink" onClick=${() => { setNotice('All'); setQ(''); }}>Show all notices</button></p>`}
+    ${rows.length > 0 && view==='grid' && html`<ul className="grid" style=${{listStyle:'none',margin:0,padding:0}}>
+      ${rows.map(p => html`<li key=${p.id} className="card" style=${nvars(p.status)}>
+        <div className="band" aria-hidden="true"></div>
+        <div className="ph"><img src=${p.src} alt="" loading="lazy" style=${{viewTransitionName:'ph-'+p.id}} /></div>
+        <div className="bd">
+          <h3><a href=${'#'+p.id}>${p.name}</a></h3>
+          <span className="no">${p.id}</span>
+          <span className="meta">${p.role}, ${p.lang}</span>
+          <span className="meta">Held by ${p.holder}</span>
+          <${NTag} status=${p.status} />
+        </div>
+      </li>`)}
+    </ul>`}
+    ${rows.length > 0 && view==='list' && html`<div className="tbl-box"><table>
+      <caption className="sr">Notices. Demonstration entries.</caption>
+      <thead><tr><th scope="col"><span className="sr">Portrait</span></th><th scope="col">Persona</th><th scope="col">Passport number</th><th scope="col">Rights holder</th><th scope="col">Notice</th><th scope="col">Issued</th></tr></thead>
+      <tbody>${rows.map(p => html`<tr key=${p.id}>
+        <td><img className="thumb" src=${p.src} alt="" /></td>
+        <td><a href=${'#'+p.id}>${p.name}</a><br /><span style=${{color:'var(--muted)',fontSize:'14.5px'}}>${p.handle}</span></td>
+        <td className="mono">${p.id}</td><td>${p.holder}</td><td><${NTag} status=${p.status} /></td><td style=${{whiteSpace:'nowrap'}}>${p.issued}</td></tr>`)}</tbody>
+    </table></div>`}
+  </div></section>`;
+}
+
+function Home(){
+  return html`<div>
+    <${Hero} />
+    <${Notices} />
+    <section className="sec" style=${{background:'var(--mist)'}} aria-labelledby="s-h"><div className="wrap">
+      <div className="sec-h"><div><h2 className="h2" id="s-h">How a persona gets a passport</h2>
+        <p className="sub">The same five stages for every persona. A passport is renewed every year and can be suspended at any stage.</p></div></div>
+      <ol className="steps">
+        <li><h3>Application</h3><p>The rights holder registers the persona with reference images and says how it was made.</p></li>
+        <li><h3>Evidence</h3><p>Model files are hashed, licences and service terms are saved, channels are linked.</p></li>
+        <li><h3>Examination</h3><p>An examiner checks the evidence and compares the face with known real people.</p></li>
+        <li><h3>Passport issued</h3><p>The registrar signs the passport and a green notice appears in the register.</p></li>
+        <li><h3>Yearly renewal</h3><p>The holder confirms ownership and reports any change to the persona.</p></li>
+      </ol>
+    </div></section>
+    <section className="sec" aria-labelledby="sv-h"><div className="wrap">
+      <h2 className="h2 sr" id="sv-h">Services</h2>
+      <div className="svc">
+        <div className="a"><h3>Register a persona</h3><p>Apply for a passport for a persona you own. You answer four short sections and get a case number straight away.</p><span className="time">Takes about 5 minutes</span><a className="btn light" href="#apply">Start an application</a></div>
+        <div className="b"><h3>Report a persona</h3><p>Seen an AI persona copying a real person, or posting ads without saying so? Save a report for review.</p><span className="time">Takes about 2 minutes</span><a className="btn line" href="#report">Report a persona</a></div>
+      </div>
+    </div></section>
+  </div>`;
+}
+
+/* ---------- record ---------- */
+function Record({person, toast, onReport}){
+  const [tab,setTab] = useState('check'); const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]);
+  useEffect(() => { timers.current.forEach(clearTimeout); timers.current = []; setStep(-1); setTab('check'); }, [person.id]);
+  const N = NOTICE[person.status];
+  const tone = {Valid:'ok','Under review':'warn',Suspended:'bad',Revoked:'bad'}[person.status];
+  const checks = [
+    {l:'Record exists in the demo register', d:person.id, t:'ok'},
+    {l:'Registry record identifier', d:person.record, t:'ok'},
+    {l:'Face review shown in the record', d:person.status==='Revoked' ? 'Close match recorded' : person.nature==='Licensed likeness' ? 'Consent noted' : 'No issue recorded', t:person.status==='Revoked' ? 'bad' : 'ok'},
+    {l:'Notice', d:N.name, t:tone},
+    {l:'Open risks on the record', d:person.risks.length ? String(person.risks.length) : 'None', t:person.risks.length ? 'warn' : 'ok'}
+  ];
+  const run = async () => { setTab('check'); setCheckError(''); timers.current.forEach(clearTimeout); setStep(-1);
+    if(location.protocol!=='file:') {
+      try { const r = await fetch('/api/v1/passports/' + encodeURIComponent(person.id) + '/check'); if(!r.ok) throw new Error('Registry lookup failed'); const data = await r.json(); if(!data.registryRecordFound || data.passportId!==person.id) throw new Error('Registry record could not be confirmed'); }
+      catch(e){ setCheckError('The registry is unavailable. Please try again.'); return; }
+    }
+    setStep(0); const g = REDUCED ? 0 : 380; checks.forEach((_,i) => timers.current.push(setTimeout(() => setStep(i+1), g*(i+1)))); };
+  const done = step >= checks.length;
+  const verdict = {Valid:'This demo record has a green notice. Review its open risks before working with this persona.', 'Under review':'This demo record is under review. Wait for a decision.', Suspended:'This demo record is suspended. Do not run campaigns with this persona.', Revoked:'This demo record is revoked. Do not use this persona.'}[person.status];
+  const i = PEOPLE.indexOf(person), prev = PEOPLE[(i - 1 + PEOPLE.length) % PEOPLE.length], next = PEOPLE[(i + 1) % PEOPLE.length];
+  const tabs = [['check','Check'],['history','History'],['risks','Open risks (' + person.risks.length + ')'],['stamps','Endorsements']];
+  const tabKey = e => { const k = tabs.findIndex(t => t[0]===tab); if(e.key==='ArrowRight' || e.key==='ArrowLeft'){ e.preventDefault(); const n = tabs[(k + (e.key==='ArrowRight' ? 1 : tabs.length - 1)) % tabs.length][0]; setTab(n); setTimeout(() => { const b = document.getElementById('tab-' + n); b && b.focus(); }, 0); } };
+  return html`<div style=${nvars(person.status)}>
+    <div className="rec-top"><div className="wrap">
+      <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#home">Registry</a></li><li><a href="#notices">Notices</a></li><li aria-current="page">${person.name}</li></ol>
+      <div className="rec-head">
+        <img className="rec-photo" src=${person.src} alt=${'Portrait of ' + person.name} style=${{viewTransitionName:'ph-'+person.id}} />
+        <div>
+          <span className="no">${person.id}</span>
+          <h1 id="h1" tabIndex="-1">${person.name}</h1>
+          <${NTag} status=${person.status} />
+        </div>
+        <div className="acts">
+          <button type="button" className="btn" onClick=${run}>Check this passport</button>
+          <button type="button" className="btn line" onClick=${() => copy(location.href.split('#')[0] + '#' + person.id, 'Link to this record', toast)}>Copy link</button>
+          <button type="button" className="btn line" onClick=${() => onReport(person)}>Report a concern</button>
+        </div>
+      </div>
+    </div></div>
+    <div className="wrap">
+      <div className="rec-grid">
+        <div className="rec-stage"><${Viewer} person=${person} /></div>
+        <div>
+          <div className="notice-box" style=${{marginTop:0}}><div><b>${N.name}: ${N.meaning.toLowerCase()}</b><span>${N.advice}${person.note ? ' Reason: ' + person.note.toLowerCase() + '.' : ''}</span></div></div>
+          <dl className="dl" style=${{marginTop:'24px'}}>
+            <div><dt>Passport number</dt><dd><span className="mono">${person.id}</span> <button type="button" className="tlink" style=${{marginLeft:'8px',fontSize:'15px'}} onClick=${() => copy(person.id, 'Passport number', toast)}>Copy</button></dd></div>
+            <div><dt>Main channel</dt><dd>${person.handle}</dd></div>
+            <div><dt>Nature</dt><dd>${person.nature}</dd></div>
+            <div><dt>Occupation</dt><dd>${person.role}</dd></div>
+            <div><dt>Language</dt><dd>${person.lang}</dd></div>
+            <div><dt>Rights holder</dt><dd>${person.holder}</dd></div>
+            <div><dt>Date of issue</dt><dd>${person.issued}</dd></div>
+            <div><dt>Date of expiry</dt><dd>${person.expires}</dd></div>
+            <div><dt>Level of proof</dt><dd>${person.level}, ${LEVELS.indexOf(person.level) + 1} of 4</dd></div>
+          </dl>
+        </div>
+      </div>
+      <div className="tabs">
+        <div className="tablist" role="tablist" aria-label="Record details" onKeyDown=${tabKey}>
+          ${tabs.map(([k,l]) => html`<button key=${k} type="button" role="tab" id=${'tab-'+k} aria-controls=${'tp-'+k} aria-selected=${tab===k?'true':'false'} tabIndex=${tab===k?0:-1} onClick=${() => setTab(k)}>${l}</button>`)}
+        </div>
+        <div className="panel" role="tabpanel" id=${'tp-'+tab} aria-labelledby=${'tab-'+tab}>
+          ${tab==='check' && html`<div>
+            ${step < 0 && html`<p className="sub" style=${{marginTop:0,marginBottom:'18px'}}>This demo lookup shows the stored record, notice and risks. It does not verify a cryptographic signature or run a new face comparison.</p>`}
+            ${checkError && html`<p role="alert" className="risk">${checkError}</p>`}
+            ${step >= 0 && html`<ul className="checks" aria-live="polite">${checks.map((c,k) => html`<li key=${k} className=${step>k ? 'done ' + c.t : step===k ? 'run' : ''}>
+              <span className="mk" aria-hidden="true">${step>k ? (c.t==='ok' ? '✓' : '!') : ''}</span><span>${c.l}</span><span className="d">${step>k ? c.d : step===k ? 'Checking' : ''}</span></li>`)}</ul>`}
+            ${done && html`<p className="verdict" role="status">${verdict}</p>`}
+            <button type="button" className="btn" onClick=${run} disabled=${step>=0 && !done}>${done ? 'Check again' : step>=0 ? 'Checking' : 'Check this passport'}</button>
+          </div>`}
+          ${tab==='history' && html`<dl className="hist">${person.history.map((h,k) => html`<div key=${k}><dt>${h.d}</dt><dd>${h.e}</dd></div>`)}</dl>`}
+          ${tab==='risks' && (person.risks.length ? html`<div>${person.risks.map((r,k) => html`<div key=${k} className="risk"><span className="ex" aria-hidden="true">!</span><p><span className="sr">Risk: </span>${r}</p></div>`)}</div>` : html`<p>There are no open risks on this record.</p>`)}
+          ${tab==='stamps' && html`<dl className="hist">${person.stamps.map((s,k) => html`<div key=${k}><dt style=${{fontFamily:'var(--sans)',fontSize:'15px',color:'var(--muted)'}}>${s.t}</dt><dd><b>${s.v.charAt(0) + s.v.slice(1).toLowerCase()}</b>${s.sub ? ', ' + s.sub : ''}</dd></div>`)}</dl>`}
+        </div>
+      </div>
+      <nav className="pager" aria-label="Other records">
+        <a href=${'#'+prev.id}><span>Previous record</span><b>${prev.name}</b></a>
+        <a className="nx" href=${'#'+next.id}><span>Next record</span><b>${next.name}</b></a>
+      </nav>
+      <div style=${{height:'64px'}}></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- apply: four short sections ---------- */
+const APPLY0 = {name:'', handle:'', nature:'', langs:'', holderType:'', holder:'', email:'', evidence:[]};
+const EVIDENCE = [['images','Reference images of the persona'],['models','The model files used (base model, checkpoint or LoRA)'],['licences','Licences or terms for every tool and model'],['channels','Login access to the main channel'],['consent','Signed consent from a real person, if the persona is based on one']];
+function Apply({toast}){
+  const [d,setD] = useState(() => ({...APPLY0, ...(store.get('spr-apply') || {})}));
+  const [step,setStep] = useState(() => (store.get('spr-apply-step') || 1));
+  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
+  useEffect(() => { if(!ref){ store.set('spr-apply', d); store.set('spr-apply-step', step); } }, [d, step, ref]);
+  const set = k => e => setD(s => ({...s, [k]: e.target.value}));
+  const toggleEv = k => setD(s => ({...s, evidence: s.evidence.includes(k) ? s.evidence.filter(x => x!==k) : [...s.evidence, k]}));
+  const validate = n => { const e = {};
+    if(n===1){ if(!d.name.trim()) e.name = 'Enter the persona’s public name'; if(!/^@?[\w.]{2,}$/.test(d.handle.trim())) e.handle = 'Enter the main channel handle, like @fidan.sings'; if(!d.nature) e.nature = 'Select whether the persona is based on a real person'; }
+    if(n===2){ if(!d.holderType) e.holderType = 'Select whether a person or a company holds the rights'; if(!d.holder.trim()) e.holder = d.holderType==='company' ? 'Enter the company’s registered name' : 'Enter the full name of the rights holder'; if(!/^\S+@\S+\.\S+$/.test(d.email.trim())) e.email = 'Enter an email address in the correct format, like name@example.com'; }
+    if(n===3){ if(!d.evidence.length) e.evidence = 'Select at least one piece of evidence you can send'; if(d.nature==='likeness' && !d.evidence.includes('consent')) e.evidence = 'A persona based on a real person needs that person’s signed consent'; }
+    return e; };
+  const focusTop = () => setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0);
+  const next = e => { e.preventDefault(); const er = validate(step); if(Object.keys(er).length){ setErr(er); setTimeout(() => sum.current && sum.current.focus(), 0); return; } setErr(null); setStep(step + 1); focusTop(); };
+  const back = () => { setErr(null); setStep(Math.max(1, step - 1)); focusTop(); };
+  const submit = async () => { if(pending) return; setPending(true); setServerError('');
+    try { const result = await submitToRegistry('/api/v1/applications', d); setRef(result.id); setDemo(!!result.demo); store.del('spr-apply'); store.del('spr-apply-step'); focusTop(); }
+    catch(e){ setServerError(e.message || 'The application could not be saved. Please try again.'); }
+    finally { setPending(false); } };
+  const restart = () => { setD(APPLY0); setStep(1); setRef(null); setErr(null); focusTop(); };
+  const fe = k => err && err[k];
+  const Text = (k, label, hint, type, extra) => html`<div className=${'fg' + (fe(k) ? ' err' : '')}>
+    <label htmlFor=${'f-'+k}>${label}</label>${hint && html`<span className="hint" id=${'h-'+k}>${hint}</span>`}
+    ${fe(k) && html`<span className="emsg" id=${'e-'+k}><span className="sr">Error: </span>${err[k]}</span>`}
+    <input id=${'f-'+k} className=${'in' + (fe(k) ? ' err' : '')} type=${type || 'text'} value=${d[k]} onChange=${set(k)} ...${extra || {}}
+      aria-describedby=${[hint ? 'h-'+k : '', fe(k) ? 'e-'+k : ''].join(' ').trim() || undefined} /></div>`;
+  const Radios = (k, legend, opts) => html`<fieldset className=${'fg' + (fe(k) ? ' err' : '')}>
+    <legend>${legend}</legend>${fe(k) && html`<span className="emsg"><span className="sr">Error: </span>${err[k]}</span>`}
+    <div className="opts">${opts.map(([v,l,h],n) => html`<label key=${v} className="opt"><input type="radio" id=${n===0 ? 'f-'+k : undefined} name=${k} value=${v} checked=${d[k]===v} onChange=${set(k)} /><span>${l}${h && html`<small>${h}</small>`}</span></label>`)}</div></fieldset>`;
+  if(ref) return html`<div className="wrap formwrap">
+     <div className="done"><h1 id="h1" tabIndex="-1">${demo ? 'Application preview' : 'Application received'}</h1><p style=${{marginTop:'10px'}}>${demo ? 'Demo number' : 'Your case number'}</p><span className="ref">${ref}</span></div>
+    <h2 className="h2" style=${{fontSize:'26px',marginTop:'36px'}}>What happens next</h2>
+     <p style=${{marginTop:'10px'}}>${demo ? 'This standalone preview did not save or send your answers.' : 'Your answers were stored for review. Keep your case number. This prototype does not send email or assign an examiner.'}</p>
+    <div className="rowbtns" style=${{marginTop:'28px'}}><a className="btn" href="#notices">Back to notices</a><button type="button" className="tlink" onClick=${restart}>Start another application</button></div>
+  </div>`;
+  const titles = ['About the persona','Who holds the rights','Evidence you can send','Check your answers'];
+  const yes = d.nature==='likeness' ? 'Yes, with the person’s signed consent' : d.nature==='synthetic' ? 'No, it is fully synthetic' : '';
+  return html`<div className="wrap formwrap">
+    <ol className="crumbs" aria-label="Breadcrumb" style=${{paddingTop:0}}><li><a href="#home">Registry</a></li><li aria-current="page">Register a persona</li></ol>
+    <div className="progress" aria-hidden="true">${[1,2,3,4].map(n => html`<span key=${n} className=${n<=step ? 'on' : ''}></span>`)}</div>
+    ${step>1 && html`<button type="button" className="tlink" onClick=${back} style=${{marginBottom:'16px'}}>Back</button>`}
+    <span className="cap">Register a persona, section ${step} of 4</span>
+    <h1 className="fh1" id="h1" tabIndex="-1">${titles[step-1]}</h1>
+    ${err && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#f-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById(k==='evidence' ? 'f-ev-0' : 'f-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
+    ${step<4 && html`<form className="form" onSubmit=${next} noValidate>
+      ${step===1 && html`${Text('name','Persona’s public name','As it appears on the persona’s channels','text',{autoComplete:'off'})}
+        ${Text('handle','Main channel handle','The account with the largest audience','text',{autoComplete:'off',spellCheck:false})}
+        ${Radios('nature','Is the persona based on a real person?',[['synthetic','No, it is fully synthetic',''],['likeness','Yes, with the person’s signed consent','You will need to send the consent in section 3']])}
+        ${Text('langs','Languages the persona speaks (optional)','For example, Azerbaijani and Russian','text')}`}
+      ${step===2 && html`${Radios('holderType','Who holds the rights to the persona?',[['person','A person',''],['company','A company','Use the name on its registration certificate']])}
+        ${Text('holder', d.holderType==='company' ? 'Company name' : 'Full name', '', 'text', {autoComplete: d.holderType==='company' ? 'organization' : 'name'})}
+        ${Text('email','Email address','Contact address for future follow-up. This prototype does not send email.','email',{autoComplete:'email',spellCheck:false})}`}
+      ${step===3 && html`<fieldset className=${'fg' + (fe('evidence') ? ' err' : '')}>
+          <legend>Which evidence do you have?</legend><span className="hint">Select all that apply. This prototype stores your answer but does not issue a passport.</span>
+          ${fe('evidence') && html`<span className="emsg"><span className="sr">Error: </span>${err.evidence}</span>`}
+          <div className="opts">${EVIDENCE.map(([k,l],n) => html`<label key=${k} className="opt"><input type="checkbox" id=${'f-ev-'+n} checked=${d.evidence.includes(k)} onChange=${() => toggleEv(k)} /><span>${l}</span></label>`)}</div>
+        </fieldset>`}
+      <div className="rowbtns"><button type="submit" className="btn">Continue</button><span className="saved">Your answers are saved in this browser.</span></div>
+    </form>`}
+    ${step===4 && html`<div style=${{marginTop:'28px'}}>
+      <dl className="review">
+        ${[['Public name',d.name,1],['Main channel',d.handle,1],['Based on a real person',yes,1],['Languages',d.langs || 'Not given',1],['Rights holder',(d.holderType==='company' ? 'Company: ' : 'Person: ') + d.holder,2],['Email',d.email,2],['Evidence',d.evidence.map(k => EVIDENCE.find(e => e[0]===k)[1]).join('; '),3]].map(([l,v,s]) => html`<div key=${l}><dt>${l}</dt><dd className="rv">${v}</dd><dd className="ra"><button type="button" className="tlink" onClick=${() => { setStep(s); focusTop(); }}>Change<span className="sr"> ${l.toLowerCase()}</span></button></dd></div>`)}
+      </dl>
+      <h2 className="h2" style=${{fontSize:'24px',marginTop:'32px'}}>Declaration</h2>
+      <p style=${{marginTop:'10px',maxWidth:'60ch'}}>By submitting, you confirm you hold the rights to this persona and that the information is correct to the best of your knowledge.</p>
+       ${serverError && html`<p role="alert" className="risk">${serverError}</p>`}
+       <div className="rowbtns" style=${{marginTop:'24px'}}><button type="button" className="btn" onClick=${submit} disabled=${pending}>${pending ? 'Saving' : 'Accept and submit'}</button></div>
+    </div>`}
+  </div>`;
+}
+
+/* ---------- report ---------- */
+function Report({prefill, toast}){
+  const [d,setD] = useState({who: prefill ? prefill.name + ' (' + prefill.id + ')' : '', what:'', details:'', email:''});
+  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
+  const set = k => e => setD(s => ({...s, [k]: e.target.value}));
+  const submit = async e => { e.preventDefault(); if(pending) return; const er = {};
+    if(!d.who.trim()) er.who = 'Enter the persona’s name, handle or passport number';
+    if(!d.what) er.what = 'Select what the problem is';
+    if(d.details.trim().length < 20) er.details = 'Describe what you saw in at least 20 characters';
+    if(d.email.trim() && !/^\S+@\S+\.\S+$/.test(d.email.trim())) er.email = 'Enter an email address in the correct format, or leave it empty';
+    if(Object.keys(er).length){ setErr(er); setTimeout(() => sum.current && sum.current.focus(), 0); return; }
+    setErr(null); setPending(true); setServerError('');
+    try { const result = await submitToRegistry('/api/v1/reports', d); setRef(result.id); setDemo(!!result.demo); setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0); }
+    catch(e){ setServerError(e.message || 'The report could not be saved. Please try again.'); }
+    finally { setPending(false); } };
+  const fe = k => err && err[k];
+   if(ref) return html`<div className="wrap formwrap"><div className="done"><h1 id="h1" tabIndex="-1">${demo ? 'Report preview' : 'Report received'}</h1><p style=${{marginTop:'10px'}}>${demo ? 'Demo reference' : 'Your reference'}</p><span className="ref">${ref}</span></div>
+     <p style=${{marginTop:'28px'}}>${demo ? 'This standalone preview did not save or send your report.' : 'Your report was stored for review. This prototype does not assign an examiner or change a notice automatically.'}</p>
+    <div className="rowbtns" style=${{marginTop:'24px'}}><a className="btn" href="#notices">Back to notices</a></div></div>`;
+  return html`<div className="wrap formwrap">
+    <ol className="crumbs" aria-label="Breadcrumb" style=${{paddingTop:0,marginBottom:'24px'}}><li><a href="#home">Registry</a></li><li aria-current="page">Report a persona</li></ol>
+    <h1 className="fh1" id="h1" tabIndex="-1">Report a persona</h1>
+    <p className="sub">Use this form for registered and unregistered personas. You do not need an account.</p>
+    ${err && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#r-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById('r-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
+    <form className="form" onSubmit=${submit} noValidate>
+      <div className=${'fg' + (fe('who') ? ' err' : '')}><label htmlFor="r-who">Which persona?</label><span className="hint">Name, handle or passport number</span>
+        ${fe('who') && html`<span className="emsg">${err.who}</span>`}<input id="r-who" className=${'in' + (fe('who') ? ' err' : '')} value=${d.who} onChange=${set('who')} autoComplete="off" /></div>
+      <fieldset className=${'fg' + (fe('what') ? ' err' : '')}><legend>What is the problem?</legend>${fe('what') && html`<span className="emsg">${err.what}</span>`}
+        <div className="opts">${[['copy','It copies or looks like a real person'],['ads','It posts ads without saying they are ads'],['undisclosed','It does not say it is an AI'],['other','Something else']].map(([v,l],n) => html`<label key=${v} className="opt"><input type="radio" id=${n===0 ? 'r-what' : undefined} name="what" value=${v} checked=${d.what===v} onChange=${set('what')} /><span>${l}</span></label>`)}</div></fieldset>
+      <div className=${'fg' + (fe('details') ? ' err' : '')}><label htmlFor="r-details">What did you see?</label><span className="hint">Include links to posts if you have them</span>
+        ${fe('details') && html`<span className="emsg">${err.details}</span>`}<textarea id="r-details" className=${'in' + (fe('details') ? ' err' : '')} value=${d.details} onChange=${set('details')}></textarea></div>
+      <div className=${'fg' + (fe('email') ? ' err' : '')}><label htmlFor="r-email">Email address (optional)</label><span className="hint">Contact address for future follow-up. This prototype does not send email.</span>
+        ${fe('email') && html`<span className="emsg">${err.email}</span>`}<input id="r-email" type="email" className=${'in' + (fe('email') ? ' err' : '')} value=${d.email} onChange=${set('email')} autoComplete="email" /></div>
+       ${serverError && html`<p role="alert" className="risk">${serverError}</p>`}
+       <div className="rowbtns"><button type="submit" className="btn" disabled=${pending}>${pending ? 'Saving' : 'Send report'}</button></div>
+    </form>
+  </div>`;
+}
+
+/* ---------- shell ---------- */
+function parse(){
+  const h = decodeURIComponent((location.hash || '').slice(1));
+  const id = h.toUpperCase();
+  if(byId(id)) return {name:'record', id};
+  if(h==='apply' || h==='report' || h==='notices') return {name:h};
+  return {name:'home'};
+}
+function App(){
+  const [route,setRoute] = useState(parse); const routeRef = useRef(route); const prevRef = useRef(null); const [pal,setPal] = useState(false); const [menu,setMenu] = useState(false); const [reportFor,setReportFor] = useState(null); const [msg,toast] = useToast();
+  useEffect(() => {
+    const on = () => { const r = parse(); const go = () => ReactDOM.flushSync(() => setRoute(r));
+      const c = routeRef.current, sameRecord = c && c.name==='record' && r.name==='record';
+      if(document.startViewTransition && !REDUCED && !sameRecord) document.startViewTransition(go); else go(); };
+    window.addEventListener('hashchange', on);
+    const k = e => { const typing = /input|textarea|select/i.test((document.activeElement || {}).tagName || '');
+      if((e.key==='k' && (e.metaKey || e.ctrlKey)) || (e.key==='/' && !typing)){ e.preventDefault(); setPal(true); } };
+    window.addEventListener('keydown', k);
+    return () => { window.removeEventListener('hashchange', on); window.removeEventListener('keydown', k); };
+  }, []);
+  useEffect(() => { setMenu(false); }, [route.name, route.id]);
+  useEffect(() => { if(!menu) return; const k = e => { if(e.key==='Escape') setMenu(false); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [menu]);
+  useEffect(() => {
+    const prev = prevRef.current; prevRef.current = route; routeRef.current = route;
+    if(route.name==='notices'){ const el = document.getElementById('notices'); el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth'}); return; }
+    if(prev && prev.name==='record' && route.name==='record'){ const st = document.querySelector('.rec-stage'); if(st){ const r = st.getBoundingClientRect(); if(r.top < 0 || r.top > window.innerHeight * .6) window.scrollTo({top: Math.max(0, window.scrollY + r.top - 90), behavior: REDUCED ? 'auto' : 'smooth'}); } }
+    else window.scrollTo(0, 0);
+    const h = document.getElementById('h1'); if(h && route.name!=='home') h.focus({preventScroll:true});
+    document.title = route.name==='record' ? byId(route.id).name + ' | Synthetic Persona Registry' : route.name==='apply' ? 'Register a persona | Synthetic Persona Registry' : route.name==='report' ? 'Report a persona | Synthetic Persona Registry' : 'Synthetic Persona Registry';
+  }, [route.name, route.id]);
+  const onReport = p => { setReportFor(p); navigate('report'); };
+  const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} toast=${toast} onReport=${onReport} />`
+    : route.name==='apply' ? html`<${Apply} toast=${toast} />`
+    : route.name==='report' ? html`<${Report} prefill=${reportFor} toast=${toast} />`
+    : html`<${Home} />`;
+  const cur = route.name==='record' || route.name==='notices' ? 'notices' : route.name;
+  return html`<div>
+    <a className="skip" href="#main" onClick=${e => { e.preventDefault(); const m = document.getElementById('main'); m && m.focus(); }}>Skip to main content</a>
+    <div className="util"><div className="wrap"><span><span className="u-long">Independent registry of AI personas. Not a government or police body.</span><span className="u-short">Independent registry, not a government body. Demo data.</span></span><span>Demo data</span></div></div>
+    <header className="hdr"><div className="wrap">
+      <a className="brand" href="#home" aria-label="Synthetic Persona Registry, home"><${Emblem} size=${50} color="#fff" /><span className="wm" aria-hidden="true"><b>SPR</b><small>SYNTHETIC PERSONA REGISTRY</small></span></a>
+      <div className="hbtns">
+        <button type="button" className="ibtn" onClick=${() => { setMenu(false); setPal(true); }} aria-label="Search the registry"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M20 20l-4.6-4.6"></path></svg></button>
+        <button type="button" className="ibtn menu" aria-expanded=${menu ? 'true' : 'false'} aria-controls="mainnav" onClick=${() => setMenu(m => !m)}>${menu
+          ? html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>`
+          : html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>`}<span>Menu</span></button>
+      </div>
+      <nav className=${'nav' + (menu ? ' open' : '')} id="mainnav" aria-label="Main">
+        <a href="#notices" aria-current=${cur==='notices' ? 'page' : undefined}>Notices</a>
+        <a href="#apply" aria-current=${cur==='apply' ? 'page' : undefined}>Register a persona</a>
+        <a href="#report" aria-current=${cur==='report' ? 'page' : undefined}>Report</a>
+        <button type="button" className="kbtn" onClick=${() => setPal(true)} aria-label="Search the registry"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M20 20l-4.6-4.6"></path></svg>Search<span className="kbd" aria-hidden="true">/</span></button>
+      </nav>
+    </div></header>
+    <main id="main" tabIndex="-1" style=${{outline:'none'}}>${view}</main>
+    <footer><div className="wrap">
+      <div className="fbrand"><${Emblem} size=${56} color="#B9C6DC" /><p style=${{maxWidth:'52ch'}}>The Synthetic Persona Registry is an independent register of AI personas. It is not part of, or endorsed by, any government, police or intergovernmental body. Every entry on this site is demonstration data. Portraits are illustrations from the Lorelei set by Lisa Wischofsky, released under CC0.</p></div>
+      <ul><li><a href="#notices">Notices</a></li><li><a href="#apply">Register a persona</a></li><li><a href="#report">Report a persona</a></li><li><a href="#home">Registry home</a></li></ul>
+    </div></footer>
+    ${pal && html`<${Palette} onClose=${() => setPal(false)} />`}
+    <div className=${'toast' + (msg ? ' show' : '')} role="status" aria-live="polite">${msg}</div>
+  </div>`;
+}
+ async function boot(){
+   if(location.protocol!=='file:'){
+     try{
+       const response=await fetch('/api/v1/personas', {signal:AbortSignal.timeout(3000)});
+       if(response.ok){const data=await response.json(); if(Array.isArray(data.personas)) PEOPLE.splice(0,PEOPLE.length,...data.personas.map(p=>({...p,src:PHOTOS[p.id]})));}
+     }catch(e){ /* The standalone demo remains available if no backend is present. */ }
+   }
+   ReactDOM.createRoot(document.getElementById('app')).render(html`<${App} />`);
+ }
+ boot();
+})();
+</script>
+</body>
+</html>
