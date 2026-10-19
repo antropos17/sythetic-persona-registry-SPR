@@ -38,12 +38,15 @@ test('serves the site and registry, while private files stay inaccessible', asyn
   assert.equal(page.status, 200);
   assert.match(await page.text(), /Synthetic Persona Registry/);
   const registry = await fetch(base + '/api/v1/personas').then(r => r.json());
-  assert.equal(registry.personas.length, 6);
+  assert.equal(registry.personas.length, 8);
   const record = await fetch(base + '/api/v1/personas/PP-AZ-0001').then(r => r.json());
   assert.equal(record.name, 'Fidan');
-  const picture = await fetch(base + '/assets/portraits/PP-AZ-0001.png');
+  const picture = await fetch(base + '/assets/portraits/PP-AZ-0001.jpg');
   assert.equal(picture.status, 200);
-  assert.equal(picture.headers.get('content-type'), 'image/png');
+  assert.equal(picture.headers.get('content-type'), 'image/jpeg');
+  for (const person of registry.personas) {
+    assert.equal((await fetch(base + '/' + person.portrait)).status, 200, person.id);
+  }
   for (const path of ['/data/personas.json', '/server/db.mjs', '/.env', '/assets/../data/personas.json']) {
     assert.equal((await fetch(base + path)).status, 404, path);
   }

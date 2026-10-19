@@ -9,7 +9,7 @@ const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const assetRoot = resolve(projectRoot, 'assets');
 const registry = JSON.parse(readFileSync(join(projectRoot, 'data/personas.json'), 'utf8'));
 const byId = new Map(registry.personas.map(person => [person.id, person]));
-const mime = { '.png': 'image/png', '.svg': 'image/svg+xml' };
+const mime = { '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',

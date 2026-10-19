@@ -460,9 +460,17 @@ const PEOPLE = [
   { id:'PP-SE-0023', surname:'BERG', given:'ELIN', name:'Elin Berg', handle:'@elin.berg', nature:'Claimed synthetic', lang:'Swedish', code:'SWE', role:'Travel', holder:'North Pixel', level:'Declared', status:'Revoked', note:'Close match to a real person', issued:'02 Apr 2026', expires:'Revoked', created:'260402', exp:'000000', record:'0f6db52c', sort:20260402,
     stamps:[{t:'Face comparison',v:'MATCH FOUND',c:R,k:'rect',r:-5},{t:'Status',v:'REVOKED',c:R,k:'double',r:5}],
     history:[{d:'24 Sep 2026',e:'Passport revoked'},{d:'21 Sep 2026',e:'Face comparison found a close match to a real person'},{d:'02 Apr 2026',e:'Passport issued'}],
-    risks:['Revoked. The persona’s face could not be cleared.'] }
+    risks:['Revoked. The persona’s face could not be cleared.'] },
+  { id:'PP-TR-0027', surname:'DEMIR', given:'EMRE', name:'Emre Demir', handle:'@emre.frames', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Photographer', holder:'Emre Studio', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261018', exp:'000000', record:'e27c916b', sort:20261018,
+    stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'rect',r:-3},{t:'Evidence',v:'REQUESTED',c:A,k:'round',r:4}],
+    history:[{d:'18 Oct 2026',e:'Demonstration application received'}],
+    risks:['Model lineage and usage rights have not been reviewed.'] },
+  { id:'PP-PT-0031', surname:'COSTA', given:'RAFAEL', name:'Rafael Costa', handle:'@rafael.costa', nature:'Fully synthetic', lang:'Portuguese', code:'PRT', role:'Presenter', holder:'Costa Media', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261019', exp:'000000', record:'b4d73e29', sort:20261019,
+    stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'round',r:2},{t:'Examiner',v:'EVIDENCE REQUESTED',c:A,k:'double',r:-4}],
+    history:[{d:'19 Oct 2026',e:'Demonstration application received'}],
+    risks:['Identity evidence has not been reviewed.'] }
 ];
-const PHOTOS = Object.fromEntries(PEOPLE.map(p => [p.id, '../assets/portraits/' + p.id + '.png']));
+const PHOTOS = Object.fromEntries(PEOPLE.map(p => [p.id, '../assets/portraits/' + p.id + '.jpg']));
 PEOPLE.forEach(p=>{p.src=PHOTOS[p.id];});
 function loadPhotos(){return Promise.all(PEOPLE.map(p=>new Promise(res=>{if(p.photo&&p.photo.complete)return res();const im=new Image();im.onload=im.onerror=()=>res();im.src=p.src;p.photo=im;})));}
 const STATUS = {
@@ -1415,7 +1423,7 @@ function App(){
     </div></header>
     <main id="main" tabIndex="-1" style=${{outline:'none'}}>${view}</main>
     <footer><div className="wrap">
-      <div className="fbrand"><${Emblem} size=${56} color="#B9C6DC" /><p style=${{maxWidth:'52ch'}}>The Synthetic Persona Registry is an independent register of AI personas. It is not part of, or endorsed by, any government, police or intergovernmental body. Every entry on this site is demonstration data. Portraits are illustrations from the Lorelei set by Lisa Wischofsky, released under CC0.</p></div>
+      <div className="fbrand"><${Emblem} size=${56} color="#B9C6DC" /><p style=${{maxWidth:'52ch'}}>The Synthetic Persona Registry is an independent register of AI personas. It is not part of, or endorsed by, any government, police or intergovernmental body. Every entry on this site is demonstration data. Portraits are AI-generated fictional illustrations, not identity or review evidence.</p></div>
       <ul><li><a href="#notices">Notices</a></li><li><a href="#apply">Register a persona</a></li><li><a href="#report">Report a persona</a></li><li><a href="#home">Registry home</a></li></ul>
     </div></footer>
     ${pal && html`<${Palette} onClose=${() => setPal(false)} />`}

@@ -82,7 +82,7 @@
         "Voice made on a hosted service. Its commercial terms are not archived yet.",
         "The base model publisher has not disclosed its training data."
       ],
-      "portrait": "assets/portraits/PP-AZ-0001.png"
+      "portrait": "assets/portraits/PP-AZ-0001.jpg"
     },
     {
       "id": "PP-TR-0004",
@@ -149,7 +149,7 @@
         }
       ],
       "risks": [],
-      "portrait": "assets/portraits/PP-TR-0004.png"
+      "portrait": "assets/portraits/PP-TR-0004.jpg"
     },
     {
       "id": "PP-ES-0011",
@@ -211,7 +211,7 @@
       "risks": [
         "The model’s likeness consent expires on 30 Nov 2026."
       ],
-      "portrait": "assets/portraits/PP-ES-0011.png"
+      "portrait": "assets/portraits/PP-ES-0011.jpg"
     },
     {
       "id": "PP-JP-0016",
@@ -263,7 +263,7 @@
         "Model files have not been hashed.",
         "No licence snapshots on file."
       ],
-      "portrait": "assets/portraits/PP-JP-0016.png"
+      "portrait": "assets/portraits/PP-JP-0016.jpg"
     },
     {
       "id": "PP-MX-0019",
@@ -314,7 +314,7 @@
       "risks": [
         "Sponsored posts without disclosure on three channels."
       ],
-      "portrait": "assets/portraits/PP-MX-0019.png"
+      "portrait": "assets/portraits/PP-MX-0019.jpg"
     },
     {
       "id": "PP-SE-0023",
@@ -369,7 +369,67 @@
       "risks": [
         "Revoked. The persona’s face could not be cleared."
       ],
-      "portrait": "assets/portraits/PP-SE-0023.png"
+      "portrait": "assets/portraits/PP-SE-0023.jpg"
+    },
+    {
+      "id": "PP-TR-0027",
+      "surname": "DEMIR",
+      "given": "EMRE",
+      "name": "Emre Demir",
+      "handle": "@emre.frames",
+      "nature": "Fully synthetic",
+      "lang": "Turkish",
+      "code": "TUR",
+      "role": "Photographer",
+      "holder": "Emre Studio",
+      "level": "Declared",
+      "status": "Under review",
+      "note": "Evidence requested",
+      "issued": "Pending",
+      "expires": "Pending",
+      "created": "261018",
+      "exp": "000000",
+      "record": "e27c916b",
+      "sort": 20261018,
+      "stamps": [
+        { "t": "Identity root", "v": "DECLARED", "c": "#2C3A8C", "k": "rect", "r": -3 },
+        { "t": "Evidence", "v": "REQUESTED", "c": "#A3570A", "k": "round", "r": 4 }
+      ],
+      "history": [
+        { "d": "18 Oct 2026", "e": "Demonstration application received" }
+      ],
+      "risks": ["Model lineage and usage rights have not been reviewed."],
+      "portrait": "assets/portraits/PP-TR-0027.jpg"
+    },
+    {
+      "id": "PP-PT-0031",
+      "surname": "COSTA",
+      "given": "RAFAEL",
+      "name": "Rafael Costa",
+      "handle": "@rafael.costa",
+      "nature": "Fully synthetic",
+      "lang": "Portuguese",
+      "code": "PRT",
+      "role": "Presenter",
+      "holder": "Costa Media",
+      "level": "Declared",
+      "status": "Under review",
+      "note": "Evidence requested",
+      "issued": "Pending",
+      "expires": "Pending",
+      "created": "261019",
+      "exp": "000000",
+      "record": "b4d73e29",
+      "sort": 20261019,
+      "stamps": [
+        { "t": "Identity root", "v": "DECLARED", "c": "#2C3A8C", "k": "round", "r": 2 },
+        { "t": "Examiner", "v": "EVIDENCE REQUESTED", "c": "#A3570A", "k": "double", "r": -4 }
+      ],
+      "history": [
+        { "d": "19 Oct 2026", "e": "Demonstration application received" }
+      ],
+      "risks": ["Identity evidence has not been reviewed."],
+      "portrait": "assets/portraits/PP-PT-0031.jpg"
     }
   ]
 }

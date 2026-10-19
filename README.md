@@ -1,6 +1,6 @@
 # Synthetic Persona Registry
 
-SPR is a demonstration registry for synthetic personas. It presents six example records, colour-coded notices, and a 3D passport. It is an independent prototype, not a government or police service. Every listed persona and notice is demonstration data.
+SPR is a demonstration registry for synthetic personas. It presents eight example records, colour-coded notices, and a 3D passport. It is an independent prototype, not a government or police service. Every listed persona and notice is demonstration data.
 
 ## Run locally
 
@@ -24,8 +24,8 @@ npm test
 | Path | Purpose |
 | --- | --- |
 | `site/index.html` | Existing React, htm, and three.js interface. No bundler. |
-| `assets/` | Registry emblem and CC0 demo portraits. |
-| `data/personas.json` | Canonical source for the six public demo records. |
+| `assets/` | Registry emblem and generated fictional demo portraits. |
+| `data/personas.json` | Canonical source for the eight public demo records. |
 | `data/persona-passport.v0.1.json` | Example evidence and model bill of materials, not a validation schema. |
 | `server/` | Zero-dependency Node HTTP API and SQLite submission storage. |
 | `tests/` | API, security boundary, and persistence tests. |
@@ -58,7 +58,7 @@ curl -X POST http://127.0.0.1:4176/api/v1/reports \
 - The application uses same-origin browser requests, strict server-side validation, a 16 KiB request limit, and a basic in-memory per-IP write limit. The rate limit resets on restart and is not suitable as the sole abuse control for a public launch.
 - Application email addresses and report details are personal data. Protect and back up the database when operating the service. Establish an access, deletion, and retention process before accepting real submissions.
 - `var/`, `.env*` (except `.env.example`), SQLite databases, logs, test output, and `node_modules/` are ignored by Git. Do not put credentials or real submissions in tracked files. CI uses no repository secrets. The manual container-publish workflow uses GitHub's scoped `GITHUB_TOKEN`.
-- The six portraits use the Lorelei set under CC0; see `assets/portraits/LICENSE.txt`. No licence has been selected for the project's code.
+- The eight fictional portraits were generated for this prototype. They illustrate the records and are not identity, likeness-consent, or review evidence. See `assets/portraits/README.md`. No licence has been selected for the project's code.
 
 ## Container and CI/CD
 
