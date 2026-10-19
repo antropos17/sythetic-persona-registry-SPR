@@ -24,7 +24,11 @@ jobs:
             sleep 1
           done
           curl --fail --silent http://127.0.0.1:4176/api/v1/health
-          docker rm --force spr-release
+          curl --fail --silent http://127.0.0.1:4176/ > /dev/null
+          curl --fail --silent http://127.0.0.1:4176/assets/full-body/PP-AZ-0001.jpg > /dev/null
+      - name: Stop smoke container
+        if: always()
+        run: docker rm --force spr-release 2>/dev/null || true
       - name: Publish immutable commit tag
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

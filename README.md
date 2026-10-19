@@ -10,7 +10,7 @@ Requires Node.js 24.11 or later in the 24.x line. No npm dependencies or build s
 npm start
 ```
 
-Open `http://127.0.0.1:4176/`. The server creates `var/spr.sqlite` on first start. Set `HOST`, `PORT`, `SPR_DB_PATH`, and, for a public reverse-proxy deployment, `PUBLIC_ORIGIN` through the process environment. `.env.example` is a reference; the application does not load `.env` files automatically.
+Open `http://127.0.0.1:4176/`. The server creates `var/spr.sqlite` on first start. Set `HOST`, `PORT`, `SPR_DB_PATH`, and, for a public reverse-proxy deployment, `PUBLIC_ORIGIN` through the process environment. The proxy must forward the public `Host` header. Literal IP addresses and `localhost` remain available for local access and health checks; other domain hosts are rejected unless they match `PUBLIC_ORIGIN`. `.env.example` is a reference; the application does not load `.env` files automatically.
 
 For a standalone visual preview, open `site/index.html` directly. In that mode submissions receive a clearly labelled demo number and are not saved.
 
@@ -31,6 +31,8 @@ npm test
 | `tests/` | API, security boundary, and persistence tests. |
 
 The frontend fetches public records from the API when the server is available. Its embedded records remain a fallback for the standalone preview. Images are loaded from `assets/`: catalog cards use full-length images, compact table rows use headshots, and each record explains and displays both image types beside its sample passport. The images are illustrations, not identity or review evidence.
+
+An unfinished application is saved in that browser's local storage so it can be resumed. The form includes **Clear draft**, and a successful submission removes the draft. Reports are not stored in browser local storage.
 
 ## API
 
@@ -55,7 +57,7 @@ curl -X POST http://127.0.0.1:4176/api/v1/reports \
 
 - The check endpoint confirms only that a demonstration record exists and returns its stored notice and risk count. It does **not** verify a signature, perform a new face comparison, prove ownership, or issue a passport.
 - Submitting a form stores its answers. There is no email delivery, examiner assignment, admin review UI, automatic notice update, or public production registry yet.
-- The application uses same-origin browser requests, strict server-side validation, a 16 KiB request limit, and a basic in-memory per-IP write limit. The rate limit resets on restart and is not suitable as the sole abuse control for a public launch.
+- The application uses same-origin browser requests, Host-header validation, strict server-side validation, a 16 KiB request limit, and a basic in-memory per-IP write limit. The rate limit resets on restart and is not suitable as the sole abuse control for a public launch.
 - Application email addresses and report details are personal data. Protect and back up the database when operating the service. Establish an access, deletion, and retention process before accepting real submissions.
 - `var/`, `.env*` (except `.env.example`), SQLite databases, logs, test output, and `node_modules/` are ignored by Git. Do not put credentials or real submissions in tracked files. CI uses no repository secrets. The manual container-publish workflow uses GitHub's scoped `GITHUB_TOKEN`.
 - The eight fictional catalog images and matching passport portraits were generated for this prototype. They illustrate the records and are not identity, likeness-consent, or review evidence. See `assets/full-body/README.md` and `assets/portraits/README.md`. No licence has been selected for the project's code.
@@ -74,5 +76,7 @@ The named volume retains SQLite data across container replacement. The image run
 ## Continuing development
 
 Keep the interface's current hierarchy, colour system, and passport animation. Preserve the visible independent-registry and demo-data disclosures. Before a public launch, add a real evidence review and signature model, authenticated back office, privacy operations, abuse protection, monitoring, and a deployment-specific backup and restore test.
+
+The focused audit and current verification boundary are recorded in [`docs/AUDIT-2026-10-19.md`](docs/AUDIT-2026-10-19.md).
 
 The original handoff, continuation prompt, and exploratory market notes remain in the local workspace under `research/` and `CHATGPT-PROMPT.md`. They are excluded from the public repository. See `docs/DESIGN.md` for the product rules needed during development.

@@ -1,5 +1,7 @@
 import { createServer } from 'node:http';
 import { readFileSync, createReadStream, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { isIP } from 'node:net';
 import { resolve, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDatabase } from './db.mjs';
@@ -7,6 +9,7 @@ import { validateApplication, validateReport, normalizeApplication, normalizeRep
 
 const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const assetRoot = resolve(projectRoot, 'assets');
+const siteFile = join(projectRoot, 'site/index.html');
 const registry = JSON.parse(readFileSync(join(projectRoot, 'data/personas.json'), 'utf8'));
 const byId = new Map(registry.personas.map(person => [person.id, person]));
 const mime = { '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
@@ -30,9 +33,41 @@ function staticFile(req, res, file, cache = 'no-cache') {
   const extension = file.slice(file.lastIndexOf('.'));
   const type = extension === '.html' ? 'text/html; charset=utf-8' : mime[extension];
   if (!type) return json(res, 404, { error: 'Not found' });
-  res.writeHead(200, { ...securityHeaders, 'Content-Type': type, 'Cache-Control': cache, 'Content-Length': stat.size });
+  const etag = `W/"${stat.size.toString(16)}-${Math.trunc(stat.mtimeMs).toString(16)}"`;
+  const headers = { ...securityHeaders, 'Content-Type': type, 'Cache-Control': cache, ETag: etag };
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304, headers);
+    return res.end();
+  }
+  res.writeHead(200, { ...headers, 'Content-Length': stat.size });
   if (req.method === 'HEAD') return res.end();
   createReadStream(file).pipe(res);
+}
+
+function sitePage(req, res) {
+  const body = readFileSync(siteFile);
+  const inline = /<script>([\s\S]*?)<\/script>/.exec(body.toString('utf8'));
+  const inlineHash = inline ? ` 'sha256-${createHash('sha256').update(inline[1]).digest('base64')}'` : '';
+  const policy = [
+    "default-src 'self'",
+    `script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net${inlineHash}`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob:",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'"
+  ].join('; ');
+  const etag = `"${createHash('sha256').update(body).digest('base64url')}"`;
+  const headers = { ...securityHeaders, 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache', 'Content-Security-Policy': policy, ETag: etag };
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304, headers);
+    return res.end();
+  }
+  res.writeHead(200, { ...headers, 'Content-Length': body.length });
+  res.end(req.method === 'HEAD' ? undefined : body);
 }
 
 async function readJson(req) {
@@ -57,12 +92,26 @@ function sameOrigin(req, publicOrigin) {
   } catch { return false; }
 }
 
+function trustedHost(req, publicHost) {
+  const raw = req.headers.host;
+  if (typeof raw !== 'string') return false;
+  try {
+    const parsed = new URL(`http://${raw}`);
+    if (parsed.host !== raw.toLowerCase() || parsed.pathname !== '/' || parsed.username || parsed.password) return false;
+    const hostname = parsed.hostname.replace(/^\[|\]$/g, '');
+    return hostname === 'localhost' || isIP(hostname) !== 0 || parsed.host === publicHost;
+  } catch { return false; }
+}
+
 export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlite', publicOrigin = process.env.PUBLIC_ORIGIN || '' } = {}) {
+  const allowedOrigin = publicOrigin ? new URL(publicOrigin).origin : '';
+  const publicHost = allowedOrigin ? new URL(allowedOrigin).host : '';
   const db = openDatabase(dbPath);
   const hits = new Map();
   const server = createServer({ maxHeaderSize: 8192 }, async (req, res) => {
     try {
       const path = new URL(req.url, 'http://localhost').pathname;
+      if (!trustedHost(req, publicHost)) return json(res, 421, { error: 'Host is not allowed' });
       if (req.method === 'GET' && path === '/api/v1/health') return json(res, 200, { status: 'ok' });
       if (req.method === 'GET' && path === '/api/v1/personas') return json(res, 200, registry, { 'Cache-Control': 'public, max-age=60' });
       const record = /^\/api\/v1\/personas\/(PP-[A-Z]{2}-\d{4})$/.exec(path);
@@ -82,7 +131,7 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
         });
       }
       if (req.method === 'POST' && (path === '/api/v1/applications' || path === '/api/v1/reports')) {
-        if (!sameOrigin(req, publicOrigin)) return json(res, 403, { error: 'Origin is not allowed' });
+        if (!sameOrigin(req, allowedOrigin)) return json(res, 403, { error: 'Origin is not allowed' });
         const key = req.socket.remoteAddress || 'unknown';
         const now = Date.now();
         for (const [ip, value] of hits) if (now - value.start >= 3_600_000) hits.delete(ip);
@@ -99,15 +148,15 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
         return json(res, 201, { ...result, message: 'Stored for review. This demo does not send email or assign an examiner.' });
       }
       if (req.method === 'GET' || req.method === 'HEAD') {
-        if (path === '/' || path === '/index.html') return staticFile(req, res, join(projectRoot, 'site/index.html'));
-        if (path === '/favicon.ico') return staticFile(req, res, join(assetRoot, 'emblem.png'), 'public, max-age=86400');
+        if (path === '/' || path === '/index.html') return sitePage(req, res);
+        if (path === '/favicon.ico') return staticFile(req, res, join(assetRoot, 'emblem.png'), 'public, no-cache');
         if (path.startsWith('/assets/')) {
           let decoded;
           try { decoded = decodeURIComponent(path.slice('/assets/'.length)); } catch { return json(res, 400, { error: 'Invalid path' }); }
           if (decoded.includes('\\') || decoded.split('/').includes('..')) return json(res, 404, { error: 'Not found' });
           const file = resolve(assetRoot, decoded);
           if (!file.startsWith(assetRoot + sep)) return json(res, 404, { error: 'Not found' });
-          return staticFile(req, res, file, 'public, max-age=86400');
+          return staticFile(req, res, file, 'public, no-cache');
         }
       }
       return json(res, 404, { error: 'Not found' });

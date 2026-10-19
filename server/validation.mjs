@@ -18,7 +18,7 @@ export function validateApplication(data) {
   if (typeof data.email !== 'string' || data.email.length > 254 || !email.test(data.email.trim())) errors.email = 'Enter a valid email';
   if (data.langs != null && (typeof data.langs !== 'string' || data.langs.length > 160)) errors.langs = 'Languages must be text up to 160 characters';
   if (!Array.isArray(data.evidence) || !data.evidence.length || data.evidence.length > evidenceTypes.size || data.evidence.some(x => !evidenceTypes.has(x))) errors.evidence = 'Select valid evidence';
-  if (data.nature === 'likeness' && !data.evidence?.includes('consent')) errors.evidence = 'Signed consent is required for a licensed likeness';
+  if (data.nature === 'likeness' && !(Array.isArray(data.evidence) && data.evidence.includes('consent'))) errors.evidence = 'Signed consent is required for a licensed likeness';
   return errors;
 }
 
@@ -28,7 +28,7 @@ export function validateReport(data) {
   if (!string(data.who, 160)) errors.who = 'Enter the persona name or handle';
   if (!reportTypes.has(data.what)) errors.what = 'Choose a report type';
   if (!string(data.details, 4000) || data.details.trim().length < 20) errors.details = 'Describe the issue in 20 to 4000 characters';
-  if (data.email != null && data.email !== '' && (typeof data.email !== 'string' || data.email.length > 254 || !email.test(data.email.trim()))) errors.email = 'Enter a valid email or leave it empty';
+  if (data.email != null && (typeof data.email !== 'string' || (data.email.trim() && (data.email.length > 254 || !email.test(data.email.trim()))))) errors.email = 'Enter a valid email or leave it empty';
   return errors;
 }
 

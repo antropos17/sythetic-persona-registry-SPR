@@ -291,9 +291,11 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 
 /* palette */
 .pal-bg{position:fixed;inset:0;background:rgba(7,26,58,.55);z-index:70;display:flex;align-items:flex-start;justify-content:center;padding:calc(10vh + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
-.pal{width:100%;max-width:640px;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);border-top:5px solid var(--navy)}
-.pal input{width:100%;min-height:60px;border:0;border-bottom:1px solid var(--rule);padding:0 18px;font-size:19px}
-.pal input:focus{outline:none}
+.pal{position:relative;width:100%;max-width:640px;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);border-top:5px solid var(--navy)}
+.pal input{width:100%;min-height:60px;border:0;border-bottom:1px solid var(--rule);padding:0 86px 0 18px;font-size:19px}
+.pal input:focus{outline:none;box-shadow:inset 0 -3px 0 var(--link)}
+.pal .close{position:absolute;top:13px;right:9px;min-width:65px;min-height:44px;border:1px solid var(--rule);background:#fff;font-size:14px;font-weight:700;cursor:pointer}
+.pal .close:hover{background:var(--mist)}
 .pal ul{list-style:none;margin:0;padding:6px;max-height:min(56vh,440px);overflow:auto}
 .pal li{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer}
 .pal li[aria-selected="true"]{background:var(--mist)}
@@ -435,10 +437,10 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
 <div id="app"></div>
 <noscript><p style="padding:24px">The registry needs JavaScript to show notices and passports.</p></noscript>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js" integrity="sha384-toVdrLSMaw7Y55MowcKqkmFL/Ek6Sky62NOk0b5sDDZBu2wcoPyyQUt9unDVjXhL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js" integrity="sha384-5UGTcMIxVUKFeJH0zOS3lqMAZNBG+fCXJbi3UglUq6ABO4MQJu6rxNa+MPP+qtwq" crossorigin="anonymous"></script>
 <script>
 (function(){
 'use strict';
@@ -485,7 +487,13 @@ const PEOPLE = [
 const PHOTOS = Object.fromEntries(PEOPLE.map(p => [p.id, '../assets/portraits/' + p.id + '.jpg']));
 const BODY_PHOTOS = Object.fromEntries(PEOPLE.map(p => [p.id, '../assets/full-body/' + p.id + '.jpg']));
 PEOPLE.forEach(p=>{p.src=PHOTOS[p.id];p.bodySrc=BODY_PHOTOS[p.id];});
-function loadPhotos(){return Promise.all(PEOPLE.map(p=>new Promise(res=>{if(p.photo&&p.photo.complete)return res();const im=new Image();im.onload=im.onerror=()=>res();im.src=p.src;p.photo=im;})));}
+function loadPhoto(p){
+  if(p.photo && p.photo.complete) return Promise.resolve();
+  if(p.photoPromise) return p.photoPromise;
+  const im = new Image(); p.photo = im;
+  p.photoPromise = new Promise(resolve => { im.onload = im.onerror = () => { p.photoPromise = null; resolve(); }; im.src = p.src; });
+  return p.photoPromise;
+}
 const STATUS = {
   'Valid':{cls:'ok', line:'In force and cleared to appear as itself.'},
   'Under review':{cls:'warn', line:'An examiner is checking new evidence.'},
@@ -900,14 +908,17 @@ function createViewer(el){
   }
   const ro=new ResizeObserver(fit);ro.observe(el);fit();
   let visible=true;
-  const io=new IntersectionObserver(es=>{visible=es[0].isIntersecting;});io.observe(el);
+  const io=new IntersectionObserver(es=>{visible=es[0].isIntersecting; if(visible) scheduleFrame(); else pauseFrame();});io.observe(el);
 
   let raf=0,last=performance.now(),alive=true;
+  function pauseFrame(){ if(raf){cancelAnimationFrame(raf);raf=0;} }
+  function scheduleFrame(){ if(alive && visible && !document.hidden && !raf) raf=requestAnimationFrame(frame); }
+  const onVisibility=()=>{ if(document.hidden) pauseFrame(); else scheduleFrame(); };
+  document.addEventListener('visibilitychange',onVisibility);
   function frame(now){
-    if(!alive)return;raf=requestAnimationFrame(frame);
+    raf=0;if(!alive||!visible||document.hidden)return;
     const dt=Math.min(.05,(now-last)/1000);last=now;
     tweens=tweens.filter(tw=>{let t=(now-tw.s)/tw.dur;if(t>=1){tw.fn(1);tw.done&&tw.done();return false;}tw.fn(tw.linear?t:t);return true;});
-    if(!visible||document.hidden)return;
     const k=1-Math.pow(.0015,dt);
     const idle=REDUCED?0:Math.sin(now/2400)*.025;
     rot.x+=(base.x+hover.x+drag.x-rot.x)*k;rot.y+=(base.y+hover.y+drag.y+idle-rot.y)*k;
@@ -917,23 +928,24 @@ function createViewer(el){
     holoMat.uniforms.uTime.value=now/1000;holoMat.uniforms.uTilt.value.set(rot.y-base.y,rot.x-base.x);
     renderer.render(scene,camera);
     if(!shown){shown=true;requestAnimationFrame(()=>{dom.style.opacity='1';});}
+    scheduleFrame();
   }
   let shown=false;
   dom.style.opacity='0';dom.style.transition=REDUCED?'none':'opacity .5s ease';
-  raf=requestAnimationFrame(frame);
+  scheduleFrame();
   applyOpen();
   return {
     setPersona,setOpen,
     isOpen:()=>openP>.5,
     reset:()=>{drag.x=drag.y=0;},
     nudge:(dx,dy)=>{drag.y=Math.max(-.95,Math.min(.95,drag.y+dx));drag.x=Math.max(-.45,Math.min(.45,drag.x+dy));},
-    dispose:()=>{alive=false;cancelAnimationFrame(raf);ro.disconnect();io.disconnect();renderer.dispose();el.removeChild(dom);}
+    dispose:()=>{alive=false;pauseFrame();document.removeEventListener('visibilitychange',onVisibility);ro.disconnect();io.disconnect();renderer.dispose();renderer.forceContextLoss?.();el.removeChild(dom);}
   };
 }
 
 /* ---------- notices: the registry's colour language ---------- */
 const NOTICE = {
-  'Valid':       {name:'Green notice',  key:'green',  nc:'var(--g)', nt:'var(--g-tint)', ni:'var(--g-ink)', meaning:'Valid passport', advice:'Safe to work with.'},
+  'Valid':       {name:'Green notice',  key:'green',  nc:'var(--g)', nt:'var(--g-tint)', ni:'var(--g-ink)', meaning:'Valid passport', advice:'Review open risks before collaborating.'},
   'Under review':{name:'Yellow notice', key:'yellow', nc:'var(--y)', nt:'var(--y-tint)', ni:'var(--y-ink)', meaning:'Under review', advice:'Wait until the review is finished.'},
   'Suspended':   {name:'Orange notice', key:'orange', nc:'var(--o)', nt:'var(--o-tint)', ni:'var(--o-ink)', meaning:'Suspended', advice:'Do not run campaigns until it is lifted.'},
   'Revoked':     {name:'Red notice',    key:'red',    nc:'var(--r)', nt:'var(--r-tint)', ni:'var(--r-ink)', meaning:'Revoked', advice:'Do not use. Report any copies you find.'}
@@ -1003,15 +1015,23 @@ async function copy(text, label, toast){
 /* ---------- 3D passport ---------- */
 function Viewer({person, label}){
   const box = useRef(null), api = useRef(null);
+  const latest = useRef(person); latest.current = person;
   const [state,setState] = useState('loading'); const [open,setOpen] = useState(true); const [fb,setFb] = useState('');
   useEffect(() => { let dead = false;
-    (async () => { await Promise.all([fontsReady(), loadPhotos()]); if(dead) return;
-      try{ api.current = createViewer(box.current); api.current.setPersona(person, false); setState('ready');
+    (async () => { await fontsReady();
+      while(!dead){ const selected = latest.current; await loadPhoto(selected); if(selected === latest.current) break; }
+      if(dead) return;
+      try{ api.current = createViewer(box.current); api.current.setPersona(latest.current, false); setState('ready');
         setTimeout(() => { api.current && api.current.setOpen(true); }, REDUCED ? 0 : 450); }
-      catch(e){ setFb(TEX.dataPage(person).toDataURL('image/jpeg', .9)); setState('fallback'); } })();
+      catch(e){ setFb(TEX.dataPage(latest.current).toDataURL('image/jpeg', .9)); setState('fallback'); } })();
     return () => { dead = true; api.current && api.current.dispose(); api.current = null; };
   }, []);
-  useEffect(() => { if(api.current) api.current.setPersona(person, true); else if(state==='fallback') setFb(TEX.dataPage(person).toDataURL('image/jpeg', .9)); }, [person.id]);
+  useEffect(() => { let cancelled = false;
+    loadPhoto(person).then(() => { if(cancelled || latest.current !== person) return;
+      if(api.current) api.current.setPersona(person, true);
+      else if(state==='fallback') setFb(TEX.dataPage(person).toDataURL('image/jpeg', .9)); });
+    return () => { cancelled = true; };
+  }, [person.id]);
   const toggle = () => { const w = !open; setOpen(w); api.current && api.current.setOpen(w); };
   const key = e => { if(!api.current) return; const m = {ArrowLeft:[-.12,0],ArrowRight:[.12,0],ArrowUp:[0,-.08],ArrowDown:[0,.08]}[e.key]; if(m){ e.preventDefault(); api.current.nudge(m[0], m[1]); } };
   return html`<div className="vbox"><div className="viewer" ref=${box} tabIndex="0" role="img" onKeyDown=${key} aria-label=${label || ('Passport ' + person.id + ' of ' + person.name + '. Arrow keys turn it.')}>
@@ -1029,7 +1049,7 @@ function Viewer({person, label}){
 
 /* ---------- command palette ---------- */
 function Palette({onClose}){
-  const [q,setQ] = useState(''); const [act,setAct] = useState(0); const inp = useRef(null); const prev = useRef(document.activeElement);
+  const [q,setQ] = useState(''); const [act,setAct] = useState(0); const inp = useRef(null); const close = useRef(null); const prev = useRef(document.activeElement);
   useEffect(() => { inp.current && inp.current.focus(); return () => { prev.current && prev.current.focus && prev.current.focus(); }; }, []);
   const people = q.trim() ? find(q) : PEOPLE;
   const actions = [['Browse all notices','notices'],['Register a persona','apply'],['Report a persona','report'],['Registry home','home']].filter(a => !q.trim() || a[0].toLowerCase().includes(q.trim().toLowerCase()));
@@ -1040,7 +1060,7 @@ function Palette({onClose}){
     else if(e.key==='ArrowUp'){ e.preventDefault(); setAct(a => Math.max(a-1, 0)); }
     else if(e.key==='Enter'){ e.preventDefault(); items[act] && go(items[act]); }
     else if(e.key==='Escape'){ e.preventDefault(); onClose(); }
-    else if(e.key==='Tab'){ e.preventDefault(); }
+    else if(e.key==='Tab'){ e.preventDefault(); close.current && close.current.focus(); }
   };
   let idx = -1;
   const row = it => { idx++; const i = idx; const sel = i===act;
@@ -1051,6 +1071,7 @@ function Palette({onClose}){
     <div className="pal" role="dialog" aria-modal="true" aria-label="Search the registry">
       <input ref=${inp} value=${q} onChange=${e => { setQ(e.target.value); setAct(0); }} onKeyDown=${key} placeholder="Name, handle, passport number or a page"
         role="combobox" aria-expanded="true" aria-controls="pal-list" aria-activedescendant=${items[act] ? 'pi-'+items[act].k : undefined} aria-label="Search the registry" />
+      <button className="close" type="button" ref=${close} onClick=${onClose} onKeyDown=${e => { if(e.key==='Tab'){ e.preventDefault(); inp.current && inp.current.focus(); } else if(e.key==='Escape'){ e.preventDefault(); onClose(); } }}>Close</button>
       <ul id="pal-list" role="listbox" aria-label="Results">
         ${people.length > 0 && html`<li className="grp" role="presentation">Personas</li>`}
         ${items.filter(i => i.p).map(row)}
@@ -1065,21 +1086,22 @@ function Palette({onClose}){
 
 /* ---------- home ---------- */
 function Hero(){
-  const [q,setQ] = useState(''); const res = find(q); const top = res[0];
+  const [q,setQ] = useState(''); const [tried,setTried] = useState(false); const res = find(q); const top = res[0];
   const featured = PEOPLE[0];
-  const submit = e => { e.preventDefault(); if(top) navigate(top.id); };
+  const submit = e => { e.preventDefault(); if(top) navigate(top.id); else { setTried(true); document.getElementById('vq')?.focus(); } };
   return html`<section className="hero" aria-labelledby="h1"><div className="wrap">
     <div>
       <h1 id="h1" tabIndex="-1">Check an AI persona before you work with it.</h1>
-      <p className="lede">The registry records who owns each AI persona, what it was built from, and whether its passport is valid.</p>
+      <p className="lede">Explore fictional personas, listed rights holders and sample notices. This demo does not verify identity or evidence.</p>
       <form className="verify" role="search" onSubmit=${submit}>
         <label htmlFor="vq">Passport number, handle or name</label>
         <div className="row">
-          <input id="vq" type="text" autoComplete="off" spellCheck="false" placeholder="PP-AZ-0001" value=${q} onChange=${e => setQ(e.target.value)} aria-describedby="vres" />
+          <input id="vq" type="text" autoComplete="off" spellCheck="false" placeholder="PP-AZ-0001" value=${q} onChange=${e => { setQ(e.target.value); setTried(false); }} aria-invalid=${tried ? 'true' : undefined} aria-describedby="vres" />
           <button className="btn" type="submit">Check</button>
         </div>
-        <div className="try"><span>Try</span>${['PP-AZ-0001','@leyla.kaya','Elin Berg'].map(t => html`<button key=${t} type="button" onClick=${() => setQ(t)}>${t}</button>`)}</div>
+        <div className="try"><span>Try</span>${['PP-AZ-0001','@leyla.kaya','Elin Berg'].map(t => html`<button key=${t} type="button" onClick=${() => { setQ(t); setTried(false); }}>${t}</button>`)}</div>
         <div id="vres" aria-live="polite">
+          ${tried && !q.trim() && html`<div className="vres" style=${{'--nc':'var(--focus)'}}><div className="t"><b>Enter a passport number, handle or name.</b></div></div>`}
           ${q.trim() && (top ? html`<div className="vres" style=${{'--nc':NOTICE[top.status].nc}}>
               <img src=${top.src} alt="" /><div className="t"><b>${top.name}</b><span>${NOTICE[top.status].name}. ${NOTICE[top.status].advice}${res.length > 1 ? ' ' + (res.length - 1) + ' more match.' : ''}</span></div>
               <a className="btn light" href=${'#'+top.id}>Open record</a></div>`
@@ -1105,8 +1127,8 @@ function Notices(){
   const filtered = notice!=='All' || q.trim();
   return html`<section id="notices" className="sec" aria-labelledby="n-h"><div className="wrap">
     <div className="sec-h"><div>
-      <h2 className="h2" id="n-h">Notices</h2>
-      <p className="sub">Every persona in the register carries a notice. Its colour tells you what you can do with that persona. Select a colour to filter.</p>
+      <h2 className="h2" id="n-h" tabIndex="-1">Notices</h2>
+      <p className="sub">Every demo persona carries a notice. Its colour shows a sample decision and next step. Select a colour to filter.</p>
     </div></div>
     <div className="key" role="group" aria-label="Filter by notice">
       ${ORDER.map(s => html`<button key=${s} type="button" style=${nvars(s)} aria-pressed=${notice===s?'true':'false'} onClick=${() => setNotice(n => n===s ? 'All' : s)}>
@@ -1161,8 +1183,8 @@ function Home(){
     <${Hero} />
     <${Notices} />
     <section className="sec" style=${{background:'var(--mist)'}} aria-labelledby="s-h"><div className="wrap">
-      <div className="sec-h"><div><h2 className="h2" id="s-h">How a persona gets a passport</h2>
-        <p className="sub">The same five stages for every persona. A passport is renewed every year and can be suspended at any stage.</p></div></div>
+      <div className="sec-h"><div><h2 className="h2" id="s-h">How a persona would get a passport</h2>
+        <p className="sub">The proposed five-stage process. Evidence review, signatures and renewals are not active in this demo.</p></div></div>
       <ol className="steps">
         <li><h3>Application</h3><p>The rights holder registers the persona with reference images and says how it was made.</p></li>
         <li><h3>Evidence</h3><p>Model files are hashed, licences and service terms are saved, channels are linked.</p></li>
@@ -1197,8 +1219,10 @@ function Record({person, toast, onReport}){
   const run = async () => { setTab('check'); setCheckError(''); timers.current.forEach(clearTimeout); setStep(-1);
     requestAnimationFrame(() => document.getElementById('tp-check')?.scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth',block:'start'}));
     if(location.protocol!=='file:') {
-      try { const r = await fetch('/api/v1/passports/' + encodeURIComponent(person.id) + '/check'); if(!r.ok) throw new Error('Registry lookup failed'); const data = await r.json(); if(!data.registryRecordFound || data.passportId!==person.id) throw new Error('Registry record could not be confirmed'); }
-      catch(e){ setCheckError('The registry is unavailable. Please try again.'); return; }
+      try { const r = await fetch('/api/v1/passports/' + encodeURIComponent(person.id) + '/check'); if(!r.ok) throw new Error('Registry lookup failed'); const data = await r.json();
+        if(!data.registryRecordFound || data.passportId!==person.id || data.registryMode!=='demonstration' || data.cryptographicSignatureVerified!==false || data.faceComparisonPerformed!==false) throw new Error('Registry response could not be confirmed');
+        if(data.notice!==person.status || data.openRiskCount!==person.risks.length || data.evidenceLevel!==person.level) throw new Error('This record has changed. Reload to see its current notice and risks.'); }
+      catch(e){ setCheckError(e.message?.startsWith('This record has changed.') ? e.message : 'The registry is unavailable. Please try again.'); return; }
     }
     setStep(0); const g = REDUCED ? 0 : 380; checks.forEach((_,i) => timers.current.push(setTimeout(() => setStep(i+1), g*(i+1)))); };
   const done = step >= checks.length;
@@ -1285,16 +1309,27 @@ function Record({person, toast, onReport}){
 /* ---------- apply: four short sections ---------- */
 const APPLY0 = {name:'', handle:'', nature:'', langs:'', holderType:'', holder:'', email:'', evidence:[]};
 const EVIDENCE = [['images','Reference images of the persona'],['models','The model files used (base model, checkpoint or LoRA)'],['licences','Licences or terms for every tool and model'],['channels','Login access to the main channel'],['consent','Signed consent from a real person, if the persona is based on one']];
+const EVIDENCE_KEYS = new Set(EVIDENCE.map(([key]) => key));
+const HANDLE_FORMAT = /^@?[\p{L}\p{N}_.]{2,80}$/u;
+const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validEmail = value => value.length <= 254 && EMAIL_FORMAT.test(value.trim());
+function restoreApplication(raw){
+  const draft = {...APPLY0, evidence:[]};
+  if(!raw || typeof raw!=='object' || Array.isArray(raw)) return draft;
+  for(const key of ['name','handle','nature','langs','holderType','holder','email']) if(typeof raw[key]==='string') draft[key]=raw[key];
+  if(Array.isArray(raw.evidence)) draft.evidence=[...new Set(raw.evidence.filter(key => EVIDENCE_KEYS.has(key)))];
+  return draft;
+}
 function Apply({toast}){
-  const [d,setD] = useState(() => ({...APPLY0, ...(store.get('spr-apply') || {})}));
-  const [step,setStep] = useState(() => (store.get('spr-apply-step') || 1));
+  const [d,setD] = useState(() => restoreApplication(store.get('spr-apply')));
+  const [step,setStep] = useState(() => { const value=store.get('spr-apply-step'); return Number.isInteger(value) && value>=1 && value<=4 ? value : 1; });
   const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
   useEffect(() => { if(!ref){ store.set('spr-apply', d); store.set('spr-apply-step', step); } }, [d, step, ref]);
   const set = k => e => setD(s => ({...s, [k]: e.target.value}));
   const toggleEv = k => setD(s => ({...s, evidence: s.evidence.includes(k) ? s.evidence.filter(x => x!==k) : [...s.evidence, k]}));
   const validate = n => { const e = {};
-    if(n===1){ if(!d.name.trim()) e.name = 'Enter the persona’s public name'; if(!/^@?[\w.]{2,}$/.test(d.handle.trim())) e.handle = 'Enter the main channel handle, like @fidan.sings'; if(!d.nature) e.nature = 'Select whether the persona is based on a real person'; }
-    if(n===2){ if(!d.holderType) e.holderType = 'Select whether a person or a company holds the rights'; if(!d.holder.trim()) e.holder = d.holderType==='company' ? 'Enter the company’s registered name' : 'Enter the full name of the rights holder'; if(!/^\S+@\S+\.\S+$/.test(d.email.trim())) e.email = 'Enter an email address in the correct format, like name@example.com'; }
+    if(n===1){ if(!d.name.trim() || d.name.trim().length>120) e.name = 'Enter the persona’s public name (up to 120 characters)'; if(!HANDLE_FORMAT.test(d.handle.trim())) e.handle = 'Enter a channel handle with 2 to 80 letters, numbers, dots or underscores'; if(!d.nature) e.nature = 'Select whether the persona is based on a real person'; if(d.langs.length>160) e.langs = 'Enter up to 160 characters for languages'; }
+    if(n===2){ if(!d.holderType) e.holderType = 'Select whether a person or a company holds the rights'; if(!d.holder.trim() || d.holder.trim().length>160) e.holder = 'Enter the rights holder name (up to 160 characters)'; if(!validEmail(d.email)) e.email = 'Enter an email address in the correct format, like name@example.com'; }
     if(n===3){ if(!d.evidence.length) e.evidence = 'Select at least one piece of evidence you can send'; if(d.nature==='likeness' && !d.evidence.includes('consent')) e.evidence = 'A persona based on a real person needs that person’s signed consent'; }
     return e; };
   const focusTop = () => setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0);
@@ -1305,14 +1340,16 @@ function Apply({toast}){
     catch(e){ setServerError(e.message || 'The application could not be saved. Please try again.'); }
     finally { setPending(false); } };
   const restart = () => { setD(APPLY0); setStep(1); setRef(null); setErr(null); focusTop(); };
+  const clearDraft = () => { if(!window.confirm('Clear this saved application draft from this browser?')) return;
+    store.del('spr-apply'); store.del('spr-apply-step'); setD({...APPLY0, evidence:[]}); setStep(1); setErr(null); setServerError(''); focusTop(); };
   const fe = k => err && err[k];
   const Text = (k, label, hint, type, extra) => html`<div className=${'fg' + (fe(k) ? ' err' : '')}>
     <label htmlFor=${'f-'+k}>${label}</label>${hint && html`<span className="hint" id=${'h-'+k}>${hint}</span>`}
     ${fe(k) && html`<span className="emsg" id=${'e-'+k}><span className="sr">Error: </span>${err[k]}</span>`}
     <input id=${'f-'+k} className=${'in' + (fe(k) ? ' err' : '')} type=${type || 'text'} value=${d[k]} onChange=${set(k)} ...${extra || {}}
-      aria-describedby=${[hint ? 'h-'+k : '', fe(k) ? 'e-'+k : ''].join(' ').trim() || undefined} /></div>`;
-  const Radios = (k, legend, opts) => html`<fieldset className=${'fg' + (fe(k) ? ' err' : '')}>
-    <legend>${legend}</legend>${fe(k) && html`<span className="emsg"><span className="sr">Error: </span>${err[k]}</span>`}
+      aria-invalid=${fe(k) ? 'true' : undefined} aria-describedby=${[hint ? 'h-'+k : '', fe(k) ? 'e-'+k : ''].join(' ').trim() || undefined} /></div>`;
+  const Radios = (k, legend, opts) => html`<fieldset className=${'fg' + (fe(k) ? ' err' : '')} aria-describedby=${fe(k) ? 'e-'+k : undefined}>
+    <legend>${legend}</legend>${fe(k) && html`<span className="emsg" id=${'e-'+k}><span className="sr">Error: </span>${err[k]}</span>`}
     <div className="opts">${opts.map(([v,l,h],n) => html`<label key=${v} className="opt"><input type="radio" id=${n===0 ? 'f-'+k : undefined} name=${k} value=${v} checked=${d[k]===v} onChange=${set(k)} /><span>${l}${h && html`<small>${h}</small>`}</span></label>`)}</div></fieldset>`;
   if(ref) return html`<div className="wrap formwrap">
      <div className="done"><h1 id="h1" tabIndex="-1">${demo ? 'Application preview' : 'Application received'}</h1><p style=${{marginTop:'10px'}}>${demo ? 'Demo number' : 'Your case number'}</p><span className="ref">${ref}</span></div>
@@ -1330,19 +1367,19 @@ function Apply({toast}){
     <h1 className="fh1" id="h1" tabIndex="-1">${titles[step-1]}</h1>
     ${err && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#f-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById(k==='evidence' ? 'f-ev-0' : 'f-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
     ${step<4 && html`<form className="form" onSubmit=${next} noValidate>
-      ${step===1 && html`${Text('name','Persona’s public name','As it appears on the persona’s channels','text',{autoComplete:'off'})}
-        ${Text('handle','Main channel handle','The account with the largest audience','text',{autoComplete:'off',spellCheck:false})}
+      ${step===1 && html`${Text('name','Persona’s public name','As it appears on the persona’s channels','text',{autoComplete:'off',maxLength:120})}
+        ${Text('handle','Main channel handle','The account with the largest audience','text',{autoComplete:'off',spellCheck:false,maxLength:81})}
         ${Radios('nature','Is the persona based on a real person?',[['synthetic','No, it is fully synthetic',''],['likeness','Yes, with the person’s signed consent','You will need to send the consent in section 3']])}
-        ${Text('langs','Languages the persona speaks (optional)','For example, Azerbaijani and Russian','text')}`}
+        ${Text('langs','Languages the persona speaks (optional)','For example, Azerbaijani and Russian','text',{maxLength:160})}`}
       ${step===2 && html`${Radios('holderType','Who holds the rights to the persona?',[['person','A person',''],['company','A company','Use the name on its registration certificate']])}
-        ${Text('holder', d.holderType==='company' ? 'Company name' : 'Full name', '', 'text', {autoComplete: d.holderType==='company' ? 'organization' : 'name'})}
-        ${Text('email','Email address','Contact address for future follow-up. This prototype does not send email.','email',{autoComplete:'email',spellCheck:false})}`}
-      ${step===3 && html`<fieldset className=${'fg' + (fe('evidence') ? ' err' : '')}>
+        ${Text('holder', d.holderType==='company' ? 'Company name' : 'Full name', '', 'text', {autoComplete: d.holderType==='company' ? 'organization' : 'name',maxLength:160})}
+        ${Text('email','Email address','Contact address for future follow-up. This prototype does not send email.','email',{autoComplete:'email',spellCheck:false,maxLength:254})}`}
+      ${step===3 && html`<fieldset className=${'fg' + (fe('evidence') ? ' err' : '')} aria-describedby=${fe('evidence') ? 'e-evidence' : undefined}>
           <legend>Which evidence do you have?</legend><span className="hint">Select all that apply. This prototype stores your answer but does not issue a passport.</span>
-          ${fe('evidence') && html`<span className="emsg"><span className="sr">Error: </span>${err.evidence}</span>`}
+          ${fe('evidence') && html`<span className="emsg" id="e-evidence"><span className="sr">Error: </span>${err.evidence}</span>`}
           <div className="opts">${EVIDENCE.map(([k,l],n) => html`<label key=${k} className="opt"><input type="checkbox" id=${'f-ev-'+n} checked=${d.evidence.includes(k)} onChange=${() => toggleEv(k)} /><span>${l}</span></label>`)}</div>
         </fieldset>`}
-      <div className="rowbtns"><button type="submit" className="btn">Continue</button><span className="saved">Your answers are saved in this browser.</span></div>
+      <div className="rowbtns"><button type="submit" className="btn">Continue</button><span className="saved">Draft saved in this browser until you submit or clear it.</span><button type="button" className="tlink" onClick=${clearDraft}>Clear draft</button></div>
     </form>`}
     ${step===4 && html`<div style=${{marginTop:'28px'}}>
       <dl className="review">
@@ -1351,7 +1388,7 @@ function Apply({toast}){
       <h2 className="h2" style=${{fontSize:'24px',marginTop:'32px'}}>Declaration</h2>
       <p style=${{marginTop:'10px',maxWidth:'60ch'}}>By submitting, you confirm you hold the rights to this persona and that the information is correct to the best of your knowledge.</p>
        ${serverError && html`<p role="alert" className="risk">${serverError}</p>`}
-       <div className="rowbtns" style=${{marginTop:'24px'}}><button type="button" className="btn" onClick=${submit} disabled=${pending}>${pending ? 'Saving' : 'Accept and submit'}</button></div>
+       <div className="rowbtns" style=${{marginTop:'24px'}}><button type="button" className="btn" onClick=${submit} disabled=${pending}>${pending ? 'Saving' : 'Accept and submit'}</button><button type="button" className="tlink" onClick=${clearDraft}>Clear draft</button></div>
     </div>`}
   </div>`;
 }
@@ -1362,10 +1399,10 @@ function Report({prefill, toast}){
   const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
   const set = k => e => setD(s => ({...s, [k]: e.target.value}));
   const submit = async e => { e.preventDefault(); if(pending) return; const er = {};
-    if(!d.who.trim()) er.who = 'Enter the persona’s name, handle or passport number';
+    if(!d.who.trim() || d.who.trim().length>160) er.who = 'Enter the persona’s name, handle or passport number (up to 160 characters)';
     if(!d.what) er.what = 'Select what the problem is';
-    if(d.details.trim().length < 20) er.details = 'Describe what you saw in at least 20 characters';
-    if(d.email.trim() && !/^\S+@\S+\.\S+$/.test(d.email.trim())) er.email = 'Enter an email address in the correct format, or leave it empty';
+    if(d.details.trim().length < 20 || d.details.trim().length > 4000) er.details = 'Describe what you saw in 20 to 4000 characters';
+    if(d.email.trim() && !validEmail(d.email)) er.email = 'Enter an email address in the correct format, or leave it empty';
     if(Object.keys(er).length){ setErr(er); setTimeout(() => sum.current && sum.current.focus(), 0); return; }
     setErr(null); setPending(true); setServerError('');
     try { const result = await submitToRegistry('/api/v1/reports', d); setRef(result.id); setDemo(!!result.demo); setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0); }
@@ -1381,14 +1418,14 @@ function Report({prefill, toast}){
     <p className="sub">Use this form for registered and unregistered personas. You do not need an account.</p>
     ${err && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#r-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById('r-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
     <form className="form" onSubmit=${submit} noValidate>
-      <div className=${'fg' + (fe('who') ? ' err' : '')}><label htmlFor="r-who">Which persona?</label><span className="hint">Name, handle or passport number</span>
-        ${fe('who') && html`<span className="emsg">${err.who}</span>`}<input id="r-who" className=${'in' + (fe('who') ? ' err' : '')} value=${d.who} onChange=${set('who')} autoComplete="off" /></div>
-      <fieldset className=${'fg' + (fe('what') ? ' err' : '')}><legend>What is the problem?</legend>${fe('what') && html`<span className="emsg">${err.what}</span>`}
+      <div className=${'fg' + (fe('who') ? ' err' : '')}><label htmlFor="r-who">Which persona?</label><span className="hint" id="r-h-who">Name, handle or passport number</span>
+        ${fe('who') && html`<span className="emsg" id="r-e-who">${err.who}</span>`}<input id="r-who" className=${'in' + (fe('who') ? ' err' : '')} value=${d.who} onChange=${set('who')} autoComplete="off" maxLength="160" aria-invalid=${fe('who') ? 'true' : undefined} aria-describedby=${fe('who') ? 'r-h-who r-e-who' : 'r-h-who'} /></div>
+      <fieldset className=${'fg' + (fe('what') ? ' err' : '')} aria-describedby=${fe('what') ? 'r-e-what' : undefined}><legend>What is the problem?</legend>${fe('what') && html`<span className="emsg" id="r-e-what">${err.what}</span>`}
         <div className="opts">${[['copy','It copies or looks like a real person'],['ads','It posts ads without saying they are ads'],['undisclosed','It does not say it is an AI'],['other','Something else']].map(([v,l],n) => html`<label key=${v} className="opt"><input type="radio" id=${n===0 ? 'r-what' : undefined} name="what" value=${v} checked=${d.what===v} onChange=${set('what')} /><span>${l}</span></label>`)}</div></fieldset>
-      <div className=${'fg' + (fe('details') ? ' err' : '')}><label htmlFor="r-details">What did you see?</label><span className="hint">Include links to posts if you have them</span>
-        ${fe('details') && html`<span className="emsg">${err.details}</span>`}<textarea id="r-details" className=${'in' + (fe('details') ? ' err' : '')} value=${d.details} onChange=${set('details')}></textarea></div>
-      <div className=${'fg' + (fe('email') ? ' err' : '')}><label htmlFor="r-email">Email address (optional)</label><span className="hint">Contact address for future follow-up. This prototype does not send email.</span>
-        ${fe('email') && html`<span className="emsg">${err.email}</span>`}<input id="r-email" type="email" className=${'in' + (fe('email') ? ' err' : '')} value=${d.email} onChange=${set('email')} autoComplete="email" /></div>
+      <div className=${'fg' + (fe('details') ? ' err' : '')}><label htmlFor="r-details">What did you see?</label><span className="hint" id="r-h-details">Include links to posts if you have them</span>
+        ${fe('details') && html`<span className="emsg" id="r-e-details">${err.details}</span>`}<textarea id="r-details" className=${'in' + (fe('details') ? ' err' : '')} value=${d.details} onChange=${set('details')} maxLength="4000" aria-invalid=${fe('details') ? 'true' : undefined} aria-describedby=${fe('details') ? 'r-h-details r-e-details' : 'r-h-details'}></textarea></div>
+      <div className=${'fg' + (fe('email') ? ' err' : '')}><label htmlFor="r-email">Email address (optional)</label><span className="hint" id="r-h-email">Contact address for future follow-up. This prototype does not send email.</span>
+        ${fe('email') && html`<span className="emsg" id="r-e-email">${err.email}</span>`}<input id="r-email" type="email" className=${'in' + (fe('email') ? ' err' : '')} value=${d.email} onChange=${set('email')} autoComplete="email" maxLength="254" aria-invalid=${fe('email') ? 'true' : undefined} aria-describedby=${fe('email') ? 'r-h-email r-e-email' : 'r-h-email'} /></div>
        ${serverError && html`<p role="alert" className="risk">${serverError}</p>`}
        <div className="rowbtns"><button type="submit" className="btn" disabled=${pending}>${pending ? 'Saving' : 'Send report'}</button></div>
     </form>
@@ -1397,7 +1434,9 @@ function Report({prefill, toast}){
 
 /* ---------- shell ---------- */
 function parse(){
-  const h = decodeURIComponent((location.hash || '').slice(1));
+  let h;
+  try { h = decodeURIComponent((location.hash || '').slice(1)); }
+  catch { return {name:'home'}; }
   const id = h.toUpperCase();
   if(byId(id)) return {name:'record', id};
   if(h==='apply' || h==='report' || h==='notices') return {name:h};
@@ -1415,16 +1454,16 @@ function App(){
     window.addEventListener('keydown', k);
     return () => { window.removeEventListener('hashchange', on); window.removeEventListener('keydown', k); };
   }, []);
-  useEffect(() => { setMenu(false); }, [route.name, route.id]);
+  useEffect(() => { setMenu(false); if(route.name!=='report') setReportFor(null); }, [route.name, route.id]);
   useEffect(() => { if(!menu) return; const k = e => { if(e.key==='Escape') setMenu(false); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [menu]);
   useEffect(() => {
     const prev = prevRef.current; prevRef.current = route; routeRef.current = route;
-    if(route.name==='notices'){ const el = document.getElementById('notices'); el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth'}); return; }
+    document.title = route.name==='record' ? byId(route.id).name + ' | Synthetic Persona Registry' : route.name==='apply' ? 'Register a persona | Synthetic Persona Registry' : route.name==='report' ? 'Report a persona | Synthetic Persona Registry' : route.name==='notices' ? 'Notices | Synthetic Persona Registry' : 'Synthetic Persona Registry';
+    if(route.name==='notices'){ const el = document.getElementById('notices'); el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth'}); document.getElementById('n-h')?.focus({preventScroll:true}); return; }
     if(prev && prev.name==='record' && route.name==='record'){ const st = document.querySelector('.rec-stage'); if(st){ const r = st.getBoundingClientRect(); if(r.top < 0 || r.top > window.innerHeight * .6) window.scrollTo({top: Math.max(0, window.scrollY + r.top - 90), behavior: REDUCED ? 'auto' : 'smooth'}); } }
     else window.scrollTo(0, 0);
     const h = document.getElementById('h1'); if(h && route.name!=='home') h.focus({preventScroll:true});
-    document.title = route.name==='record' ? byId(route.id).name + ' | Synthetic Persona Registry' : route.name==='apply' ? 'Register a persona | Synthetic Persona Registry' : route.name==='report' ? 'Report a persona | Synthetic Persona Registry' : 'Synthetic Persona Registry';
-  }, [route.name, route.id]);
+  }, [route]);
   const onReport = p => { setReportFor(p); navigate('report'); };
   const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} toast=${toast} onReport=${onReport} />`
     : route.name==='apply' ? html`<${Apply} toast=${toast} />`
@@ -1432,9 +1471,9 @@ function App(){
     : html`<${Home} />`;
   const cur = route.name==='record' || route.name==='notices' ? 'notices' : route.name;
   return html`<div>
-    <a className="skip" href="#main" onClick=${e => { e.preventDefault(); const m = document.getElementById('main'); m && m.focus(); }}>Skip to main content</a>
-    <div className="util"><div className="wrap"><span><span className="u-long">Independent registry of AI personas. Not a government or police body.</span><span className="u-short">Independent registry, not a government body. Demo data.</span></span><span>Demo data</span></div></div>
-    <header className="hdr"><div className="wrap">
+    <a className="skip" href="#main" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined} onClick=${e => { e.preventDefault(); const m = document.getElementById('main'); m && m.focus(); }}>Skip to main content</a>
+    <div className="util" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}><div className="wrap"><span><span className="u-long">Independent registry of AI personas. Not a government or police body.</span><span className="u-short">Independent registry, not a government body. Demo data.</span></span><span>Demo data</span></div></div>
+    <header className="hdr" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}><div className="wrap">
       <a className="brand" href="#home" aria-label="Synthetic Persona Registry, home"><${Emblem} size=${50} color="#fff" /><span className="wm" aria-hidden="true"><b>SPR</b><small>SYNTHETIC PERSONA REGISTRY</small></span></a>
       <div className="hbtns">
         <button type="button" className="ibtn" onClick=${() => { setMenu(false); setPal(true); }} aria-label="Search the registry"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M20 20l-4.6-4.6"></path></svg></button>
@@ -1449,8 +1488,8 @@ function App(){
         <button type="button" className="kbtn" onClick=${() => setPal(true)} aria-label="Search the registry"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M20 20l-4.6-4.6"></path></svg>Search<span className="kbd" aria-hidden="true">/</span></button>
       </nav>
     </div></header>
-    <main id="main" tabIndex="-1" style=${{outline:'none'}}>${view}</main>
-    <footer><div className="wrap">
+    <main id="main" tabIndex="-1" style=${{outline:'none'}} inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}>${view}</main>
+    <footer inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}><div className="wrap">
       <div className="fbrand"><${Emblem} size=${56} color="#B9C6DC" /><p style=${{maxWidth:'52ch'}}>The Synthetic Persona Registry is an independent register of AI personas. It is not part of, or endorsed by, any government, police or intergovernmental body. Every entry on this site is demonstration data. Portraits are AI-generated fictional illustrations, not identity or review evidence.</p></div>
       <ul><li><a href="#notices">Notices</a></li><li><a href="#apply">Register a persona</a></li><li><a href="#report">Report a persona</a></li><li><a href="#home">Registry home</a></li></ul>
     </div></footer>
