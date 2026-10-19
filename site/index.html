@@ -295,6 +295,38 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 .formwrap .done{background:var(--g);color:#fff;padding:36px 28px;text-align:center}
 .formwrap .done h1{font-stretch:118%;font-size:clamp(30px,4vw,44px);font-weight:850}
 .formwrap .done .ref{font-family:var(--mono);font-size:28px;display:block;margin-top:8px}
+.private-note{padding:16px 18px;border-left:4px solid var(--navy);background:var(--mist);margin-top:24px;overflow-wrap:anywhere}
+.case-page{max-width:860px;padding-block:30px 72px}
+.case-page h1,.review-page h1{font-stretch:118%;font-size:clamp(30px,4vw,46px);line-height:1.08}
+.case-panel{border-top:2px solid var(--ink);padding:22px 0;margin-top:28px}
+.case-panel h2{font-size:clamp(22px,2.6vw,30px);margin-bottom:12px}
+.case-meta{display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--muted);font-size:15px;margin-top:8px}
+.case-list{list-style:none;padding:0;margin:12px 0 0}
+.case-list li{padding:14px 0;border-bottom:1px solid var(--rule);overflow-wrap:anywhere}
+.case-list small{display:block;color:var(--muted)}
+.case-list p{margin-top:5px}
+.hash{font-family:var(--mono);font-size:12.5px;overflow-wrap:anywhere;color:var(--muted)}
+.review-page{padding-block:30px 72px}
+.review-grid{display:grid;grid-template-columns:minmax(230px,320px) minmax(0,1fr);gap:32px;margin-top:28px}
+.review-queue{list-style:none;padding:0;margin:0;border-top:2px solid var(--ink)}
+.review-queue li{border-bottom:1px solid var(--rule)}
+.review-queue button{width:100%;padding:12px 10px;background:#fff;border:0;text-align:left;cursor:pointer;min-height:58px}
+.review-queue button:hover,.review-queue button[aria-current="true"]{background:var(--mist)}
+.review-queue b,.review-queue span{display:block;overflow-wrap:anywhere}
+.review-queue span{font-size:14px;color:var(--muted)}
+.review-detail{min-width:0}
+.review-detail .review{margin-top:14px}
+.review-detail .review div{grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr)}
+.review-detail .review dd{grid-column:2}
+.review-detail .fg{margin-top:16px}
+.prov{margin-top:40px;padding:28px;border:1px solid var(--rule);background:#fff}
+.prov h2{font-size:clamp(24px,2.6vw,32px)}
+.prov-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:20px}
+.prov-grid article{border-top:2px solid var(--ink);padding-top:12px;min-width:0}
+.prov-grid h3{font-size:18px;margin-bottom:8px}
+.prov .caution{margin-top:18px;color:var(--muted);max-width:80ch}
+.prov .integrity-bad{color:var(--r)}
+@media (max-width:760px){.review-grid,.prov-grid{grid-template-columns:minmax(0,1fr)}.prov{padding:20px 16px}}
 
 /* palette */
 .pal-bg{position:fixed;inset:0;background:rgba(7,26,58,.55);z-index:70;display:flex;align-items:flex-start;justify-content:center;padding:calc(10vh + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
@@ -1223,7 +1255,18 @@ function Home({savedRecords, toggleSaved}){
 /* ---------- record ---------- */
 function Record({person, toast, onReport, savedRecords, toggleSaved}){
   const [tab,setTab] = useState('check'); const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]);
+  const [provenance,setProvenance] = useState(null); const [provenanceError,setProvenanceError] = useState('');
   useEffect(() => { timers.current.forEach(clearTimeout); timers.current = []; setStep(-1); setTab('check'); }, [person.id]);
+  useEffect(() => {
+    setProvenance(null); setProvenanceError('');
+    if(location.protocol==='file:') return;
+    const controller = new AbortController();
+    fetch('/api/v1/personas/' + encodeURIComponent(person.id) + '/provenance', {signal:controller.signal})
+      .then(async response => { if(!response.ok) throw new Error('Unavailable'); return response.json(); })
+      .then(data => { if(data.personaId===person.id) setProvenance(data); })
+      .catch(error => { if(error.name!=='AbortError') setProvenanceError('Media integrity information is unavailable.'); });
+    return () => controller.abort();
+  }, [person.id]);
   const N = NOTICE[person.status];
   const tone = {Valid:'ok','Under review':'warn',Suspended:'bad',Revoked:'bad'}[person.status];
   const checks = [
@@ -1315,6 +1358,21 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
           <figcaption>Full-length studio image of ${person.name}</figcaption>
         </figure>
       </section>
+      <section className="prov" aria-labelledby="prov-h">
+        <h2 id="prov-h">Image provenance and integrity</h2>
+        <p className="sub">The project declares these fictional images as AI-generated. The SHA-256 checks below compare the served files with hashes recorded in this repository.</p>
+        ${provenanceError && html`<p className="risk" role="status">${provenanceError}</p>`}
+        ${!provenance && !provenanceError && html`<p className="sub" role="status">${location.protocol==='file:' ? 'Open the local server to check media hashes.' : 'Checking the media hashes…'}</p>`}
+        ${provenance && html`<div>
+          <div className="prov-grid">${provenance.assets.map(asset => html`<article key=${asset.role}>
+            <h3>${asset.role==='portrait' ? 'Face portrait' : 'Full-length image'}</h3>
+            <p><b className=${asset.integrity==='matches_manifest'?'':'integrity-bad'}>${asset.integrity==='matches_manifest' ? 'Matches recorded hash' : asset.integrity==='missing' ? 'File missing' : 'Hash mismatch'}</b></p>
+            <p className="hash">SHA-256: ${asset.sha256}</p>
+            <p className="saved">Checked ${new Date(asset.checkedAt).toLocaleString()}</p>
+          </article>`)}</div>
+          <p className="caution">Source statement: ${provenance.originBasis}. A matching hash does not establish who created an image, a model lineage, consent, or a person’s identity. No C2PA manifest was verified.</p>
+        </div>`}
+      </section>
       <nav className="pager" aria-label="Other records">
         <a href=${'#'+prev.id}><span>Previous record</span><b>${prev.name}</b></a>
         <a className="nx" href=${'#'+next.id}><span>Next record</span><b>${next.name}</b></a>
@@ -1326,7 +1384,7 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
 
 /* ---------- apply: four short sections ---------- */
 const APPLY0 = {name:'', handle:'', nature:'', langs:'', holderType:'', holder:'', email:'', evidence:[]};
-const EVIDENCE = [['images','Reference images of the persona'],['models','The model files used (base model, checkpoint or LoRA)'],['licences','Licences or terms for every tool and model'],['channels','Login access to the main channel'],['consent','Signed consent from a real person, if the persona is based on one']];
+const EVIDENCE = [['images','Reference images of the persona'],['models','Model names, versions and file hashes'],['licences','Licences or terms for every tool and model'],['channels','Proof of control of the main channel (without sharing credentials)'],['consent','Signed consent from a real person, if the persona is based on one']];
 const EVIDENCE_KEYS = new Set(EVIDENCE.map(([key]) => key));
 const HANDLE_FORMAT = /^@?[\p{L}\p{N}_.]{2,80}$/u;
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1341,7 +1399,7 @@ function restoreApplication(raw){
 function Apply({toast}){
   const [d,setD] = useState(() => restoreApplication(store.get('spr-apply')));
   const [step,setStep] = useState(() => { const value=store.get('spr-apply-step'); return Number.isInteger(value) && value>=1 && value<=4 ? value : 1; });
-  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
+  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [accessToken,setAccessToken] = useState(''); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
   useEffect(() => { if(!ref){ store.set('spr-apply', d); store.set('spr-apply-step', step); } }, [d, step, ref]);
   const set = k => e => setD(s => ({...s, [k]: e.target.value}));
   const toggleEv = k => setD(s => ({...s, evidence: s.evidence.includes(k) ? s.evidence.filter(x => x!==k) : [...s.evidence, k]}));
@@ -1354,10 +1412,10 @@ function Apply({toast}){
   const next = e => { e.preventDefault(); const er = validate(step); if(Object.keys(er).length){ setErr(er); setTimeout(() => sum.current && sum.current.focus(), 0); return; } setErr(null); setStep(step + 1); focusTop(); };
   const back = () => { setErr(null); setStep(Math.max(1, step - 1)); focusTop(); };
   const submit = async () => { if(pending) return; setPending(true); setServerError('');
-    try { const result = await submitToRegistry('/api/v1/applications', d); setRef(result.id); setDemo(!!result.demo); store.del('spr-apply'); store.del('spr-apply-step'); focusTop(); }
+    try { const result = await submitToRegistry('/api/v1/applications', d); setRef(result.id); setAccessToken(result.accessToken || ''); setDemo(!!result.demo); store.del('spr-apply'); store.del('spr-apply-step'); focusTop(); }
     catch(e){ setServerError(e.message || 'The application could not be saved. Please try again.'); }
     finally { setPending(false); } };
-  const restart = () => { setD(APPLY0); setStep(1); setRef(null); setErr(null); focusTop(); };
+  const restart = () => { setD(APPLY0); setStep(1); setRef(null); setAccessToken(''); setErr(null); focusTop(); };
   const clearDraft = () => { if(!window.confirm('Clear this saved application draft from this browser?')) return;
     store.del('spr-apply'); store.del('spr-apply-step'); setD({...APPLY0, evidence:[]}); setStep(1); setErr(null); setServerError(''); focusTop(); };
   const fe = k => err && err[k];
@@ -1372,8 +1430,10 @@ function Apply({toast}){
   if(ref) return html`<div className="wrap formwrap">
      <div className="done"><h1 id="h1" tabIndex="-1">${demo ? 'Application preview' : 'Application received'}</h1><p style=${{marginTop:'10px'}}>${demo ? 'Demo number' : 'Your case number'}</p><span className="ref">${ref}</span></div>
     <h2 className="h2" style=${{fontSize:'26px',marginTop:'36px'}}>What happens next</h2>
-     <p style=${{marginTop:'10px'}}>${demo ? 'This standalone preview did not save or send your answers.' : 'Your answers were stored for review. Keep your case number. This prototype does not send email or assign an examiner.'}</p>
-    <div className="rowbtns" style=${{marginTop:'28px'}}><a className="btn" href="#notices">Back to notices</a><button type="button" className="tlink" onClick=${restart}>Start another application</button></div>
+     <p style=${{marginTop:'10px'}}>${demo ? 'This standalone preview did not save or send your answers.' : 'Your answers were stored. Review starts when an operator is configured and opens this case; no email is sent.'}</p>
+    ${accessToken && html`<div className="private-note"><b>Keep your private case link.</b><p>It lets anyone holding it view the status and upload evidence. It is shown only here and is not emailed.</p></div>
+      <div className="rowbtns" style=${{marginTop:'20px'}}><a className="btn" href=${'#case/'+ref+'/'+accessToken}>View case and upload evidence</a><button type="button" className="btn line" onClick=${() => copy(location.href.split('#')[0] + '#case/' + ref + '/' + accessToken, 'Private case link', toast)}>Copy private link</button></div>`}
+    <div className="rowbtns" style=${{marginTop:'28px'}}><a className="btn line" href="#notices">Back to notices</a><button type="button" className="tlink" onClick=${restart}>Start another application</button></div>
   </div>`;
   const titles = ['About the persona','Who holds the rights','Evidence you can send','Check your answers'];
   const yes = d.nature==='likeness' ? 'Yes, with the person’s signed consent' : d.nature==='synthetic' ? 'No, it is fully synthetic' : '';
@@ -1387,13 +1447,13 @@ function Apply({toast}){
     ${step<4 && html`<form className="form" onSubmit=${next} noValidate>
       ${step===1 && html`${Text('name','Persona’s public name','As it appears on the persona’s channels','text',{autoComplete:'off',maxLength:120})}
         ${Text('handle','Main channel handle','The account with the largest audience','text',{autoComplete:'off',spellCheck:false,maxLength:81})}
-        ${Radios('nature','Is the persona based on a real person?',[['synthetic','No, it is fully synthetic',''],['likeness','Yes, with the person’s signed consent','You will need to send the consent in section 3']])}
+        ${Radios('nature','Is the persona based on a real person?',[['synthetic','No, it is fully synthetic',''],['likeness','Yes, with the person’s signed consent','Select consent in section 3, then upload the document from your private case page']])}
         ${Text('langs','Languages the persona speaks (optional)','For example, Azerbaijani and Russian','text',{maxLength:160})}`}
       ${step===2 && html`${Radios('holderType','Who holds the rights to the persona?',[['person','A person',''],['company','A company','Use the name on its registration certificate']])}
         ${Text('holder', d.holderType==='company' ? 'Company name' : 'Full name', '', 'text', {autoComplete: d.holderType==='company' ? 'organization' : 'name',maxLength:160})}
         ${Text('email','Email address','Contact address for future follow-up. This prototype does not send email.','email',{autoComplete:'email',spellCheck:false,maxLength:254})}`}
       ${step===3 && html`<fieldset className=${'fg' + (fe('evidence') ? ' err' : '')} aria-describedby=${fe('evidence') ? 'e-evidence' : undefined}>
-          <legend>Which evidence do you have?</legend><span className="hint">Select all that apply. This prototype stores your answer but does not issue a passport.</span>
+          <legend>Which evidence do you have?</legend><span className="hint">Select all that apply. After submitting, upload the files from your private case page. A reviewer must examine them.</span>
           ${fe('evidence') && html`<span className="emsg" id="e-evidence"><span className="sr">Error: </span>${err.evidence}</span>`}
           <div className="opts">${EVIDENCE.map(([k,l],n) => html`<label key=${k} className="opt"><input type="checkbox" id=${'f-ev-'+n} checked=${d.evidence.includes(k)} onChange=${() => toggleEv(k)} /><span>${l}</span></label>`)}</div>
         </fieldset>`}
@@ -1414,7 +1474,7 @@ function Apply({toast}){
 /* ---------- report ---------- */
 function Report({prefill, toast}){
   const [d,setD] = useState({who: prefill ? prefill.name + ' (' + prefill.id + ')' : '', what:'', details:'', email:''});
-  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
+  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [accessToken,setAccessToken] = useState(''); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
   const set = k => e => setD(s => ({...s, [k]: e.target.value}));
   const submit = async e => { e.preventDefault(); if(pending) return; const er = {};
     if(!d.who.trim() || d.who.trim().length>160) er.who = 'Enter the persona’s name, handle or passport number (up to 160 characters)';
@@ -1423,13 +1483,15 @@ function Report({prefill, toast}){
     if(d.email.trim() && !validEmail(d.email)) er.email = 'Enter an email address in the correct format, or leave it empty';
     if(Object.keys(er).length){ setErr(er); setTimeout(() => sum.current && sum.current.focus(), 0); return; }
     setErr(null); setPending(true); setServerError('');
-    try { const result = await submitToRegistry('/api/v1/reports', d); setRef(result.id); setDemo(!!result.demo); setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0); }
+    try { const result = await submitToRegistry('/api/v1/reports', d); setRef(result.id); setAccessToken(result.accessToken || ''); setDemo(!!result.demo); setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0); }
     catch(e){ setServerError(e.message || 'The report could not be saved. Please try again.'); }
     finally { setPending(false); } };
   const fe = k => err && err[k];
    if(ref) return html`<div className="wrap formwrap"><div className="done"><h1 id="h1" tabIndex="-1">${demo ? 'Report preview' : 'Report received'}</h1><p style=${{marginTop:'10px'}}>${demo ? 'Demo reference' : 'Your reference'}</p><span className="ref">${ref}</span></div>
-     <p style=${{marginTop:'28px'}}>${demo ? 'This standalone preview did not save or send your report.' : 'Your report was stored for review. This prototype does not assign an examiner or change a notice automatically.'}</p>
-    <div className="rowbtns" style=${{marginTop:'24px'}}><a className="btn" href="#notices">Back to notices</a></div></div>`;
+     <p style=${{marginTop:'28px'}}>${demo ? 'This standalone preview did not save or send your report.' : 'Your report was stored. A reviewer must inspect it; a public notice does not change automatically.'}</p>
+     ${accessToken && html`<div className="private-note"><b>Keep your private case link.</b><p>It lets anyone holding it view the status and upload evidence. It is shown only here and is not emailed.</p></div>
+       <div className="rowbtns" style=${{marginTop:'20px'}}><a className="btn" href=${'#case/'+ref+'/'+accessToken}>View case and upload evidence</a><button type="button" className="btn line" onClick=${() => copy(location.href.split('#')[0] + '#case/' + ref + '/' + accessToken, 'Private case link', toast)}>Copy private link</button></div>`}
+    <div className="rowbtns" style=${{marginTop:'24px'}}><a className="btn line" href="#notices">Back to notices</a></div></div>`;
   return html`<div className="wrap formwrap">
     <ol className="crumbs" aria-label="Breadcrumb" style=${{paddingTop:0,marginBottom:'24px'}}><li><a href="#home">Registry</a></li><li aria-current="page">Report a persona</li></ol>
     <h1 className="fh1" id="h1" tabIndex="-1">Report a persona</h1>
@@ -1450,14 +1512,201 @@ function Report({prefill, toast}){
   </div>`;
 }
 
+/* ---------- private case and evidence ---------- */
+const CASE_LABELS = {received:'Received',reviewing:'In review',needs_evidence:'More evidence requested',approved:'Application approved',rejected:'Application rejected',resolved:'Report resolved',dismissed:'Report dismissed'};
+const EVIDENCE_LABELS = {images:'Images',models:'Model record or hash manifest',licences:'Licences',channels:'Channel control proof',consent:'Signed consent',other:'Other'};
+const CLOSED_CASES = new Set(['approved','rejected','resolved','dismissed']);
+async function privateJson(path, token, options={}){
+  const response = await fetch(path, {...options, headers:{...options.headers, Authorization:'Bearer '+token}});
+  const data = await response.json().catch(() => ({}));
+  if(!response.ok) throw new Error(data.error || 'The request failed. Please try again.');
+  return data;
+}
+function CaseAccess(){
+  const [id,setId] = useState(''); const [token,setToken] = useState(''); const [error,setError] = useState('');
+  const submit = event => { event.preventDefault(); const code=id.trim().toUpperCase(), secret=token.trim();
+    if(!/^(SPR|RPT)-\d{4}-[A-F0-9]{12}$/.test(code) || !/^[A-Za-z0-9_-]{43}$/.test(secret)){ setError('Enter the case number and the private access token from your case link.'); return; }
+    setError(''); navigate('case/'+code+'/'+secret);
+  };
+  return html`<div className="wrap formwrap">
+    <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#home">Registry</a></li><li aria-current="page">Case status</li></ol>
+    <h1 className="fh1" id="h1" tabIndex="-1">Check a case</h1>
+    <p className="sub">Your private link contains both a case number and an access token. Open that link directly, or enter both parts here.</p>
+    <form className="form" onSubmit=${submit}>
+      <div className="fg"><label htmlFor="case-id">Case number</label><input className="in mono" id="case-id" value=${id} onChange=${e => setId(e.target.value)} autoComplete="off" required /></div>
+      <div className="fg"><label htmlFor="case-token">Private access token</label><input className="in mono" id="case-token" type="password" value=${token} onChange=${e => setToken(e.target.value)} autoComplete="off" required /></div>
+      ${error && html`<p role="alert">${error}</p>`}
+      <div><button className="btn" type="submit">Open case</button></div>
+    </form>
+  </div>`;
+}
+function CasePage({caseId, accessToken, toast}){
+  const [data,setData] = useState(null); const [error,setError] = useState(''); const [busy,setBusy] = useState(false);
+  const [kind,setKind] = useState('images'); const [file,setFile] = useState(null); const [sourceStatement,setSourceStatement] = useState(''); const [message,setMessage] = useState('');
+  const fileInput = useRef(null);
+  const load = async signal => {
+    const result = await privateJson('/api/v1/cases/'+caseId, accessToken, {signal});
+    setData(result); setError('');
+  };
+  useEffect(() => { setData(null); setError(''); const controller=new AbortController();
+    load(controller.signal).catch(e => { if(e.name!=='AbortError') setError(e.message); });
+    return () => controller.abort();
+  }, [caseId,accessToken]);
+  const upload = async event => { event.preventDefault(); if(busy) return;
+    if(!file){ setMessage('Choose a file before uploading.'); return; }
+    if(sourceStatement.trim().length<10 || sourceStatement.trim().length>500){ setMessage('Describe where the file came from in 10 to 500 characters.'); return; }
+    if(file.size>5*1024*1024){ setMessage('The file must be 5 MiB or smaller.'); return; }
+    setBusy(true); setMessage('');
+    try{
+      const response=await fetch('/api/v1/cases/'+caseId+'/evidence', {method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':file.type,'X-Evidence-Kind':kind,'X-File-Name':encodeURIComponent(file.name),'X-Evidence-Source':encodeURIComponent(sourceStatement.trim())},body:file});
+      const result=await response.json().catch(() => ({}));
+      if(!response.ok) throw new Error(result.error || 'The file could not be uploaded.');
+      await load(); setFile(null); setSourceStatement(''); if(fileInput.current) fileInput.current.value=''; setMessage('Evidence uploaded. A reviewer has not examined it yet.');
+    }catch(e){ setMessage(e.message); }
+    finally{ setBusy(false); }
+  };
+  const privateLink=location.href.split('#')[0]+'#case/'+caseId+'/'+accessToken;
+  return html`<div className="wrap case-page">
+    <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#home">Registry</a></li><li aria-current="page">Case status</li></ol>
+    <h1 id="h1" tabIndex="-1">Case ${caseId}</h1>
+    <p className="sub">This page is available only to someone with its private link. Keep the link confidential.</p>
+    <div className="rowbtns" style=${{marginTop:'18px'}}><button className="btn line" type="button" onClick=${() => copy(privateLink,'Private case link',toast)}>Copy private link</button><a className="tlink" href="#case-status">Enter another case</a></div>
+    ${error && html`<p className="private-note" role="alert">${error}</p>`}
+    ${!data && !error && html`<p className="private-note" role="status">Loading case status…</p>`}
+    ${data && html`<div>
+      <section className="case-panel" aria-labelledby="case-current"><h2 id="case-current">Current status</h2>
+        <p><b>${CASE_LABELS[data.status] || data.status}</b></p>
+        <p className="case-meta"><span>${data.kind==='application'?'Application':'Report'}</span><span>Submitted ${new Date(data.createdAt).toLocaleString()}</span><span>Updated ${new Date(data.updatedAt).toLocaleString()}</span></p>
+        <p className="sub">An approved application is a review decision. It does not create a public passport or change a demo record.</p>
+      </section>
+      <section className="case-panel" aria-labelledby="case-evidence"><h2 id="case-evidence">Evidence</h2>
+        <p className="sub">Files are private to this case and the reviewer. SHA-256 records file integrity; it does not prove who created a file or whether its claims are true. Do not upload passwords or access keys.</p>
+        ${data.evidence.length ? html`<ul className="case-list">${data.evidence.map(item => html`<li key=${item.id}>
+          <b>${item.fileName}</b> · ${EVIDENCE_LABELS[item.kind] || item.kind} · ${item.reviewStatus}
+          <small>${(item.bytes/1024).toFixed(1)} KiB · ${new Date(item.createdAt).toLocaleString()}</small>
+          <p>Source declared by submitter: ${item.sourceStatement || 'Not recorded'}</p>
+          <span className="hash">SHA-256: ${item.sha256}</span>
+          ${item.reviewedAt && html`<small>Reviewed ${new Date(item.reviewedAt).toLocaleString()}</small>`}
+          ${item.reviewNote && html`<p>Reviewer message: ${item.reviewNote}</p>`}
+        </li>`)}</ul>` : html`<p className="sub">No files uploaded.</p>`}
+        ${!CLOSED_CASES.has(data.status) && data.evidence.length<5 && html`<form className="form" onSubmit=${upload}>
+          <div className="fg"><label htmlFor="evidence-kind">What does this file show?</label><select className="in" id="evidence-kind" value=${kind} onChange=${e => setKind(e.target.value)}>${Object.entries(EVIDENCE_LABELS).map(([value,label]) => html`<option value=${value} key=${value}>${label}</option>`)}</select></div>
+          <div className="fg"><label htmlFor="evidence-source">Where did this file come from?</label><span className="hint">Name the creator, issuer, original channel or model version. If unknown, say how you obtained it. This is your claim for a reviewer to assess.</span><textarea className="in" id="evidence-source" value=${sourceStatement} onChange=${e => setSourceStatement(e.target.value)} maxLength="500" required></textarea></div>
+          <div className="fg"><label htmlFor="evidence-file">JPEG, PNG or PDF, up to 5 MiB</label><input id="evidence-file" ref=${fileInput} className="in" type="file" accept=".jpg,.jpeg,.png,.pdf" onChange=${e => setFile(e.target.files?.[0] || null)} /></div>
+          <div><button className="btn" type="submit" disabled=${busy}>${busy?'Uploading…':'Upload evidence'}</button></div>
+        </form>`}
+        <p role="status" style=${{marginTop:'12px'}}>${message}</p>
+      </section>
+      <section className="case-panel" aria-labelledby="case-history"><h2 id="case-history">Case history</h2>
+        <ol className="case-list">${data.events.map((item,index) => html`<li key=${index}><b>${item.action==='submitted'?'Submitted':item.action==='evidence_uploaded'?'Evidence uploaded':item.action.startsWith('evidence_')?'Evidence '+item.action.slice(9):CASE_LABELS[item.status] || item.status}</b><small>${new Date(item.at).toLocaleString()} · ${item.actor==='reviewer'?'Registry reviewer':'Submitter'}</small>${item.note && html`<p>${item.note}</p>`}</li>`)}</ol>
+      </section>
+    </div>`}
+  </div>`;
+}
+
+/* ---------- reviewer console ---------- */
+const REVIEW_NEXT = {
+  application:{received:['reviewing','needs_evidence','rejected'],reviewing:['needs_evidence','approved','rejected'],needs_evidence:['reviewing','rejected']},
+  report:{received:['reviewing','needs_evidence','dismissed'],reviewing:['needs_evidence','resolved','dismissed'],needs_evidence:['reviewing','resolved','dismissed']}
+};
+function ReviewConsole(){
+  const [draft,setDraft] = useState(''); const [token,setToken] = useState(''); const [cases,setCases] = useState([]); const [hasMore,setHasMore] = useState(false);
+  const [selected,setSelected] = useState(null); const [next,setNext] = useState(''); const [note,setNote] = useState('');
+  const [fileNotes,setFileNotes] = useState({}); const [error,setError] = useState(''); const [message,setMessage] = useState(''); const [busy,setBusy] = useState(false);
+  const loadCase = async (id, secret=token) => {
+    const item=await privateJson('/api/v1/review/cases/'+id,secret);
+    setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setError('');
+  };
+  const refreshList = async (secret=token) => { const result=await privateJson('/api/v1/review/cases',secret); setCases(result.cases); setHasMore(result.cases.length===50); };
+  const signIn = async event => { event.preventDefault(); if(busy) return; setBusy(true); setError('');
+    try { const secret=draft.trim(); await refreshList(secret); setToken(secret); setDraft(''); setMessage('Reviewer access open for this tab.'); }
+    catch(e){ setError(e.message); }
+    finally{ setBusy(false); }
+  };
+  const loadMore = async () => { setBusy(true); setError('');
+    try { const result=await privateJson('/api/v1/review/cases?offset='+cases.length,token); setCases(current => [...current,...result.cases]); setHasMore(result.cases.length===50); }
+    catch(e){ setError(e.message); } finally{ setBusy(false); }
+  };
+  const changeStatus = async event => { event.preventDefault(); if(!selected || busy) return; setBusy(true); setError(''); setMessage('');
+    try {
+      const item=await privateJson('/api/v1/review/cases/'+selected.id+'/status',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:next,note})});
+      setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); await refreshList(); setMessage('Case status updated. Your message is visible to the submitter.');
+    }catch(e){ setError(e.message); } finally{ setBusy(false); }
+  };
+  const decideFile = async (item,decision) => { const reason=(fileNotes[item.id] || '').trim();
+    if(!reason){ setError('Write a reason for the evidence decision. The submitter will see it.'); return; }
+    setBusy(true); setError(''); setMessage('');
+    try {
+      const updated=await privateJson('/api/v1/review/evidence/'+item.id+'/decision',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision,note:reason})});
+      setSelected(updated); setFileNotes(current => ({...current,[item.id]:''})); await refreshList(); setMessage('Evidence decision recorded.');
+    }catch(e){ setError(e.message); } finally{ setBusy(false); }
+  };
+  const download = async item => { setError('');
+    try {
+      const response=await fetch('/api/v1/review/evidence/'+item.id+'/file',{headers:{Authorization:'Bearer '+token}});
+      if(!response.ok){ const detail=await response.json().catch(() => ({})); throw new Error(detail.error || 'File unavailable'); }
+      const blob=await response.blob(); const url=URL.createObjectURL(blob); const link=document.createElement('a');
+      link.href=url; link.download=item.id+(item.mime==='application/pdf'?'.pdf':item.mime==='image/png'?'.png':'.jpg'); document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url),60000);
+    }catch(e){ setError(e.message); }
+  };
+  const choices=selected ? (REVIEW_NEXT[selected.kind]?.[selected.status] || []) : [];
+  return html`<div className="wrap review-page">
+    <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#home">Registry</a></li><li aria-current="page">Review console</li></ol>
+    <h1 id="h1" tabIndex="-1">Review console</h1>
+    <p className="sub">Private application and report queue. A configured operator token is required. Reviewer messages on this page are visible to the submitter.</p>
+    ${error && html`<p className="private-note" role="alert">${error}</p>`}
+    <p role="status" style=${{marginTop:'12px'}}>${message}</p>
+    ${!token ? html`<form className="form" onSubmit=${signIn} style=${{maxWidth:'520px'}}>
+      <div className="fg"><label htmlFor="review-token">Operator access token</label><input id="review-token" className="in" type="password" value=${draft} onChange=${e => setDraft(e.target.value)} autoComplete="off" required /></div>
+      <div><button className="btn" type="submit" disabled=${busy}>${busy?'Checking…':'Open review queue'}</button></div>
+    </form>` : html`<div>
+      <div className="rowbtns" style=${{marginTop:'18px'}}><button className="btn line" type="button" onClick=${() => {setToken('');setSelected(null);setCases([]);setMessage('');}}>Close reviewer access</button><button className="tlink" type="button" onClick=${() => refreshList().catch(e => setError(e.message))}>Refresh queue</button></div>
+      <div className="review-grid">
+        <aside aria-label="Case queue"><h2 className="h2" style=${{fontSize:'25px',marginBottom:'12px'}}>Cases</h2>
+          ${cases.length ? html`<ul className="review-queue">${cases.map(item => html`<li key=${item.id}><button type="button" aria-current=${selected?.id===item.id?'true':undefined} onClick=${() => loadCase(item.id).catch(e => setError(e.message))}><b className="mono">${item.id}</b><span>${item.kind} · ${CASE_LABELS[item.status] || item.status}</span></button></li>`)}</ul>` : html`<p>No cases yet.</p>`}
+          ${hasMore && html`<button className="btn line" type="button" onClick=${loadMore} disabled=${busy} style=${{marginTop:'14px'}}>Load more</button>`}
+        </aside>
+        <div className="review-detail">${!selected ? html`<p>Select a case to review its answers and evidence.</p>` : html`<div>
+          <h2 className="h2" style=${{fontSize:'28px'}}>${selected.id}</h2>
+          <p className="case-meta">${selected.kind} · ${CASE_LABELS[selected.status] || selected.status} · ${new Date(selected.createdAt).toLocaleString()}</p>
+          <section className="case-panel"><h3>Submitted answers</h3><dl className="review">${Object.entries(selected.payload).map(([key,value]) => html`<div key=${key}><dt>${key}</dt><dd>${Array.isArray(value)?value.join(', '):value}</dd></div>`)}</dl></section>
+          <section className="case-panel"><h3>Evidence</h3>
+            ${selected.evidence.length ? html`<ul className="case-list">${selected.evidence.map(item => html`<li key=${item.id}>
+              <b>${item.fileName}</b> · ${EVIDENCE_LABELS[item.kind] || item.kind} · ${item.reviewStatus}
+              <small>${(item.bytes/1024).toFixed(1)} KiB · ${new Date(item.createdAt).toLocaleString()}</small>
+              <p>Source declared by submitter: ${item.sourceStatement || 'Not recorded'}</p>
+              <span className="hash">SHA-256: ${item.sha256}</span>
+              ${item.reviewedAt && html`<small>Reviewed ${new Date(item.reviewedAt).toLocaleString()}</small>`}
+              ${item.reviewNote && html`<p>Decision reason: ${item.reviewNote}</p>`}
+              <div className="rowbtns" style=${{marginTop:'12px'}}><button type="button" className="btn line" onClick=${() => download(item)}>Download privately</button></div>
+              ${choices.length>0 && html`<div className="fg"><label htmlFor=${'file-note-'+item.id}>Reason for reviewing ${item.fileName}</label><textarea className="in" id=${'file-note-'+item.id} maxLength="1000" value=${fileNotes[item.id] || ''} onChange=${e => setFileNotes(current => ({...current,[item.id]:e.target.value}))}></textarea>
+                <div className="rowbtns"><button className="btn" type="button" disabled=${busy} onClick=${() => decideFile(item,'accepted')}>Accept evidence</button><button className="btn line" type="button" disabled=${busy} onClick=${() => decideFile(item,'rejected')}>Reject evidence</button></div></div>`}
+            </li>`)}</ul>` : html`<p className="sub">No evidence files uploaded. A declared evidence category is not a reviewed file.</p>`}
+          </section>
+          ${choices.length>0 && html`<section className="case-panel"><h3>Change case status</h3>
+            <form className="form" onSubmit=${changeStatus}>
+              <div className="fg"><label htmlFor="next-status">New status</label><select className="in" id="next-status" value=${next} onChange=${e => setNext(e.target.value)}>${choices.map(value => html`<option key=${value} value=${value}>${CASE_LABELS[value] || value}</option>`)}</select></div>
+              <div className="fg"><label htmlFor="review-note">Message to submitter</label><textarea className="in" id="review-note" maxLength="1000" value=${note} onChange=${e => setNote(e.target.value)}></textarea><span className="hint">Required for requests for evidence and final decisions.</span></div>
+              <div><button className="btn" type="submit" disabled=${busy}>${busy?'Saving…':'Save decision'}</button></div>
+            </form>
+          </section>`}
+          <section className="case-panel"><h3>Activity</h3><ol className="case-list">${selected.events.map((item,index) => html`<li key=${index}><b>${item.action}</b> · ${CASE_LABELS[item.status] || item.status}<small>${new Date(item.at).toLocaleString()} · ${item.actor}</small>${item.note && html`<p>${item.note}</p>`}</li>`)}</ol></section>
+        </div>`}</div>
+      </div>
+    </div>`}
+  </div>`;
+}
+
 /* ---------- shell ---------- */
 function parse(){
   let h;
   try { h = decodeURIComponent((location.hash || '').slice(1)); }
   catch { return {name:'home'}; }
+  const caseRoute = /^case\/((?:SPR|RPT)-\d{4}-[A-F0-9]{12})\/([A-Za-z0-9_-]{43})$/.exec(h);
+  if(caseRoute) return {name:'case', id:caseRoute[1], accessToken:caseRoute[2]};
   const id = h.toUpperCase();
   if(byId(id)) return {name:'record', id};
-  if(h==='apply' || h==='report' || h==='notices') return {name:h};
+  if(h==='apply' || h==='report' || h==='notices' || h==='case-status' || h==='review') return {name:h};
   return {name:'home'};
 }
 function App(){
@@ -1479,7 +1728,7 @@ function App(){
   useEffect(() => { if(!menu) return; const k = e => { if(e.key==='Escape') setMenu(false); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [menu]);
   useEffect(() => {
     const prev = prevRef.current; prevRef.current = route; routeRef.current = route;
-    document.title = route.name==='record' ? byId(route.id).name + ' | Synthetic Persona Registry' : route.name==='apply' ? 'Register a persona | Synthetic Persona Registry' : route.name==='report' ? 'Report a persona | Synthetic Persona Registry' : route.name==='notices' ? 'Notices | Synthetic Persona Registry' : 'Synthetic Persona Registry';
+    document.title = route.name==='record' ? byId(route.id).name + ' | Synthetic Persona Registry' : route.name==='apply' ? 'Register a persona | Synthetic Persona Registry' : route.name==='report' ? 'Report a persona | Synthetic Persona Registry' : route.name==='notices' ? 'Notices | Synthetic Persona Registry' : route.name==='case' || route.name==='case-status' ? 'Case status | Synthetic Persona Registry' : route.name==='review' ? 'Review console | Synthetic Persona Registry' : 'Synthetic Persona Registry';
     if(route.name==='notices'){ const el = document.getElementById('notices'); el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth'}); document.getElementById('n-h')?.focus({preventScroll:true}); return; }
     if(prev && prev.name==='record' && route.name==='record'){ const st = document.querySelector('.rec-stage'); if(st){ const r = st.getBoundingClientRect(); if(r.top < 0 || r.top > window.innerHeight * .6) window.scrollTo({top: Math.max(0, window.scrollY + r.top - 90), behavior: REDUCED ? 'auto' : 'smooth'}); } }
     else window.scrollTo(0, 0);
@@ -1489,6 +1738,9 @@ function App(){
   const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} toast=${toast} onReport=${onReport} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`
     : route.name==='apply' ? html`<${Apply} toast=${toast} />`
     : route.name==='report' ? html`<${Report} prefill=${reportFor} toast=${toast} />`
+    : route.name==='case-status' ? html`<${CaseAccess} />`
+    : route.name==='case' ? html`<${CasePage} key=${route.id} caseId=${route.id} accessToken=${route.accessToken} toast=${toast} />`
+    : route.name==='review' ? html`<${ReviewConsole} />`
     : html`<${Home} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`;
   const cur = route.name==='record' || route.name==='notices' ? 'notices' : route.name;
   return html`<div>
@@ -1506,13 +1758,14 @@ function App(){
         <a href="#notices" aria-current=${cur==='notices' ? 'page' : undefined}>Notices</a>
         <a href="#apply" aria-current=${cur==='apply' ? 'page' : undefined}>Register a persona</a>
         <a href="#report" aria-current=${cur==='report' ? 'page' : undefined}>Report</a>
+        <a href="#case-status" aria-current=${cur==='case-status' || cur==='case' ? 'page' : undefined}>Case status</a>
         <button type="button" className="kbtn" onClick=${() => setPal(true)} aria-label="Search the registry"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M20 20l-4.6-4.6"></path></svg>Search<span className="kbd" aria-hidden="true">/</span></button>
       </nav>
     </div></header>
     <main id="main" tabIndex="-1" style=${{outline:'none'}} inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}>${view}</main>
     <footer inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}><div className="wrap">
       <div className="fbrand"><${Emblem} size=${56} color="#B9C6DC" /><p style=${{maxWidth:'52ch'}}>The Synthetic Persona Registry is an independent register of AI personas. It is not part of, or endorsed by, any government, police or intergovernmental body. Every entry on this site is demonstration data. Portraits are AI-generated fictional illustrations, not identity or review evidence.</p></div>
-      <ul><li><a href="#notices">Notices</a></li><li><a href="#apply">Register a persona</a></li><li><a href="#report">Report a persona</a></li><li><a href="#home">Registry home</a></li></ul>
+      <ul><li><a href="#notices">Notices</a></li><li><a href="#apply">Register a persona</a></li><li><a href="#report">Report a persona</a></li><li><a href="#case-status">Case status</a></li><li><a href="#home">Registry home</a></li></ul>
     </div></footer>
     ${pal && html`<${Palette} onClose=${() => setPal(false)} />`}
     <div className=${'toast' + (msg ? ' show' : '')} role="status" aria-live="polite">${msg}</div>

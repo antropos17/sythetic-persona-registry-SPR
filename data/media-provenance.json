@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "originClaim": "Project-created AI-generated fictional illustrations",
+  "originBasis": "Project declaration; original generation files and C2PA manifests were not captured",
+  "assets": [
+    {
+      "personaId": "PP-AZ-0001",
+      "role": "portrait",
+      "path": "assets/portraits/PP-AZ-0001.jpg",
+      "sha256": "e4e0c1b22d9c2fa61bb20cdad61bf47c01315b47726914000a859fde153ea1ef"
+    },
+    {
+      "personaId": "PP-AZ-0001",
+      "role": "full_body",
+      "path": "assets/full-body/PP-AZ-0001.jpg",
+      "sha256": "ae96e1c8af1bb222bf738a04894efa216093cb499ec7fb77b2dc2fb52396102b"
+    },
+    {
+      "personaId": "PP-TR-0004",
+      "role": "portrait",
+      "path": "assets/portraits/PP-TR-0004.jpg",
+      "sha256": "fba3dafc3735b5a2cf6cab5ca00308c7dd57eaa648461320e0cd7b35b9498992"
+    },
+    {
+      "personaId": "PP-TR-0004",
+      "role": "full_body",
+      "path": "assets/full-body/PP-TR-0004.jpg",
+      "sha256": "3e5f3a2616608db38b901d776d6ee653800b5e6186a51776a35f2cb049d402ab"
+    },
+    {
+      "personaId": "PP-ES-0011",
+      "role": "portrait",
+      "path": "assets/portraits/PP-ES-0011.jpg",
+      "sha256": "9d34b3da745c37cbda4db6ab51029a679c9076ce31d1abab329f68f503ce4aa2"
+    },
+    {
+      "personaId": "PP-ES-0011",
+      "role": "full_body",
+      "path": "assets/full-body/PP-ES-0011.jpg",
+      "sha256": "963f2e67537a1ce549bac4fd01f2176f45b3ad1dd093dd0e2d25c8a520eaba9d"
+    },
+    {
+      "personaId": "PP-JP-0016",
+      "role": "portrait",
+      "path": "assets/portraits/PP-JP-0016.jpg",
+      "sha256": "fe51d7d109eb8011ba2fa64d59eda4921448036c413861220442045fc44f5818"
+    },
+    {
+      "personaId": "PP-JP-0016",
+      "role": "full_body",
+      "path": "assets/full-body/PP-JP-0016.jpg",
+      "sha256": "be6d630987cdf56a823ded0afe8d6ec21016bb487864cc65625613daa75ce249"
+    },
+    {
+      "personaId": "PP-MX-0019",
+      "role": "portrait",
+      "path": "assets/portraits/PP-MX-0019.jpg",
+      "sha256": "e409d18a7c1ff4f2002404f44f1a04542d2ea6f9fc993f5af25978dcbd232fa8"
+    },
+    {
+      "personaId": "PP-MX-0019",
+      "role": "full_body",
+      "path": "assets/full-body/PP-MX-0019.jpg",
+      "sha256": "423aa9ebe750455c545da82f5bdea3f2faa38a0f15fb6c2ff0b276be9a496327"
+    },
+    {
+      "personaId": "PP-SE-0023",
+      "role": "portrait",
+      "path": "assets/portraits/PP-SE-0023.jpg",
+      "sha256": "455a3f670bfb11b586753085120fbf13556ff754e884a91f4a153bab2118875c"
+    },
+    {
+      "personaId": "PP-SE-0023",
+      "role": "full_body",
+      "path": "assets/full-body/PP-SE-0023.jpg",
+      "sha256": "3d8aa2d3e6d169f8c5ec5576f852bccc2c4226350949425246e057b024b60d0c"
+    },
+    {
+      "personaId": "PP-TR-0027",
+      "role": "portrait",
+      "path": "assets/portraits/PP-TR-0027.jpg",
+      "sha256": "b1b155cb6a24c4d61e65c08d53848519894f213e235d4ec84399adf4813c1b75"
+    },
+    {
+      "personaId": "PP-TR-0027",
+      "role": "full_body",
+      "path": "assets/full-body/PP-TR-0027.jpg",
+      "sha256": "441c0f9d415847f9ae13b8aa9e43cb518bd544c6fc73ab0480cb9e8812f1bdd3"
+    },
+    {
+      "personaId": "PP-PT-0031",
+      "role": "portrait",
+      "path": "assets/portraits/PP-PT-0031.jpg",
+      "sha256": "46aed717ba636955d2956a553d4de2e5ae450b4675f5a7610fac7943de6b10cf"
+    },
+    {
+      "personaId": "PP-PT-0031",
+      "role": "full_body",
+      "path": "assets/full-body/PP-PT-0031.jpg",
+      "sha256": "ced45e3d58557953079812e926d8c5dfa4c1b058470904708f5dc917f4e9b749"
+    }
+  ]
+}
