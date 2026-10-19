@@ -352,12 +352,31 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 .review-detail .fg{margin-top:16px}
 .prov{margin-top:40px;padding:28px;border:1px solid var(--rule);background:#fff}
 .prov h2{font-size:clamp(24px,2.6vw,32px)}
-.prov-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:20px}
-.prov-grid article{border-top:2px solid var(--ink);padding-top:12px;min-width:0}
-.prov-grid h3{font-size:18px;margin-bottom:8px}
-.prov .caution{margin-top:18px;color:var(--muted);max-width:80ch}
-.prov .integrity-bad{color:var(--r)}
-@media (max-width:760px){.review-grid,.prov-grid{grid-template-columns:minmax(0,1fr)}.prov{padding:20px 16px}}
+.prov .sub{max-width:70ch}
+.prov-summary{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 20px;margin-top:24px;padding:14px 18px;border-left:4px solid var(--g);background:var(--g-tint)}
+.prov-summary strong{font-size:16px}
+.prov-summary span{font-size:14px;color:var(--muted)}
+.prov-summary.problem{border-left-color:var(--r);background:var(--r-tint)}
+.prov-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
+.prov-asset{border:1px solid var(--rule);min-width:0}
+.prov-asset header{padding:16px 18px 14px;border-bottom:1px solid var(--rule)}
+.prov-asset h3{font-size:19px;line-height:1.25}
+.prov-result{font-size:15px;font-weight:700;color:var(--g-ink);margin-top:8px}
+.prov-result.integrity-bad{color:var(--r)}
+.prov-facts{margin:0;padding:0 18px 18px}
+.prov-facts>div{padding:12px 0;border-bottom:1px solid var(--rule)}
+.prov-facts>div:last-child{border-bottom:0;padding-bottom:0}
+.prov-facts dt{color:var(--muted);font-size:14px;margin-bottom:3px}
+.prov-facts dd{margin:0;font-size:15px;min-width:0}
+.prov-digest{display:block;padding:9px 10px;background:var(--mist);font-family:var(--mono);font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.prov-hash-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.prov-hash-head dt{margin:0}
+.prov-hash-head .tlink{font-size:14px}
+.prov-limits{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px 24px;margin-top:20px;padding:18px 20px;border:1px solid var(--rule);background:var(--mist)}
+.prov-limits h3{font-size:18px;line-height:1.3}
+.prov-limits p{font-size:15px;max-width:72ch}
+.prov-limits p+p{margin-top:8px}
+@media (max-width:760px){.review-grid,.prov-grid,.prov-limits{grid-template-columns:minmax(0,1fr)}.prov{padding:20px 16px}.prov-limits{padding:16px}.prov-summary{padding:12px 14px}}
 
 /* palette */
 .pal-bg{position:fixed;inset:0;background:rgba(7,26,58,.55);z-index:70;display:flex;align-items:flex-start;justify-content:center;padding:calc(10vh + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
@@ -1284,6 +1303,7 @@ function Home({savedRecords, toggleSaved}){
 }
 
 /* ---------- record ---------- */
+const PROV_DATE_TIME = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
 function Record({person, toast, onReport, savedRecords, toggleSaved}){
   const [tab,setTab] = useState('check'); const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]);
   const [provenance,setProvenance] = useState(null); const [provenanceError,setProvenanceError] = useState('');
@@ -1391,17 +1411,21 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
       </section>
       <section className="prov" aria-labelledby="prov-h">
         <h2 id="prov-h">Image provenance and integrity</h2>
-        <p className="sub">The project declares these fictional images as AI-generated. The SHA-256 checks below compare the served files with hashes recorded in this repository.</p>
+        <p className="sub">The project declares both images AI-generated. This section compares the server's image files with hashes recorded in this repository.</p>
         ${provenanceError && html`<p className="risk" role="status">${provenanceError}</p>`}
         ${!provenance && !provenanceError && html`<p className="sub" role="status">${location.protocol==='file:' ? 'Open the local server to check media hashes.' : 'Checking the media hashes…'}</p>`}
         ${provenance && html`<div>
-          <div className="prov-grid">${provenance.assets.map(asset => html`<article key=${asset.role}>
-            <h3>${asset.role==='portrait' ? 'Face portrait' : 'Full-length image'}</h3>
-            <p><b className=${asset.integrity==='matches_manifest'?'':'integrity-bad'}>${asset.integrity==='matches_manifest' ? 'Matches recorded hash' : asset.integrity==='missing' ? 'File missing' : 'Hash mismatch'}</b></p>
-            <p className="hash">SHA-256: ${asset.sha256}</p>
-            <p className="saved">Checked ${new Date(asset.checkedAt).toLocaleString()}</p>
+          <div role="status" className=${'prov-summary' + (provenance.assets.length>0 && provenance.assets.every(asset => asset.integrity==='matches_manifest') ? '' : ' problem')}>
+            <strong>${provenance.assets.filter(asset => asset.integrity==='matches_manifest').length} of ${provenance.assets.length} image files match repository hashes</strong><span>File integrity check only</span>
+          </div>
+          <div className="prov-grid">${provenance.assets.map(asset => html`<article className="prov-asset" key=${asset.role}>
+            <header><h3>${asset.role==='portrait' ? 'Face portrait' : 'Full-length image'}</h3>
+              <p className=${'prov-result' + (asset.integrity==='matches_manifest' ? '' : ' integrity-bad')}>${asset.integrity==='matches_manifest' ? 'Matches recorded hash' : asset.integrity==='missing' ? 'File missing' : 'Hash mismatch'}</p></header>
+            <dl className="prov-facts"><div><dt>Checked</dt><dd><time dateTime=${asset.checkedAt}>${PROV_DATE_TIME.format(new Date(asset.checkedAt))}</time></dd></div>
+              <div><div className="prov-hash-head"><dt>Recorded SHA-256</dt><button type="button" className="tlink" aria-label=${'Copy SHA-256 hash for ' + (asset.role==='portrait' ? 'face portrait' : 'full-length image')} onClick=${() => copy(asset.sha256,'SHA-256 hash',toast)}>Copy hash</button></div><dd><code className="prov-digest">${asset.sha256}</code></dd></div></dl>
           </article>`)}</div>
-          <p className="caution">Source statement: ${provenance.originBasis}. A matching hash does not establish who created an image, a model lineage, consent, or a person’s identity. No C2PA manifest was verified.</p>
+          <aside className="prov-limits"><h3>What this check does not prove</h3><div><p><b>Basis for origin claim:</b> ${provenance.originBasis}</p>
+            <p>Matching hashes show file consistency. They do not establish the creator, model lineage, consent, or a person’s identity.</p></div></aside>
         </div>`}
       </section>
       <nav className="pager" aria-label="Other records">
