@@ -30,7 +30,7 @@ npm test
 | `server/` | Zero-dependency Node HTTP API and SQLite submission storage. |
 | `tests/` | API, security boundary, and persistence tests. |
 
-The frontend fetches public records from the API when the server is available. Its embedded records remain a fallback for the standalone preview. Portraits are loaded from `assets/`; catalog cards use full-length images while passports and record details use matching headshots.
+The frontend fetches public records from the API when the server is available. Its embedded records remain a fallback for the standalone preview. Images are loaded from `assets/`: catalog cards use full-length images, compact table rows use headshots, and each record explains and displays both image types beside its sample passport. The images are illustrations, not identity or review evidence.
 
 ## API
 
