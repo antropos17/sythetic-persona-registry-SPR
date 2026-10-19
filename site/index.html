@@ -306,6 +306,29 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 .case-list small{display:block;color:var(--muted)}
 .case-list p{margin-top:5px}
 .hash{font-family:var(--mono);font-size:12.5px;overflow-wrap:anywhere;color:var(--muted)}
+.case-history-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px 20px}
+.case-history-head h2{margin-bottom:0}
+.case-history-count{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap;border:1px solid var(--rule);padding:3px 9px}
+.case-timeline{list-style:none;padding:0;margin:22px 0 0;border-top:1px solid var(--rule)}
+.case-timeline li{display:grid;grid-template-columns:132px minmax(0,1fr)}
+.case-timeline-date{padding:20px 16px 20px 0;border-bottom:1px solid var(--rule)}
+.case-timeline-date time{display:flex;flex-direction:column;line-height:1.3}
+.case-timeline-day{font-weight:800;font-size:18px;color:var(--ink)}
+.case-timeline-year{font-size:14px;color:var(--muted)}
+.case-timeline-clock{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:6px}
+.case-timeline-entry{position:relative;min-width:0;border-left:2px solid var(--navy);border-bottom:1px solid var(--rule);background:var(--mist);padding:18px 20px 22px 24px}
+.case-timeline-entry::before{content:"";position:absolute;top:25px;left:-6px;width:10px;height:10px;border-radius:50%;background:var(--navy);box-shadow:0 0 0 4px var(--paper)}
+.case-timeline-title{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 18px}
+.case-timeline-title h3{font-size:19px;font-weight:800;font-stretch:112%;line-height:1.25}
+.case-timeline-status{font-size:13px;font-weight:700;color:var(--navy);background:var(--paper);border:1px solid var(--rule);padding:3px 9px;white-space:nowrap}
+.case-timeline-actor{font-size:14px;color:var(--muted);margin-top:4px}
+.case-timeline-detail{font-size:15px;margin-top:14px;max-width:66ch}
+.case-timeline-file{font-size:15px;color:var(--muted);margin-top:8px;overflow-wrap:anywhere}
+.case-timeline-note{max-width:68ch;margin-top:14px;padding:12px 16px;background:var(--paper);border-left:3px solid var(--navy);overflow-wrap:anywhere}
+.case-timeline-note span{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:3px}
+.case-timeline-note p{margin:0}
+.case-history-empty{margin-top:22px;padding:18px 20px;border:1px solid var(--rule);color:var(--muted)}
+@media (max-width:560px){.case-timeline li{grid-template-columns:80px minmax(0,1fr)}.case-timeline-date{padding-right:10px}.case-timeline-day{font-size:16px}.case-timeline-entry{padding:16px 12px 18px 16px}.case-timeline-title h3{font-size:17px}}
 .case-upload{max-width:680px;gap:22px;margin-top:24px}
 .fg .file-picker{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;min-height:54px;padding:7px 10px;border:2px solid var(--ink);border-radius:2px;cursor:pointer}
 .file-picker:focus-within{outline:3px solid var(--focus);outline-offset:0}
@@ -1524,6 +1547,16 @@ function Report({prefill, toast}){
 const CASE_LABELS = {received:'Received',reviewing:'In review',needs_evidence:'More evidence requested',approved:'Application approved',rejected:'Application rejected',resolved:'Report resolved',dismissed:'Report dismissed'};
 const EVIDENCE_LABELS = {images:'Images',models:'Model record or hash manifest',licences:'Licences',channels:'Channel control proof',consent:'Signed consent',other:'Other'};
 const CLOSED_CASES = new Set(['approved','rejected','resolved','dismissed']);
+const CASE_DAY = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short'});
+const CASE_TIME = new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const CASE_DATE_TIME = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+function caseEventTitle(item,kind){
+  if(item.action==='submitted') return kind==='application' ? 'Application submitted' : 'Report submitted';
+  if(item.action==='evidence_uploaded') return 'Evidence uploaded';
+  if(item.action==='evidence_accepted') return 'Evidence accepted';
+  if(item.action==='evidence_rejected') return 'Evidence rejected';
+  return item.action==='status_changed' ? CASE_LABELS[item.status] || 'Status changed' : 'Case updated';
+}
 async function privateJson(path, token, options={}){
   const response = await fetch(path, {...options, headers:{...options.headers, Authorization:'Bearer '+token}});
   const data = await response.json().catch(() => ({}));
@@ -1584,17 +1617,17 @@ function CasePage({caseId, accessToken, toast}){
     ${data && html`<div>
       <section className="case-panel" aria-labelledby="case-current"><h2 id="case-current">Current status</h2>
         <p><b>${CASE_LABELS[data.status] || data.status}</b></p>
-        <p className="case-meta"><span>${data.kind==='application'?'Application':'Report'}</span><span>Submitted ${new Date(data.createdAt).toLocaleString()}</span><span>Updated ${new Date(data.updatedAt).toLocaleString()}</span></p>
+        <p className="case-meta"><span>${data.kind==='application'?'Application':'Report'}</span><span>Submitted ${CASE_DATE_TIME.format(new Date(data.createdAt))}</span><span>Updated ${CASE_DATE_TIME.format(new Date(data.updatedAt))}</span></p>
         <p className="sub">An approved application is a review decision. It does not create a public passport or change a demo record.</p>
       </section>
       <section className="case-panel" aria-labelledby="case-evidence"><h2 id="case-evidence">Evidence</h2>
         <p className="sub">Files are private to this case and the reviewer. SHA-256 records file integrity; it does not prove who created a file or whether its claims are true. Do not upload passwords or access keys.</p>
         ${data.evidence.length ? html`<ul className="case-list">${data.evidence.map(item => html`<li key=${item.id}>
           <b>${item.fileName}</b> · ${EVIDENCE_LABELS[item.kind] || item.kind} · ${item.reviewStatus}
-          <small>${(item.bytes/1024).toFixed(1)} KiB · ${new Date(item.createdAt).toLocaleString()}</small>
+          <small>${(item.bytes/1024).toFixed(1)} KiB · ${CASE_DATE_TIME.format(new Date(item.createdAt))}</small>
           <p>Source declared by submitter: ${item.sourceStatement || 'Not recorded'}</p>
           <span className="hash">SHA-256: ${item.sha256}</span>
-          ${item.reviewedAt && html`<small>Reviewed ${new Date(item.reviewedAt).toLocaleString()}</small>`}
+          ${item.reviewedAt && html`<small>Reviewed ${CASE_DATE_TIME.format(new Date(item.reviewedAt))}</small>`}
           ${item.reviewNote && html`<p>Reviewer message: ${item.reviewNote}</p>`}
         </li>`)}</ul>` : html`<p className="sub">No files uploaded.</p>`}
         ${!CLOSED_CASES.has(data.status) && data.evidence.length<5 && html`<form className="form case-upload" onSubmit=${upload}>
@@ -1607,8 +1640,16 @@ function CasePage({caseId, accessToken, toast}){
         </form>`}
         <p role="status" style=${{marginTop:'12px'}}>${message}</p>
       </section>
-      <section className="case-panel" aria-labelledby="case-history"><h2 id="case-history">Case history</h2>
-        <ol className="case-list">${data.events.map((item,index) => html`<li key=${index}><b>${item.action==='submitted'?'Submitted':item.action==='evidence_uploaded'?'Evidence uploaded':item.action.startsWith('evidence_')?'Evidence '+item.action.slice(9):CASE_LABELS[item.status] || item.status}</b><small>${new Date(item.at).toLocaleString()} · ${item.actor==='reviewer'?'Registry reviewer':'Submitter'}</small>${item.note && html`<p>${item.note}</p>`}</li>`)}</ol>
+      <section className="case-panel" aria-labelledby="case-history"><div className="case-history-head"><h2 id="case-history">Case history</h2><span className="case-history-count">${data.events.length} ${data.events.length===1?'event':'events'}</span></div>
+        <p className="sub">Submissions, file checks and decisions in the order they happened.</p>
+        ${data.events.length ? html`<ol className="case-timeline">${data.events.map((item,index) => { const at=new Date(item.at), evidenceName=data.evidence.find(file => file.id===item.evidenceId)?.fileName; return html`<li key=${index}>
+          <div className="case-timeline-date"><time dateTime=${item.at}><span className="case-timeline-day">${CASE_DAY.format(at)}</span><span className="case-timeline-year">${at.getFullYear()}</span><span className="case-timeline-clock">${CASE_TIME.format(at)}</span></time></div>
+          <div className="case-timeline-entry"><div className="case-timeline-title"><h3>${caseEventTitle(item,data.kind)}</h3>${item.action!=='status_changed' && html`<span className="case-timeline-status">${CASE_LABELS[item.status] || item.status}</span>`}</div>
+            <p className="case-timeline-actor">${item.actor==='reviewer'?'Registry reviewer':'Submitter'}</p>
+            ${item.action==='submitted' && html`<p className="case-timeline-detail">A private case was opened for review.</p>`}
+            ${evidenceName && html`<p className="case-timeline-file">File: ${evidenceName}</p>`}
+            ${item.note && html`<div className="case-timeline-note"><span>Reviewer message</span><p>${item.note}</p></div>`}</div>
+        </li>`; })}</ol>` : html`<p className="case-history-empty">No recorded events are available for this case.</p>`}
       </section>
     </div>`}
   </div>`;
