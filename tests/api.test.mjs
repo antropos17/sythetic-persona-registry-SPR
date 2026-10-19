@@ -46,6 +46,9 @@ test('serves the site and registry, while private files stay inaccessible', asyn
   assert.equal(picture.headers.get('content-type'), 'image/jpeg');
   for (const person of registry.personas) {
     assert.equal((await fetch(base + '/' + person.portrait)).status, 200, person.id);
+    const fullBody = await fetch(base + '/assets/full-body/' + person.id + '.jpg');
+    assert.equal(fullBody.status, 200, person.id);
+    assert.equal(fullBody.headers.get('content-type'), 'image/jpeg');
   }
   for (const path of ['/data/personas.json', '/server/db.mjs', '/.env', '/assets/../data/personas.json']) {
     assert.equal((await fetch(base + path)).status, 404, path);
