@@ -306,6 +306,14 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 .case-list small{display:block;color:var(--muted)}
 .case-list p{margin-top:5px}
 .hash{font-family:var(--mono);font-size:12.5px;overflow-wrap:anywhere;color:var(--muted)}
+.case-upload{max-width:680px;gap:22px;margin-top:24px}
+.file-picker{position:relative;display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;min-height:54px;padding:7px 10px;border:2px solid var(--ink);border-radius:2px;cursor:pointer}
+.file-picker:focus-within{outline:3px solid var(--focus);outline-offset:0}
+.file-picker-input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.file-picker-button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 12px;background:var(--mist);border:1px solid var(--rule);border-radius:2px;font-weight:700;font-size:15px;white-space:nowrap}
+.file-picker:hover .file-picker-button{background:var(--mist-2)}
+.file-picker-name{min-width:0;color:var(--muted);font-size:15px;overflow-wrap:anywhere}
+.file-picker-name.selected{color:var(--ink)}
 .review-page{padding-block:30px 72px}
 .review-grid{display:grid;grid-template-columns:minmax(230px,320px) minmax(0,1fr);gap:32px;margin-top:28px}
 .review-queue{list-style:none;padding:0;margin:0;border-top:2px solid var(--ink)}
@@ -1589,10 +1597,12 @@ function CasePage({caseId, accessToken, toast}){
           ${item.reviewedAt && html`<small>Reviewed ${new Date(item.reviewedAt).toLocaleString()}</small>`}
           ${item.reviewNote && html`<p>Reviewer message: ${item.reviewNote}</p>`}
         </li>`)}</ul>` : html`<p className="sub">No files uploaded.</p>`}
-        ${!CLOSED_CASES.has(data.status) && data.evidence.length<5 && html`<form className="form" onSubmit=${upload}>
+        ${!CLOSED_CASES.has(data.status) && data.evidence.length<5 && html`<form className="form case-upload" onSubmit=${upload}>
           <div className="fg"><label htmlFor="evidence-kind">What does this file show?</label><select className="in" id="evidence-kind" value=${kind} onChange=${e => setKind(e.target.value)}>${Object.entries(EVIDENCE_LABELS).map(([value,label]) => html`<option value=${value} key=${value}>${label}</option>`)}</select></div>
           <div className="fg"><label htmlFor="evidence-source">Where did this file come from?</label><span className="hint">Name the creator, issuer, original channel or model version. If unknown, say how you obtained it. This is your claim for a reviewer to assess.</span><textarea className="in" id="evidence-source" value=${sourceStatement} onChange=${e => setSourceStatement(e.target.value)} maxLength="500" required></textarea></div>
-          <div className="fg"><label htmlFor="evidence-file">JPEG, PNG or PDF, up to 5 MiB</label><input id="evidence-file" ref=${fileInput} className="in" type="file" accept=".jpg,.jpeg,.png,.pdf" onChange=${e => setFile(e.target.files?.[0] || null)} /></div>
+          <div className="fg"><label htmlFor="evidence-file">JPEG, PNG or PDF, up to 5 MiB</label>
+            <div className="file-picker"><input id="evidence-file" ref=${fileInput} className="file-picker-input" type="file" accept=".jpg,.jpeg,.png,.pdf" aria-describedby="evidence-file-name" onChange=${e => setFile(e.target.files?.[0] || null)} />
+              <label className="file-picker-button" htmlFor="evidence-file">Choose file</label><span className=${'file-picker-name' + (file ? ' selected' : '')} id="evidence-file-name" aria-live="polite">${file ? file.name : 'No file selected'}</span></div></div>
           <div><button className="btn" type="submit" disabled=${busy}>${busy?'Uploading…':'Upload evidence'}</button></div>
         </form>`}
         <p role="status" style=${{marginTop:'12px'}}>${message}</p>
