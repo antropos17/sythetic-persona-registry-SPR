@@ -1,6 +1,6 @@
-# Fictional full-length catalog images
+# Fictional full-length studio images
 
-These eight images were generated from scratch for the SPR demonstration on 19 October 2026 with the built-in image generation tool. Each depicts a fictional adult. They are illustrative catalog assets, not photographs of applicants or evidence of identity, consent, rights, or an examiner's review.
+These eight images were generated from scratch for the SPR demonstration on 19 October 2026 with the built-in image generation tool. Each depicts a fictional adult. They are illustrative assets shown inside record pages, not photographs of applicants or evidence of identity, consent, rights, or an examiner's review. Face portraits are the primary catalog-card images.
 
 The shared brief requested a natural full-length, front-facing studio photograph, with the entire head and both shoes in frame, anatomically plausible slender adult proportions, visible hands, a neutral light gray background, soft even lighting, realistic skin and fabric texture, and distinct contemporary clothing. It excluded text, watermarks, document props, dramatic posing, glamour retouching, and CGI styling. One selected generation was used for each persona; the selected PNG output was encoded as a quality-90 JPEG for the site without retouching or compositing.
 

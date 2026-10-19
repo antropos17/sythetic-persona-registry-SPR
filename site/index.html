@@ -140,12 +140,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 .clear{margin-left:6px}
 
 /* cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:20px}
 .card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--rule);transition:border-color .15s var(--ease)}
 .card:hover{border-color:var(--navy)}
 .card .band{height:6px;background:var(--nc)}
-.card .ph{aspect-ratio:2/3;background:var(--mist);overflow:hidden}
-.card .ph img{width:100%;height:100%;object-fit:contain;display:block}
+.card .ph{aspect-ratio:4/5;background:var(--mist);overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
 .card .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px}
 .card h3{font-stretch:112%;font-weight:800;font-size:20px;line-height:1.15}
 .card h3 a{color:var(--ink);text-decoration:none}
@@ -154,6 +154,13 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card:has(a:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 .card .no{font-family:var(--mono);font-size:14px;color:var(--muted)}
 .card .meta{font-size:14.5px;color:var(--muted)}
+.card-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin-top:8px}
+.card-actions .ntag{margin-top:0}
+.save-action{position:relative;z-index:1;font-size:14.5px}
+.saved-filter{min-height:44px;padding:0 14px;border:1.5px solid #8C99AF;border-radius:2px;background:#fff;color:var(--navy);font-weight:700;cursor:pointer}
+.saved-filter[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.saved-filter:hover{border-color:var(--navy)}
+.rec-save{display:block;margin-top:10px}
 .ntag{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--ni);background:var(--nt);padding:3px 9px 3px 8px;align-self:flex-start;margin-top:8px;border-radius:2px}
 .ntag i{width:9px;height:9px;background:var(--nc);display:inline-block}
 .tbl-box{overflow-x:auto;border-top:2px solid var(--ink)}
@@ -379,7 +386,7 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .tools{gap:10px}
   .tools .viewsw{flex:0 0 auto}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .card .ph{aspect-ratio:2/3;height:auto;min-height:0}
+  .card .ph{aspect-ratio:4/5;height:auto;min-height:0}
   .card .bd{padding:10px 12px 12px;gap:2px}
   .card h3{font-size:18px}
   .card .meta{font-size:14px}
@@ -957,6 +964,12 @@ const hay = p => (p.name+' '+p.handle+' '+p.id+' '+p.holder+' '+p.lang).toLowerC
 const find = q => { q = q.trim().toLowerCase(); if(!q) return []; const exact = PEOPLE.filter(p => p.id.toLowerCase()===q || p.handle.toLowerCase()===q || p.handle.toLowerCase()==='@'+q); return exact.length ? exact : PEOPLE.filter(p => hay(p).includes(q)); };
 const navigate = token => { if(('#'+token)===location.hash){ window.dispatchEvent(new HashChangeEvent('hashchange')); } else { location.hash = token; } };
 const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }, del(k){ try{ localStorage.removeItem(k); }catch(e){} } };
+const SAVED_KEY = 'spr-saved-records';
+function restoreSaved(value){
+  if(!Array.isArray(value)) return [];
+  const known = new Set(PEOPLE.map(person => person.id));
+  return [...new Set(value.filter(id => typeof id==='string' && known.has(id)))];
+}
 async function submitToRegistry(path, data){
   if(location.protocol==='file:') return {id:'DEMO-' + (Math.random().toString(36).slice(2,10)).toUpperCase(), demo:true};
   const response = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
@@ -1113,18 +1126,18 @@ function Hero(){
   </div></section>`;
 }
 
-function Notices(){
+function Notices({savedRecords, toggleSaved}){
   const saved = store.get('spr-view') || {};
-  const [notice,setNotice] = useState('All'); const [q,setQ] = useState(''); const [sort,setSort] = useState('recent'); const [view,setView] = useState(saved.view || 'grid');
+  const [notice,setNotice] = useState('All'); const [q,setQ] = useState(''); const [sort,setSort] = useState('recent'); const [view,setView] = useState(saved.view || 'grid'); const [savedOnly,setSavedOnly] = useState(false);
   useEffect(() => { store.set('spr-view', {view}); }, [view]);
   const counts = {}; PEOPLE.forEach(p => { counts[p.status] = (counts[p.status] || 0) + 1; });
   const rows = useMemo(() => {
     const ql = q.trim().toLowerCase();
-    let r = PEOPLE.filter(p => (notice==='All' || p.status===notice) && (!ql || hay(p).includes(ql)));
+    let r = PEOPLE.filter(p => (notice==='All' || p.status===notice) && (!savedOnly || savedRecords.includes(p.id)) && (!ql || hay(p).includes(ql)));
     const cmp = { recent:(a,b) => b.sort-a.sort, name:(a,b) => a.name.localeCompare(b.name), notice:(a,b) => ORDER.indexOf(a.status)-ORDER.indexOf(b.status) || b.sort-a.sort }[sort];
     return r.slice().sort(cmp);
-  }, [notice, q, sort]);
-  const filtered = notice!=='All' || q.trim();
+  }, [notice, q, sort, savedOnly, savedRecords]);
+  const filtered = notice!=='All' || q.trim() || savedOnly;
   return html`<section id="notices" className="sec" aria-labelledby="n-h"><div className="wrap">
     <div className="sec-h"><div>
       <h2 className="h2" id="n-h" tabIndex="-1">Notices</h2>
@@ -1148,40 +1161,44 @@ function Notices(){
         <button type="button" aria-pressed=${view==='grid'?'true':'false'} onClick=${() => setView('grid')}>Cards</button>
         <button type="button" aria-pressed=${view==='list'?'true':'false'} onClick=${() => setView('list')}>Table</button>
       </div>
+      <button type="button" className="saved-filter" aria-pressed=${savedOnly?'true':'false'} onClick=${() => setSavedOnly(value => !value)}>Saved in this browser (${savedRecords.length})</button>
     </div>
     <p className="status-line" aria-live="polite" style=${{marginBottom:'16px'}}>
-      ${rows.length} of ${PEOPLE.length} personas${notice!=='All' ? ' with a ' + NOTICE[notice].name.toLowerCase() : ''}${q.trim() ? ' matching “' + q.trim() + '”' : ''}.
-      ${filtered && html`<button type="button" className="tlink clear" onClick=${() => { setNotice('All'); setQ(''); }}>Clear filters</button>`}
+      ${rows.length} of ${PEOPLE.length} personas${notice!=='All' ? ' with a ' + NOTICE[notice].name.toLowerCase() : ''}${q.trim() ? ' matching “' + q.trim() + '”' : ''}${savedOnly ? ' in your saved records' : ''}.
+      ${filtered && html`<button type="button" className="tlink clear" onClick=${() => { setNotice('All'); setQ(''); setSavedOnly(false); }}>Clear filters</button>`}
     </p>
-    ${!rows.length && html`<p className="empty">No persona matches these filters. <button type="button" className="tlink" onClick=${() => { setNotice('All'); setQ(''); }}>Show all notices</button></p>`}
+    ${!rows.length && html`<p className="empty">${savedOnly && !savedRecords.length ? 'No saved records yet. Save a persona from a card to find it here.' : 'No persona matches these filters.'} <button type="button" className="tlink" onClick=${() => { setNotice('All'); setQ(''); setSavedOnly(false); }}>Show all notices</button></p>`}
     ${rows.length > 0 && view==='grid' && html`<ul className="grid" style=${{listStyle:'none',margin:0,padding:0}}>
       ${rows.map(p => html`<li key=${p.id} className="card" style=${nvars(p.status)}>
         <div className="band" aria-hidden="true"></div>
-        <div className="ph"><img src=${p.bodySrc} alt=${'Full-length studio portrait of ' + p.name} loading="lazy" /></div>
+        <div className="ph"><img src=${p.src} alt=${'Portrait of ' + p.name} loading="lazy" decoding="async" /></div>
         <div className="bd">
           <h3><a href=${'#'+p.id}>${p.name}</a></h3>
           <span className="no">${p.id}</span>
           <span className="meta">${p.role}, ${p.lang}</span>
           <span className="meta">Held by ${p.holder}</span>
-          <${NTag} status=${p.status} />
+          <div className="card-actions"><${NTag} status=${p.status} />
+            <button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button>
+          </div>
         </div>
       </li>`)}
     </ul>`}
     ${rows.length > 0 && view==='list' && html`<div className="tbl-box"><table>
       <caption className="sr">Notices. Demonstration entries.</caption>
-      <thead><tr><th scope="col"><span className="sr">Portrait</span></th><th scope="col">Persona</th><th scope="col">Passport number</th><th scope="col">Rights holder</th><th scope="col">Notice</th><th scope="col">Issued</th></tr></thead>
+      <thead><tr><th scope="col"><span className="sr">Portrait</span></th><th scope="col">Persona</th><th scope="col">Passport number</th><th scope="col">Rights holder</th><th scope="col">Notice</th><th scope="col">Issued</th><th scope="col">Save</th></tr></thead>
       <tbody>${rows.map(p => html`<tr key=${p.id}>
         <td><img className="thumb" src=${p.src} alt="" /></td>
         <td><a href=${'#'+p.id}>${p.name}</a><br /><span style=${{color:'var(--muted)',fontSize:'14.5px'}}>${p.handle}</span></td>
-        <td className="mono">${p.id}</td><td>${p.holder}</td><td><${NTag} status=${p.status} /></td><td style=${{whiteSpace:'nowrap'}}>${p.issued}</td></tr>`)}</tbody>
+        <td className="mono">${p.id}</td><td>${p.holder}</td><td><${NTag} status=${p.status} /></td><td style=${{whiteSpace:'nowrap'}}>${p.issued}</td>
+        <td><button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button></td></tr>`)}</tbody>
     </table></div>`}
   </div></section>`;
 }
 
-function Home(){
+function Home({savedRecords, toggleSaved}){
   return html`<div>
     <${Hero} />
-    <${Notices} />
+    <${Notices} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />
     <section className="sec" style=${{background:'var(--mist)'}} aria-labelledby="s-h"><div className="wrap">
       <div className="sec-h"><div><h2 className="h2" id="s-h">How a persona would get a passport</h2>
         <p className="sub">The proposed five-stage process. Evidence review, signatures and renewals are not active in this demo.</p></div></div>
@@ -1204,7 +1221,7 @@ function Home(){
 }
 
 /* ---------- record ---------- */
-function Record({person, toast, onReport}){
+function Record({person, toast, onReport, savedRecords, toggleSaved}){
   const [tab,setTab] = useState('check'); const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]);
   useEffect(() => { timers.current.forEach(clearTimeout); timers.current = []; setStep(-1); setTab('check'); }, [person.id]);
   const N = NOTICE[person.status];
@@ -1239,6 +1256,7 @@ function Record({person, toast, onReport}){
           <span className="no">${person.id}</span>
           <h1 id="h1" tabIndex="-1">${person.name}</h1>
           <${NTag} status=${person.status} />
+          <button type="button" className="tlink rec-save" aria-pressed=${savedRecords.includes(person.id)?'true':'false'} onClick=${() => toggleSaved(person.id)}>${savedRecords.includes(person.id) ? 'Remove from saved records' : 'Save record in this browser'}</button>
         </div>
         <div className="acts">
           <button type="button" className="btn" onClick=${run}>Check this passport</button>
@@ -1286,15 +1304,15 @@ function Record({person, toast, onReport}){
       <section className="rec-images" aria-labelledby="rec-images-h">
         <div>
           <h2 className="h2" id="rec-images-h">Persona images</h2>
-          <p className="sub">The catalog image and passport portrait illustrate this fictional persona. They do not establish identity or represent a new face check.</p>
+          <p className="sub">The face portrait used in the catalog and this full-length studio image illustrate a fictional persona. They do not establish identity or represent a new face check.</p>
           <div className="rec-image-key">
             <img src=${person.src} alt="" loading="lazy" />
-            <div><b>Passport portrait</b><p>Shown in the sample passport above.</p></div>
+            <div><b>Face portrait</b><p>Used in the catalog and sample passport above.</p></div>
           </div>
         </div>
         <figure className="rec-full">
           <img src=${person.bodySrc} alt=${'Full-length studio image of ' + person.name} loading="lazy" />
-          <figcaption>Full-length catalog image of ${person.name}</figcaption>
+          <figcaption>Full-length studio image of ${person.name}</figcaption>
         </figure>
       </section>
       <nav className="pager" aria-label="Other records">
@@ -1444,6 +1462,9 @@ function parse(){
 }
 function App(){
   const [route,setRoute] = useState(parse); const routeRef = useRef(route); const prevRef = useRef(null); const [pal,setPal] = useState(false); const [menu,setMenu] = useState(false); const [reportFor,setReportFor] = useState(null); const [msg,toast] = useToast();
+  const [savedRecords,setSavedRecords] = useState(() => restoreSaved(store.get(SAVED_KEY)));
+  useEffect(() => { store.set(SAVED_KEY, savedRecords); }, [savedRecords]);
+  const toggleSaved = id => setSavedRecords(current => current.includes(id) ? current.filter(saved => saved!==id) : [...current,id]);
   useEffect(() => {
     const on = () => { const r = parse(); const go = () => ReactDOM.flushSync(() => setRoute(r));
       const c = routeRef.current, sameRecord = c && c.name==='record' && r.name==='record';
@@ -1465,10 +1486,10 @@ function App(){
     const h = document.getElementById('h1'); if(h && route.name!=='home') h.focus({preventScroll:true});
   }, [route]);
   const onReport = p => { setReportFor(p); navigate('report'); };
-  const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} toast=${toast} onReport=${onReport} />`
+  const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} toast=${toast} onReport=${onReport} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`
     : route.name==='apply' ? html`<${Apply} toast=${toast} />`
     : route.name==='report' ? html`<${Report} prefill=${reportFor} toast=${toast} />`
-    : html`<${Home} />`;
+    : html`<${Home} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`;
   const cur = route.name==='record' || route.name==='notices' ? 'notices' : route.name;
   return html`<div>
     <a className="skip" href="#main" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined} onClick=${e => { e.preventDefault(); const m = document.getElementById('main'); m && m.focus(); }}>Skip to main content</a>

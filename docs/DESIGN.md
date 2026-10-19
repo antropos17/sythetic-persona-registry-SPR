@@ -7,6 +7,7 @@ SPR should read as an independent international registry. Navy bands carry the i
 - Avoid gradient backgrounds, glass effects, neon, gold interface elements, decorative eyebrow labels, ornamental arrows in buttons, and numbered labels for non-sequential content.
 - Buttons should name the action, such as “Check this passport” or “Send report”.
 - Preserve the current notice colours and meaning: green valid, yellow under review, orange suspended, red revoked. A green notice is not proof that every risk has been resolved.
+- Lead catalog cards with the persona's face portrait. Keep the full-length image in the record's image section, where its illustrative role is explained.
 - Preserve the passport's cover hinge, bending page, queued persona changes, and static fallback. Account for reduced motion and keyboard operation.
 - Preserve responsive layouts at small mobile widths, visible focus, skip navigation, meaningful labels, and accessible tabs and dialogs.
 - Visual checks must not claim cryptographic signature or face verification until an actual trusted process exists. Form confirmation must describe what the backend really stored or sent.
