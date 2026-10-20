@@ -27,6 +27,7 @@ jobs:
           curl --fail --silent http://127.0.0.1:4176/ > /dev/null
           curl --fail --silent http://127.0.0.1:4176/assets/portraits/PP-AZ-0001.jpg > /dev/null
           curl --fail --silent http://127.0.0.1:4176/assets/full-body/PP-AZ-0001.jpg > /dev/null
+          curl --fail --silent http://127.0.0.1:4176/api/v1/personas/PP-AZ-0001/provenance > /dev/null
       - name: Stop smoke container
         if: always()
         run: docker rm --force spr-release 2>/dev/null || true
