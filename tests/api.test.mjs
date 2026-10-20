@@ -56,6 +56,63 @@ test('standalone fallback records match the API source', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(fallback)), source.map(({ portrait, ...record }) => record));
 });
 
+test('passport page bending preserves sheet length, binding and flat endpoints', () => {
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const source = page.match(/function passportCurve\(progress,segments=64\)\{[\s\S]*?\n\}/);
+  assert.ok(source);
+  const curve = runInNewContext(source[0] + '\npassportCurve');
+  for (const progress of [0, .1, .25, .5, .75, .9, 1]) {
+    const points = curve(progress);
+    assert.equal(points.length, 65);
+    assert.equal(points[0].x, 0);
+    assert.equal(points[0].z, 0);
+    let length = 0;
+    for (let i = 1; i < points.length; i++) {
+      length += Math.hypot(points[i].x - points[i - 1].x, points[i].z - points[i - 1].z);
+      assert.ok(Number.isFinite(points[i].x) && Number.isFinite(points[i].z));
+      assert.ok(points[i].z >= -1e-10, 'The sheet stays above its binding plane');
+    }
+    assert.ok(Math.abs(length - 1) < 1e-10, 'Turning must not stretch the sheet');
+  }
+  assert.ok(Math.abs(curve(0).at(-1).x - 1) < 1e-10);
+  assert.ok(Math.abs(curve(1).at(-1).x + 1) < 1e-10);
+  assert.ok(Math.abs(curve(1).at(-1).z) < 1e-10);
+  assert.ok(curve(.5).at(-1).z > .4, 'A turning sheet has depth');
+});
+
+test('printed passport spreads retain the supplied claims, history and risks at double resolution', () => {
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const source = page.match(/const PW=900, PH=1280;[\s\S]*?\n\}\)\(\);/);
+  const random = page.match(/function hashStr\(s\).*\nfunction rng\(seed\).*\n/);
+  assert.ok(source && random);
+  let drawn = [];
+  const document = { createElement() {
+    const ctx = { scale() {}, fillRect() {}, save() {}, restore() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {}, strokeRect() {},
+      measureText(text) { return { width: String(text).length * 13 }; }, fillText(text) { drawn.push(String(text)); } };
+    return { getContext() { return ctx; } };
+  } };
+  const tex = runInNewContext(random[0] + '\n' + source[0] + '\nTEX', { document, NOTICE: new Proxy({}, { get: (_, status) => ({ name: status, meaning: 'Demo status' }) }) });
+  const records = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
+  for (const person of records) {
+    const texts = {};
+    for (const kind of ['claims', 'history']) for (const side of [0, 1]) {
+      drawn = [];
+      const canvas = tex.recordPage(person, kind, side);
+      assert.equal(canvas.width, 1800);
+      assert.equal(canvas.height, 2560);
+      texts[kind + side] = drawn.join(' ').replace(/\s+/g, ' ');
+      assert.match(texts[kind + side], /Fictional demo record\. No new evidence check\./);
+    }
+    for (const claim of person.claims) {
+      const content = texts.claims0 + ' ' + texts.claims1;
+      assert.ok(content.includes(claim.title) && content.includes(claim.basis), `${person.id}: ${claim.title}`);
+      if (claim.issue) assert.ok(content.includes(claim.issue));
+    }
+    for (const event of person.history) assert.ok(texts.history0.includes(event.d) && texts.history0.includes(event.e));
+    for (const risk of person.risks) assert.ok(texts.history1.includes(risk));
+  }
+});
+
 test('comparison and profile section routes retain valid targets and reject invalid ones', () => {
   const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
   const route = page.match(/function parse\(\)\{[\s\S]*?\n\}/);

@@ -106,6 +106,36 @@ button,input,select,textarea{font:inherit;color:inherit}
 .vctl .hint{font-size:13.5px;color:var(--on-navy-2)}
 .vbtn{min-height:44px;padding:0 16px;border-radius:2px;border:1px solid rgba(255,255,255,.35);background:rgba(7,26,58,.72);color:#fff;font-weight:600;font-size:14.5px;cursor:pointer}
 .vbtn:hover{border-color:#fff}
+.passport-widget{min-width:0;width:100%}
+.vtools{color:#fff;padding-top:12px;display:grid;gap:12px}
+.vtools .vbtn{padding:8px 12px;line-height:1.25}
+.vbtn:disabled{opacity:.45;cursor:default}
+.vbtn[aria-pressed="true"]{background:#fff;color:var(--navy-deep);border-color:#fff}
+.vpages{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}
+.vpage-status{font-size:14px;text-align:center;line-height:1.35;min-width:0}
+.vpage-status small{display:block;color:var(--on-navy-2);font-size:12.5px;margin-top:3px}
+.voptions{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end}
+.vframe{display:flex;align-items:center;gap:8px;font-size:13px;flex:1 1 190px}
+.vframe select{font:inherit;font-size:14px;min-height:44px;min-width:0;width:100%;border:1px solid var(--navy-line);background:var(--navy-deep);color:#fff;padding:8px}
+.vzoom{display:flex;align-items:center;gap:8px;flex:1 1 230px;min-width:0}
+.vzoom label{flex:1;min-width:40px;display:flex;align-items:center;min-height:44px}
+.vzoom input{width:100%;min-width:0;accent-color:#fff}
+.vzoom output{font-family:var(--mono);font-size:12px;min-width:4ch;text-align:right}
+.vzoom .vbtn{min-width:44px;font-size:21px}
+.vactions,.vmodes{display:flex;flex-wrap:wrap;gap:8px}
+.vhint{font-size:12.5px;line-height:1.5;color:var(--on-navy-2);padding-top:12px;max-width:76ch}
+.viewer.pan-mode canvas{cursor:move}
+.vbox.is-expanded{position:fixed;inset:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));z-index:120;background:var(--navy-deep);padding:16px;box-shadow:0 0 0 100vmax rgba(3,10,25,.8);isolation:isolate;overscroll-behavior:contain;overflow:auto}
+.vbox.is-expanded .viewer{flex:1 1 auto;min-height:180px;aspect-ratio:auto!important;background:var(--navy)}
+.vbox.is-expanded canvas{touch-action:none}
+.vtitle{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;color:#fff}
+.vtitle b{display:block;font-size:20px}
+.vtitle .mono{font-size:12px;color:var(--on-navy-2)}
+.vbox.is-expanded .voptions{flex:1 1 440px}
+.vbox.is-expanded .vtools{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.vbox.is-expanded .vpages{flex:1 1 440px}
+.vbox.is-expanded .vactions{flex:1 1 440px}
+@media(max-width:480px){.vtools .vbtn{font-size:13px;padding:8px}.vpages{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr)}.vpage-status{font-size:12.5px}.vbox.is-expanded{inset:0;padding:10px}.vtitle{gap:8px}.vtitle b{font-size:17px}.vtitle .vbtn{max-width:140px;font-size:13px}.vbox.is-expanded .viewer{min-height:150px}.vbox.is-expanded .vtools{gap:8px}.vbox.is-expanded .vhint{padding-top:6px;font-size:11.5px}}
 
 /* sections */
 .sec{padding-block:72px}
@@ -814,7 +844,7 @@ function emblemCanvas(x,ox,oy,scale,ink){
 /* ---------- printed pages, drawn on canvas ---------- */
 const PW=900, PH=1280;
 const TEX = (function(){
-  const mk=(w=PW,h=PH)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+  const mk=(w=PW,h=PH,scale=w===PW&&h===PH?2:1)=>{const c=document.createElement('canvas');c.width=w*scale;c.height=h*scale;c.getContext('2d').scale(scale,scale);return c;};
   function paper(x,tint,seed){
     x.fillStyle=tint;x.fillRect(0,0,PW,PH);
     const r=rng(seed);
@@ -959,7 +989,7 @@ const TEX = (function(){
     s.globalCompositeOperation='destination-out';
     for(let i=0;i<2600;i++){s.globalAlpha=.35+r()*.6;s.beginPath();s.arc(r()*PW,r()*PH*.8+60,.6+r()*2.2,0,Math.PI*2);s.fill();}
     s.globalCompositeOperation='source-over';s.globalAlpha=1;
-    x.save();x.globalAlpha=.9;x.globalCompositeOperation='multiply';x.drawImage(sc,0,0);x.restore();
+    x.save();x.globalAlpha=.9;x.globalCompositeOperation='multiply';x.drawImage(sc,0,0,PW,PH);x.restore();
     x.save();x.strokeStyle='#1F2A55';x.lineWidth=3;x.lineCap='round';x.beginPath();
     x.moveTo(70,1062);x.bezierCurveTo(110,990,140,1100,175,1040);x.bezierCurveTo(205,995,220,1080,250,1050);x.bezierCurveTo(280,1020,300,990,312,1060);x.bezierCurveTo(330,1100,370,1020,420,1044);x.bezierCurveTo(450,1056,470,1040,488,1030);x.stroke();
     x.lineWidth=1.6;x.beginPath();x.moveTo(110,1080);x.bezierCurveTo(220,1072,360,1076,470,1068);x.stroke();x.restore();
@@ -997,7 +1027,7 @@ const TEX = (function(){
     return c;
   }
   function coverMask(metal){
-    const c=mk(),x=c.getContext('2d');
+    const c=mk(PW,PH,1),x=c.getContext('2d');
     x.fillStyle=metal?'#000':'#B4B4B4';x.fillRect(0,0,PW,PH);
     coverArt(x,metal?'#fff':'#3A3A3A',false);
     return c;
@@ -1014,7 +1044,39 @@ const TEX = (function(){
     x.lineWidth=1.2;for(let i=0;i<8;i++){x.beginPath();for(let px=0;px<=512;px+=4){const y=600+i*12+Math.sin(px/30+i)*6;px?x.lineTo(px,y):x.moveTo(px,y);}x.stroke();}
     return c;
   }
-  return {dataPage,endorsements,cover,coverMask,holoMask};
+  function recordPage(p,kind,side){
+    const c=mk(),x=c.getContext('2d');
+    paper(x,'#EEF0EA',hashStr(p.id+kind+side));
+    x.strokeStyle='rgba(44,58,140,.35)';x.lineWidth=2;x.strokeRect(26,26,PW-52,PH-52);
+    const title=kind==='claims' ? (side===0?'Recorded claims':'Supporting context') : (side===0?'Record history':'Open risks');
+    x.fillStyle='#14213D';x.font='700 40px Archivo, Arial, sans-serif';x.fillText(title,56,95);
+    x.font='500 23px "IBM Plex Mono", monospace';x.fillStyle='#5A6378';x.fillText(p.id,56,138);
+    x.fillRect(56,162,PW-112,2);
+    let y=218;
+    const paragraph=(text,size=25,color='#18202E')=>{
+      x.font='400 '+size+'px Archivo, Arial, sans-serif';x.fillStyle=color;
+      let line='';
+      for(const word of String(text).split(/\s+/)){const next=line ? line+' '+word : word;if(x.measureText(next).width>PW-124&&line){x.fillText(line,62,y);y+=size*1.4;line=word;}else line=next;}
+      if(line){x.fillText(line,62,y);y+=size*1.4;}
+    };
+    const heading=text=>{x.font='700 29px Archivo, Arial, sans-serif';x.fillStyle='#14213D';x.fillText(text,62,y,PW-124);y+=42;};
+    if(kind==='claims'){
+      const claims=p.claims||[],cut=Math.ceil(claims.length/2),part=side===0?claims.slice(0,cut):claims.slice(cut);
+      for(const claim of part){heading(claim.title);paragraph(claim.statement,22,'#365079');paragraph(claim.basis,24);if(claim.issue)paragraph('Unresolved: '+claim.issue,23,'#79500E');y+=28;}
+      if(!part.length)paragraph('No additional claim context is listed in this demo record.');
+    }else if(side===0){
+      for(const event of p.history){heading(event.d);paragraph(event.e,27);y+=38;}
+    }else{
+      paragraph(NOTICE[p.status].name+': '+NOTICE[p.status].meaning,29);y+=32;
+      for(const [index,risk] of p.risks.entries()){heading('Open issue '+(index+1));paragraph(risk,28);y+=34;}
+      if(!p.risks.length)paragraph('No open risks are listed. This does not establish that every risk has been resolved.');
+    }
+    x.fillStyle='#5A6378';x.fillRect(56,PH-140,PW-112,1);
+    y=PH-108;paragraph('Fictional demo record. No new evidence check.',20,'#5A6378');
+    x.font='500 20px "IBM Plex Mono", monospace';x.fillText('SPR / '+(kind==='claims'?5+side:7+side),56,PH-44);
+    return c;
+  }
+  return {dataPage,endorsements,cover,coverMask,holoMask,recordPage};
 })();
 
 async function fontsReady(){
@@ -1024,187 +1086,195 @@ async function fontsReady(){
 }
 
 /* ---------- three.js passport ---------- */
-function createViewer(el){
-  const T=window.THREE; if(!T) throw new Error('3D library unavailable');
-  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-  renderer.outputColorSpace=T.SRGBColorSpace;
+const PASSPORT_SPREADS=['Identity and endorsements','Recorded claims','History and open risks'];
+function passportCurve(progress,segments=64){
+  const points=[{x:0,z:0}];
+  for(let i=0;i<segments;i++){
+    let t=Math.max(0,Math.min(1,progress*1.5-.5*(i+.5)/segments));t=t*t*(3-2*t);
+    const angle=Math.PI*t,previous=points[i];
+    points.push({x:previous.x+Math.cos(angle)/segments,z:previous.z+Math.sin(angle)/segments});
+  }
+  return points;
+}
+function createViewer(el,onChange=()=>{}){
+  const T=window.THREE;if(!T)throw new Error('3D library unavailable');
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'default'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputColorSpace=T.SRGBColorSpace;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;
-  el.appendChild(renderer.domElement);
-  renderer.domElement.setAttribute('aria-hidden','true');
-  const maxAniso=renderer.capabilities.getMaxAnisotropy();
-  const tex=(c,srgb)=>{const t=new T.CanvasTexture(c);if(srgb!==false)t.colorSpace=T.SRGBColorSpace;t.anisotropy=maxAniso;return t;};
-
-  const scene=new T.Scene();
-  const camera=new T.PerspectiveCamera(28,1,.1,60);
-  const pm=new T.PMREMGenerator(renderer);
-  const env=new T.Scene();
-  env.add(new T.Mesh(new T.BoxGeometry(14,14,14),new T.MeshBasicMaterial({color:0x8d8a83,side:T.BackSide})));
-  const panel=(w,h,p,rot,c)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color:c,side:T.DoubleSide}));m.position.set(...p);m.rotation.set(...rot);env.add(m);};
-  panel(7,2.4,[0,5,2],[Math.PI/2,0,0],0xffffff);
-  panel(3,4,[-6,1,2],[0,Math.PI/2,0],0xffe0b0);
-  panel(3,4,[6,0,3],[0,-Math.PI/2,0],0xb8ccff);
-  panel(10,1.2,[0,-1.5,6.5],[0,0,0],0xffffff);
-  scene.environment=pm.fromScene(env,.04).texture;
-  scene.add(new T.HemisphereLight(0xffffff,0x8a8678,.75));
-  const key=new T.DirectionalLight(0xffffff,1.5);key.position.set(2.5,3.2,5);scene.add(key);
-  const rim=new T.DirectionalLight(0xffd59a,.55);rim.position.set(-4,-1.5,2.5);scene.add(rim);
-
-  const W=1,H=1.42,TH=.07,CT=.022;
-  const root=new T.Group();scene.add(root);
-  const book=new T.Group();root.add(book);
-  const paperEdge=new T.MeshStandardMaterial({color:0xe9e5d6,roughness:.95});
-  const navy=new T.MeshStandardMaterial({color:0x12285a,roughness:.62});
-  const blank=new T.MeshStandardMaterial({color:0xe9e7dd,roughness:.92});
-  const dataMat=new T.MeshStandardMaterial({roughness:.8,metalness:0});
-  const rightGeo=new T.BoxGeometry(W,H,TH);rightGeo.translate(W/2,0,-TH/2);
-  book.add(new T.Mesh(rightGeo,[paperEdge,navy,paperEdge,paperEdge,dataMat,navy]));
-
-  const holoMat=new T.ShaderMaterial({
-    uniforms:{mask:{value:tex(TEX.holoMask(),false)},uTime:{value:0},uTilt:{value:new T.Vector2()}},
-    vertexShader:'varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=uv;vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.0);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
-    fragmentShader:'uniform sampler2D mask;uniform float uTime;uniform vec2 uTilt;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){float f=clamp(dot(normalize(vN),normalize(vV)),0.0,1.0);float t=vUv.x*1.3+vUv.y*.7+(1.0-f)*3.2+uTilt.x*2.2+uTilt.y*1.4+uTime*.025;vec3 col=.5+.5*cos(6.28318*(t+vec3(0.0,.33,.67)));float m=texture2D(mask,vUv).r;float a=m*(.05+.30*(1.0-f)+.12*abs(uTilt.x));a=min(a,.32);gl_FragColor=vec4(mix(col,vec3(.62,.72,.95),.25),a);}',
-    transparent:true,depthWrite:false,blending:T.NormalBlending});
-  const holo=new T.Mesh(new T.PlaneGeometry(W*.97,H*.97),holoMat);holo.position.set(W/2,0,.0016);book.add(holo);
-
-  const coverPivot=new T.Group();coverPivot.position.set(0,0,.0004);book.add(coverPivot);
-  const coverGeo=new T.BoxGeometry(W+.012,H+.014,CT);coverGeo.translate(W/2+.006,0,CT/2);
-  const coverOut=new T.MeshStandardMaterial({map:tex(TEX.cover()),metalnessMap:tex(TEX.coverMask(true),false),roughnessMap:tex(TEX.coverMask(false),false),metalness:1,roughness:1,color:0xffffff});
-  const coverIn=new T.MeshStandardMaterial({roughness:.82});
-  coverPivot.add(new T.Mesh(coverGeo,[navy,navy,navy,navy,coverOut,coverIn]));
-
-  const PN=36, PGW=W, PGH=H, seg=PGW/PN;
-  const pageGeoF=new T.PlaneGeometry(PGW,PGH,PN,1), pageGeoB=pageGeoF.clone();
-  { const uv=pageGeoB.attributes.uv; for(let i=0;i<uv.count;i++) uv.setX(i,1-uv.getX(i)); uv.needsUpdate=true; }
-  const flipFront=new T.MeshStandardMaterial({roughness:.8,side:T.FrontSide}), flipBack=new T.MeshStandardMaterial({roughness:.82,side:T.BackSide});
-  const flip=new T.Group();
-  flip.add(new T.Mesh(pageGeoF,flipFront));flip.add(new T.Mesh(pageGeoB,flipBack));
-  flip.visible=false;book.add(flip);
-  const pxA=new Float32Array(PN+1), pzA=new Float32Array(PN+1);
+  const dom=renderer.domElement;dom.setAttribute('aria-hidden','true');el.appendChild(dom);
+  const textures=new Set(),geometries=new Set(),materials=new Set();
+  const geometry=g=>{geometries.add(g);return g;};
+  const material=m=>{materials.add(m);return m;};
+  const texture=(canvas,srgb=true)=>{const t=new T.CanvasTexture(canvas);if(srgb)t.colorSpace=T.SRGBColorSpace;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());textures.add(t);return t;};
+  const release=t=>{if(!t||!textures.has(t))return;t.dispose();if(t.image instanceof HTMLCanvasElement){t.image.width=1;t.image.height=1;}textures.delete(t);};
+  const scene=new T.Scene(),camera=new T.PerspectiveCamera(30,1,.1,50);
+  const env=new T.Scene(),pm=new T.PMREMGenerator(renderer);
+  env.add(new T.Mesh(new T.BoxGeometry(12,12,12),new T.MeshBasicMaterial({color:0xb1b5bd,side:T.BackSide})));
+  for(const [w,h,pos,rotation,color] of [[6,3,[0,5,2],[Math.PI/2,0,0],0xffffff],[3,4,[-5,1,3],[0,Math.PI/2,0],0xffedce],[3,4,[5,0,3],[0,-Math.PI/2,0],0xc8dbff]]){
+    const panel=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color,side:T.DoubleSide}));panel.position.set(...pos);panel.rotation.set(...rotation);env.add(panel);
+  }
+  const environment=pm.fromScene(env,.025);scene.environment=environment.texture;pm.dispose();
+  env.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});
+  scene.add(new T.HemisphereLight(0xffffff,0x6c7383,.6));
+  const key=new T.DirectionalLight(0xfff8ec,1.5);key.position.set(-2,3,5);scene.add(key);
+  const fill=new T.DirectionalLight(0xd8e7ff,.45);fill.position.set(3,-1,4);scene.add(fill);
+  const root=new T.Group(),book=new T.Group();root.add(book);scene.add(root);
+  const W=1,H=1.42;
+  const navy=material(new T.MeshStandardMaterial({color:0x10264f,roughness:.72}));
+  const ivory=material(new T.MeshStandardMaterial({color:0xe5e1d4,roughness:.95}));
+  const paperMaterial=options=>material(new T.MeshPhysicalMaterial({roughness:1,metalness:0,specularIntensity:.08,envMapIntensity:.2,...options}));
+  const leftMat=paperMaterial({}),rightMat=paperMaterial({});
+  function shape(w,h,r){
+    const s=new T.Shape(),x=-w/2,y=-h/2;
+    s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s;
+  }
+  function face(w,h,r,mat,z,parent,back=false){
+    const g=geometry(new T.ShapeGeometry(shape(w,h,r),10)),pos=g.attributes.position,uv=g.attributes.uv;
+    for(let i=0;i<pos.count;i++)uv.setXY(i,pos.getX(i)/w+.5,pos.getY(i)/h+.5);
+    const mesh=new T.Mesh(g,mat);mesh.position.set(w/2,0,z);if(back)mesh.rotation.y=Math.PI;parent.add(mesh);return mesh;
+  }
+  function slab(w,h,depth,r,mat,parent,z){
+    const g=geometry(new T.ExtrudeGeometry(shape(w,h,r),{depth,bevelEnabled:true,bevelSize:.003,bevelThickness:.003,bevelSegments:3,steps:1,curveSegments:10}));
+    const mesh=new T.Mesh(g,mat);mesh.position.set(w/2,0,z);parent.add(mesh);return mesh;
+  }
+  // Rounded covers, a real spine, stitched gutter and individually visible paper edges.
+  slab(1.034,1.458,.022,.036,navy,book,-.094);
+  slab(.995,1.414,.069,.024,ivory,book,-.07);
+  for(let i=0;i<14;i++){
+    const line=new T.LineLoop(geometry(new T.BufferGeometry().setFromPoints(shape(.994,1.413,.024).getPoints(12))),material(new T.LineBasicMaterial({color:i%3===0?0xc9c3af:0xf7f3e8})));
+    line.position.set(.497,0,-.066+i*.0048);book.add(line);
+  }
+  face(.988,1.408,.024,rightMat,.004,book);
+  const coverPivot=new T.Group();book.add(coverPivot);
+  const grain=document.createElement('canvas');grain.width=grain.height=256;const gx=grain.getContext('2d'),random=rng(74);
+  gx.fillStyle='#888';gx.fillRect(0,0,256,256);for(let i=0;i<18000;i++){gx.fillStyle=random()>.5?'#a4a4a4':'#6d6d6d';gx.fillRect(random()*256,random()*256,1+random()*2,1+random()*2);}
+  const leather=texture(grain,false);leather.wrapS=leather.wrapT=T.RepeatWrapping;leather.repeat.set(3,4);
+  const coverMat=material(new T.MeshStandardMaterial({map:texture(TEX.cover()),metalnessMap:texture(TEX.coverMask(true),false),roughnessMap:texture(TEX.coverMask(false),false),bumpMap:leather,bumpScale:.0014,metalness:.82,roughness:.88,envMapIntensity:.45}));
+  slab(1.034,1.458,.022,.036,navy,coverPivot,0);
+  face(1.034,1.458,.036,coverMat,.026,coverPivot);
+  slab(.995,1.414,.018,.024,ivory,coverPivot,-.023);
+  face(.988,1.408,.024,leftMat,-.027,coverPivot,true);
+  for(let i=0;i<5;i++){
+    const line=new T.LineLoop(geometry(new T.BufferGeometry().setFromPoints(shape(.994,1.413,.024).getPoints(12))),material(new T.LineBasicMaterial({color:0xd1cab7})));
+    line.position.set(.497,0,-.021+i*.003);coverPivot.add(line);
+  }
+  const spine=new T.Mesh(geometry(new T.CylinderGeometry(.033,.033,1.43,20)),navy);spine.position.set(.006,0,-.045);book.add(spine);
+  const thread=material(new T.MeshStandardMaterial({color:0xb9ad89,roughness:1}));
+  for(const y of [-.54,-.28,0,.28,.54]){const stitch=new T.Mesh(geometry(new T.CylinderGeometry(.002,.002,.037,6)),thread);stitch.rotation.z=Math.PI/2;stitch.position.set(.012,y,.006);book.add(stitch);}
+  const holoMat=material(new T.ShaderMaterial({
+    uniforms:{mask:{value:texture(TEX.holoMask(),false)},tilt:{value:new T.Vector2()}},
+    vertexShader:'varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=uv;vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
+    fragmentShader:'uniform sampler2D mask;uniform vec2 tilt;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){float f=clamp(dot(normalize(vN),normalize(vV)),0.,1.);float t=vUv.x*1.3+vUv.y*.7+(1.-f)*3.2+tilt.x*2.2;vec3 col=.5+.5*cos(6.28318*(t+vec3(0.,.33,.67)));float a=texture2D(mask,vUv).r*(.025+.2*(1.-f));gl_FragColor=vec4(col,a);}',
+    transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1}));
+  const holo=face(.976,1.398,.022,holoMat,.005,book);
+  const shade=document.createElement('canvas');shade.width=128;shade.height=4;const sh=shade.getContext('2d'),gradient=sh.createLinearGradient(0,0,128,0);gradient.addColorStop(0,'rgba(35,25,14,.24)');gradient.addColorStop(1,'rgba(35,25,14,0)');sh.fillStyle=gradient;sh.fillRect(0,0,128,4);
+  const gutterMat=material(new T.MeshBasicMaterial({map:texture(shade),transparent:true,depthWrite:false}));
+  const gutter=new T.Mesh(geometry(new T.PlaneGeometry(.14,1.4)),gutterMat);gutter.position.set(.07,0,.006);book.add(gutter);
+  const PN=64,ROWS=8,frontGeo=geometry(new T.PlaneGeometry(1,1.408,PN,ROWS)),backGeo=geometry(frontGeo.clone());
+  for(let i=0;i<backGeo.attributes.uv.count;i++)backGeo.attributes.uv.setX(i,1-backGeo.attributes.uv.getX(i));
+  const flipFront=paperMaterial({side:T.FrontSide}),flipBack=paperMaterial({side:T.BackSide});
+  const flip=new T.Group();flip.add(new T.Mesh(frontGeo,flipFront),new T.Mesh(backGeo,flipBack));flip.visible=false;book.add(flip);
   function bend(p){
-    pxA[0]=0;pzA[0]=0;
-    for(let i=0;i<PN;i++){
-      let t=p*1.5-.5*((i+.5)/PN); t=t<0?0:t>1?1:t; t=t*t*(3-2*t);
-      const th=Math.PI*t; pxA[i+1]=pxA[i]+seg*Math.cos(th); pzA[i+1]=pzA[i]+seg*Math.sin(th);
-    }
-    const lift=.0034+Math.sin(p*Math.PI)*.014;
-    [pageGeoF,pageGeoB].forEach(g=>{const pos=g.attributes.position;for(let r=0;r<2;r++)for(let c=0;c<=PN;c++){const i=r*(PN+1)+c;pos.setX(i,pxA[c]);pos.setZ(i,pzA[c]+lift);}pos.needsUpdate=true;g.computeVertexNormals();});
+    const points=passportCurve(p,PN),lift=.006+Math.sin(p*Math.PI)*.009;
+    for(const g of [frontGeo,backGeo]){const pos=g.attributes.position;for(let row=0;row<=ROWS;row++)for(let col=0;col<=PN;col++){
+      const i=row*(PN+1)+col,v=row/ROWS-.5,twist=Math.sin(p*Math.PI)*v*.018*col/PN;
+      pos.setXYZ(i,points[col].x,(.5-row/ROWS)*1.408,points[col].z+lift+twist);
+    }pos.needsUpdate=true;g.computeVertexNormals();}
   }
-  bend(0);
-
-  const sh=document.createElement('canvas');sh.width=sh.height=256;const sx=sh.getContext('2d');
-  const sg=sx.createRadialGradient(128,128,10,128,128,128);sg.addColorStop(0,'rgba(0,4,16,.55)');sg.addColorStop(1,'rgba(0,0,0,0)');sx.fillStyle=sg;sx.fillRect(0,0,256,256);
-  const shadow=new T.Mesh(new T.PlaneGeometry(3.4,2.6),new T.MeshBasicMaterial({map:tex(sh),transparent:true,depthWrite:false}));
-  shadow.position.set(.06,-.12,-.45);root.add(shadow);
-
-  const cache=new Map();
-  const getTex=(k,fn)=>{if(!cache.has(k))cache.set(k,tex(fn()));return cache.get(k);};
-
-  let openP=0, tweens=[], current=null, opening=null, turning=null, pending=null;
-  const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-  const easeIO=t=>-(Math.cos(Math.PI*t)-1)/2;
-  const tween=(dur,fn,done)=>{const tw={s:performance.now(),dur,fn,done};tweens.push(tw);return tw;};
-  function applyOpen(){
-    const e=ease(openP);
-    coverPivot.rotation.y=-Math.PI*e;
-    coverPivot.position.z=.0004+Math.sin(e*Math.PI)*.02;
-    book.position.x=(-W/2)*(1-e);
-  }
-  function setOpen(want,instant){
-    const from=openP,to=want?1:0;
-    if(opening){tweens=tweens.filter(t=>t!==opening);opening=null;}
-    if(instant||REDUCED||from===to){openP=to;applyOpen();flush();return;}
-    opening=tween(1800*Math.abs(to-from),t=>{openP=from+(to-from)*t;applyOpen();},()=>{opening=null;flush();});
-  }
-  const texFor=p=>[getTex('d'+p.id,()=>TEX.dataPage(p)),getTex('e'+p.id,()=>TEX.endorsements(p))];
-  function swapNow(p){const [dT,eT]=texFor(p);dataMat.map=dT;coverIn.map=eT;dataMat.needsUpdate=coverIn.needsUpdate=true;current=p;}
-  function turnTo(p){
-    const [dT,eT]=texFor(p);
-    const n=PEOPLE.length, d=(PEOPLE.indexOf(p)-PEOPLE.indexOf(current)+n)%n, fwd=d<=n/2;
-    if(fwd){
-      flipFront.map=dataMat.map;flipBack.map=eT;
-      dataMat.map=dT;
-    }else{
-      flipFront.map=dT;flipBack.map=coverIn.map;
-      coverIn.map=eT;
-    }
-    flipFront.needsUpdate=flipBack.needsUpdate=dataMat.needsUpdate=coverIn.needsUpdate=true;
-    bend(fwd?0:1);flip.visible=true;current=p;
-    turning=tween(1150,t=>bend(fwd?easeIO(t):1-easeIO(t)),()=>{
-      if(fwd){coverIn.map=eT;coverIn.needsUpdate=true;}else{dataMat.map=dT;dataMat.needsUpdate=true;}
-      flip.visible=false;turning=null;flush();
-    });
-  }
-  function flush(){
-    if(!pending||turning||opening)return;
-    const p=pending;pending=null;
-    if(current&&p.id===current.id)return;
-    if(openP>=1&&!REDUCED&&current)turnTo(p);else swapNow(p);
-  }
-  function setPersona(p,animate){
-    if(!current||!animate){swapNow(p);return;}
-    pending=p;flush();
-  }
-
-  const base={x:-.26,y:-.16};
-  let hover={x:0,y:0},drag={x:0,y:0},dragging=null;
-  const rot={x:base.x,y:base.y};
-  const dom=renderer.domElement;
-  const onMove=e=>{
-    const r=dom.getBoundingClientRect();
-    const nx=(e.clientX-r.left)/r.width-.5, ny=(e.clientY-r.top)/r.height-.5;
-    if(dragging){drag.y=Math.max(-.95,Math.min(.95,dragging.dy+(e.clientX-dragging.x)/r.width*2.4));drag.x=Math.max(-.45,Math.min(.45,dragging.dx+(e.clientY-dragging.y)/r.height*1.4));}
-    else if(e.pointerType==='mouse'){hover.x=ny*.22;hover.y=nx*.34;}
-  };
-  const onDown=e=>{dragging={x:e.clientX,y:e.clientY,dx:drag.x,dy:drag.y};try{dom.setPointerCapture(e.pointerId);}catch(_){}};
-  const onUp=e=>{dragging=null;try{dom.releasePointerCapture(e.pointerId);}catch(_){}};
-  const onLeave=()=>{hover.x=hover.y=0;};
-  dom.addEventListener('pointermove',onMove);dom.addEventListener('pointerdown',onDown);
-  dom.addEventListener('pointerup',onUp);dom.addEventListener('pointercancel',onUp);dom.addEventListener('pointerleave',onLeave);
-  dom.addEventListener('dblclick',()=>{drag.x=drag.y=0;});
-
-  let camD=0, camTarget=0;
+  let alive=true,visible=true,raf=0,last=performance.now(),zoom=1,spread=0,wantOpen=true,openP=1,current=null,busy=false,turn=null,opening=null;
+  let pair=[],targetPair=[],framing='spread',pan={x:0,y:0},mode='rotate',inspection=false;
+  const angle={x:-.16,y:-.12},rotation={...angle},velocity={x:0,y:0};
+  let cameraDistance=0,cameraTarget=4;
+  const emit=()=>onChange({zoom:Math.round(zoom*100),spread,open:wantOpen,busy,framing,mode});
+  const stop=()=>{if(raf)cancelAnimationFrame(raf);raf=0;};
+  function invalidate(){if(alive&&visible&&!document.hidden&&!raf)raf=requestAnimationFrame(frame);}
+  const ease=t=>t*t*(3-2*t);
+  function applyOpen(){const p=ease(openP);coverPivot.rotation.y=-Math.PI*p;coverPivot.position.z=.034-.056*p;book.position.x=-.5*(1-p);holo.visible=spread===0&&openP>.8;}
   function fit(){
-    const w=el.clientWidth||600,h=el.clientHeight||400;
-    renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
-    const vf=camera.fov*Math.PI/180, hf=2*Math.atan(Math.tan(vf/2)*camera.aspect);
-    camTarget=Math.max(1.12/Math.tan(hf/2),.98/Math.tan(vf/2));
-    if(!camD)camD=camTarget;
+    const w=el.clientWidth||600,h=el.clientHeight||450;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    const vertical=camera.fov*Math.PI/180,horizontal=2*Math.atan(Math.tan(vertical/2)*camera.aspect),width=framing==='spread'?(1.18+openP):1.13;
+    cameraTarget=Math.max(width/2/Math.tan(horizontal/2),.84/Math.tan(vertical/2))+.16;
+    if(!cameraDistance)cameraDistance=cameraTarget/zoom;invalidate();
   }
-  const ro=new ResizeObserver(fit);ro.observe(el);fit();
-  let visible=true;
-  const io=new IntersectionObserver(es=>{visible=es[0].isIntersecting; if(visible) scheduleFrame(); else pauseFrame();});io.observe(el);
-
-  let raf=0,last=performance.now(),alive=true;
-  function pauseFrame(){ if(raf){cancelAnimationFrame(raf);raf=0;} }
-  function scheduleFrame(){ if(alive && visible && !document.hidden && !raf) raf=requestAnimationFrame(frame); }
-  const onVisibility=()=>{ if(document.hidden) pauseFrame(); else scheduleFrame(); };
-  document.addEventListener('visibilitychange',onVisibility);
+  const mapsFor=(p,index)=>index===0?[texture(TEX.endorsements(p)),texture(TEX.dataPage(p))]:[0,1].map(side=>texture(TEX.recordPage(p,index===1?'claims':'history',side)));
+  function showPair(next){leftMat.map=next[0];rightMat.map=next[1];leftMat.needsUpdate=rightMat.needsUpdate=true;}
+  function finishTurn(){
+    if(!turn)return;showPair(targetPair);for(const map of pair)release(map);pair=targetPair;targetPair=[];turn=null;flip.visible=false;flipFront.map=flipBack.map=null;busy=false;emit();
+  }
+  function setOpen(value,instant=false){
+    finishTurn();wantOpen=!!value;velocity.x=velocity.y=0;
+    if(!wantOpen){framing='spread';zoom=1;pan={x:0,y:0};}
+    if(instant||REDUCED){openP=wantOpen?1:0;opening=null;applyOpen();fit();}
+    else opening={start:performance.now(),from:openP,to:wantOpen?1:0,duration:800*Math.max(.12,Math.abs((wantOpen?1:0)-openP))};
+    emit();invalidate();
+  }
+  function setSpread(index){
+    index=Math.max(0,Math.min(PASSPORT_SPREADS.length-1,Math.round(index)));if(index===spread||busy||!current)return;
+    const next=mapsFor(current,index),forward=index>spread;spread=index;
+    if(REDUCED||openP<.99||opening){for(const map of pair)release(map);pair=next;showPair(pair);setOpen(true,true);emit();invalidate();return;}
+    targetPair=next;busy=true;
+    if(forward){flipFront.map=pair[1];flipBack.map=next[0];rightMat.map=next[1];rightMat.needsUpdate=true;}
+    else{flipFront.map=next[1];flipBack.map=pair[0];leftMat.map=next[0];leftMat.needsUpdate=true;}
+    flipFront.needsUpdate=flipBack.needsUpdate=true;flip.visible=true;
+    turn={start:performance.now(),forward};bend(forward?0:1);holo.visible=false;emit();invalidate();
+  }
+  function setPersona(p){
+    if(current===p)return;finishTurn();for(const map of pair)release(map);current=p;spread=0;pair=mapsFor(p,0);showPair(pair);applyOpen();emit();invalidate();
+  }
+  function setZoom(value){zoom=Math.max(1,Math.min(2.5,value/100));emit();invalidate();}
+  function reset(){angle.x=-.16;angle.y=-.12;velocity.x=velocity.y=0;pan={x:0,y:0};zoom=1;framing='spread';mode='rotate';emit();fit();}
+  function setFraming(value){framing=['left','right'].includes(value)?value:'spread';pan={x:0,y:0};zoom=1;angle.x=angle.y=0;velocity.x=velocity.y=0;if(framing!=='spread')setOpen(true,true);emit();fit();}
+  const pointers=new Map();let gesture=null;
+  const clampPan=()=>{pan.x=Math.max(-1.5,Math.min(1.5,pan.x));pan.y=Math.max(-1.1,Math.min(1.1,pan.y));};
+  function snapshot(){const points=[...pointers.values()];if(points.length>=2){const [a,b]=points;return {x:(a.x+b.x)/2,y:(a.y+b.y)/2,distance:Math.hypot(a.x-b.x,a.y-b.y)};}return points[0];}
+  function onDown(e){
+    if(e.button!==0&&e.pointerType==='mouse')return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});velocity.x=velocity.y=0;
+    const point=snapshot();gesture={...point,time:performance.now(),mode:e.shiftKey?'pan':mode};
+    try{dom.setPointerCapture(e.pointerId);}catch(_){}invalidate();
+  }
+  function onMove(e){
+    if(!pointers.has(e.pointerId)||!gesture)return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});const point=snapshot(),r=dom.getBoundingClientRect(),now=performance.now(),dt=Math.max(.008,(now-gesture.time)/1000),dx=point.x-gesture.x,dy=point.y-gesture.y;
+    if(pointers.size>=2&&inspection){if(gesture.distance>0)setZoom(zoom*100*point.distance/gesture.distance);pan.x+=dx/r.width*2/zoom;pan.y-=dy/r.height*1.7/zoom;clampPan();}
+    else if(gesture.mode==='pan'){pan.x+=dx/r.width*2/zoom;pan.y-=dy/r.height*1.7/zoom;clampPan();}
+    else{const yaw=dx/r.width*Math.PI*2,pitch=dy/r.height*2;angle.y+=yaw;angle.x=Math.max(-1.25,Math.min(1.25,angle.x+pitch));velocity.y=Math.max(-4,Math.min(4,yaw/dt));velocity.x=Math.max(-2,Math.min(2,pitch/dt));}
+    gesture={...point,time:now,mode:gesture.mode};invalidate();
+  }
+  function onUp(e){
+    const elapsed=gesture?performance.now()-gesture.time:Infinity;pointers.delete(e.pointerId);
+    if(pointers.size){gesture={...snapshot(),time:performance.now(),mode};velocity.x=velocity.y=0;}else{gesture=null;if(REDUCED||elapsed>80)velocity.x=velocity.y=0;}
+    try{dom.releasePointerCapture(e.pointerId);}catch(_){}invalidate();
+  }
+  const onCancel=e=>{if(!pointers.has(e.pointerId))return;velocity.x=velocity.y=0;onUp(e);};
+  const onWheel=e=>{if(!e.altKey||e.ctrlKey||e.metaKey)return;e.preventDefault();setZoom(zoom*100-e.deltaY*.08);};
+  dom.addEventListener('pointerdown',onDown);dom.addEventListener('pointermove',onMove);dom.addEventListener('pointerup',onUp);dom.addEventListener('pointercancel',onCancel);dom.addEventListener('lostpointercapture',onCancel);dom.addEventListener('dblclick',reset);dom.addEventListener('wheel',onWheel,{passive:false});
   function frame(now){
     raf=0;if(!alive||!visible||document.hidden)return;
-    const dt=Math.min(.05,(now-last)/1000);last=now;
-    tweens=tweens.filter(tw=>{let t=(now-tw.s)/tw.dur;if(t>=1){tw.fn(1);tw.done&&tw.done();return false;}tw.fn(tw.linear?t:t);return true;});
-    const k=1-Math.pow(.0015,dt);
-    const idle=REDUCED?0:Math.sin(now/2400)*.025;
-    rot.x+=(base.x+hover.x+drag.x-rot.x)*k;rot.y+=(base.y+hover.y+drag.y+idle-rot.y)*k;
-    root.rotation.set(rot.x,rot.y,0);
-    camD+=(camTarget-camD)*(1-Math.pow(.02,dt));
-    camera.position.set(0,-.18,camD);camera.lookAt(0,0,0);
-    holoMat.uniforms.uTime.value=now/1000;holoMat.uniforms.uTilt.value.set(rot.y-base.y,rot.x-base.x);
-    renderer.render(scene,camera);
-    if(!shown){shown=true;requestAnimationFrame(()=>{dom.style.opacity='1';});}
-    scheduleFrame();
+    const dt=Math.min(.04,(now-last)/1000);last=now;
+    if(opening){const t=Math.min(1,(now-opening.start)/opening.duration);openP=opening.from+(opening.to-opening.from)*ease(t);applyOpen();fit();if(t===1)opening=null;}
+    if(turn){const t=Math.min(1,(now-turn.start)/850);bend(turn.forward?ease(t):1-ease(t));if(t===1){finishTurn();applyOpen();}}
+    if(!gesture){angle.y+=velocity.y*dt;angle.x=Math.max(-1.25,Math.min(1.25,angle.x+velocity.x*dt));velocity.x*=Math.exp(-9*dt);velocity.y*=Math.exp(-9*dt);}
+    const k=REDUCED?1:1-Math.exp(-18*dt);rotation.x+=(angle.x-rotation.x)*k;rotation.y+=(angle.y-rotation.y)*k;
+    root.rotation.set(rotation.x,rotation.y,0);
+    root.position.set(pan.x+(framing==='left'?.5:framing==='right'?-.5:0)*openP,pan.y,0);
+    const target=cameraTarget/zoom;cameraDistance+=(target-cameraDistance)*(REDUCED?1:1-Math.exp(-16*dt));camera.position.set(0,0,cameraDistance);camera.lookAt(0,0,0);
+    holoMat.uniforms.tilt.value.set(rotation.y,rotation.x);renderer.render(scene,camera);
+    if(opening||turn||Math.abs(velocity.x)+Math.abs(velocity.y)>.001||Math.abs(rotation.x-angle.x)+Math.abs(rotation.y-angle.y)>.0001||Math.abs(cameraDistance-target)>.0001)invalidate();
   }
-  let shown=false;
-  dom.style.opacity='0';dom.style.transition=REDUCED?'none':'opacity .5s ease';
-  scheduleFrame();
-  applyOpen();
-  return {
-    setPersona,setOpen,
-    isOpen:()=>openP>.5,
-    reset:()=>{drag.x=drag.y=0;},
-    nudge:(dx,dy)=>{drag.y=Math.max(-.95,Math.min(.95,drag.y+dx));drag.x=Math.max(-.45,Math.min(.45,drag.x+dy));},
-    dispose:()=>{alive=false;pauseFrame();document.removeEventListener('visibilitychange',onVisibility);ro.disconnect();io.disconnect();renderer.dispose();renderer.forceContextLoss?.();el.removeChild(dom);}
+  const ro=new ResizeObserver(fit);ro.observe(el);
+  const io=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible){last=performance.now();invalidate();}else stop();});io.observe(el);
+  const onVisibility=()=>{if(document.hidden)stop();else{last=performance.now();invalidate();}};
+  document.addEventListener('visibilitychange',onVisibility);applyOpen();fit();
+  return {setPersona,setOpen,setSpread,setZoom,setFraming,reset,
+    setInspection:value=>{inspection=value;fit();},
+    setMode:value=>{mode=value==='pan'?'pan':'rotate';emit();},
+    nudge:(dx,dy)=>{velocity.x=velocity.y=0;angle.y+=dx;angle.x=Math.max(-1.25,Math.min(1.25,angle.x+dy));invalidate();},
+    dispose:()=>{
+      alive=false;stop();ro.disconnect();io.disconnect();document.removeEventListener('visibilitychange',onVisibility);
+      dom.removeEventListener('pointerdown',onDown);dom.removeEventListener('pointermove',onMove);dom.removeEventListener('pointerup',onUp);dom.removeEventListener('pointercancel',onCancel);dom.removeEventListener('lostpointercapture',onCancel);dom.removeEventListener('dblclick',reset);dom.removeEventListener('wheel',onWheel);
+      for(const t of [...textures])release(t);for(const g of geometries)g.dispose();for(const m of materials)m.dispose();environment.dispose();renderer.dispose();renderer.forceContextLoss?.();dom.remove();
+    }
   };
 }
 
@@ -1403,39 +1473,75 @@ async function copy(text, label, toast){
 }
 
 /* ---------- 3D passport ---------- */
-function Viewer({person, label}){
-  const box = useRef(null), api = useRef(null);
-  const latest = useRef(person); latest.current = person;
-  const [state,setState] = useState('loading'); const [open,setOpen] = useState(true); const [fb,setFb] = useState('');
-  useEffect(() => { let dead = false;
-    (async () => { await fontsReady();
-      while(!dead){ const selected = latest.current; await loadPhoto(selected); if(selected === latest.current) break; }
-      if(dead) return;
-      try{ api.current = createViewer(box.current); api.current.setPersona(latest.current, false); setState('ready');
-        setTimeout(() => { api.current && api.current.setOpen(true); }, REDUCED ? 0 : 450); }
-      catch(e){ setFb(TEX.dataPage(latest.current).toDataURL('image/jpeg', .9)); setState('fallback'); } })();
-    return () => { dead = true; api.current && api.current.dispose(); api.current = null; };
-  }, []);
-  useEffect(() => { let cancelled = false;
-    loadPhoto(person).then(() => { if(cancelled || latest.current !== person) return;
-      if(api.current) api.current.setPersona(person, true);
-      else if(state==='fallback') setFb(TEX.dataPage(person).toDataURL('image/jpeg', .9)); });
-    return () => { cancelled = true; };
-  }, [person.id]);
-  const toggle = () => { const w = !open; setOpen(w); api.current && api.current.setOpen(w); };
-  const key = e => { if(!api.current) return; const m = {ArrowLeft:[-.12,0],ArrowRight:[.12,0],ArrowUp:[0,-.08],ArrowDown:[0,.08]}[e.key]; if(m){ e.preventDefault(); api.current.nudge(m[0], m[1]); } };
-  return html`<div className="vbox"><div className="viewer" ref=${box} tabIndex="0" role="img" onKeyDown=${key} aria-label=${label || ('Passport ' + person.id + ' of ' + person.name + '. Arrow keys turn it.')}>
-    ${state==='loading' && html`<div className="vmsg">Loading the passport</div>`}
-    ${state==='fallback' && html`<div className="vmsg"><img src=${fb} alt=${'Data page of passport ' + person.id} /></div>`}
-    </div>
-    <div className="vctl">
-      <span className="hint">${state==='fallback' ? '3D is not available in this browser.' : (window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches ? 'Swipe sideways to turn.' : 'Drag to turn. Double-click to straighten.')}</span>
-      ${state==='ready' && html`<span className="vbtns">
-        <button type="button" className="vbtn" onClick=${toggle}>${open ? 'Close passport' : 'Open passport'}</button>
-        <button type="button" className="vbtn" onClick=${() => api.current && api.current.reset()}>Straighten</button></span>`}
+function Viewer({person,label}){
+  const box=useRef(null),api=useRef(null),widget=useRef(null),expandButton=useRef(null),closeButton=useRef(null),slotHeight=useRef(0);
+  const latest=useRef(person);latest.current=person;
+  const uid=React.useId();
+  const [state,setState]=useState('loading'),[fb,setFb]=useState(''),[expanded,setExpanded]=useState(false);
+  const [controls,setControls]=useState({zoom:100,spread:0,open:true,busy:false,framing:'spread',mode:'rotate'});
+  useEffect(()=>{let dead=false;
+    (async()=>{
+      await fontsReady();while(!dead){const selected=latest.current;await loadPhoto(selected);if(selected===latest.current)break;}if(dead)return;
+      try{api.current=createViewer(box.current,value=>{if(!dead)setControls(value);});api.current.setPersona(latest.current);setState('ready');}
+      catch(error){console.warn('Passport 3D could not start:',error);api.current?.dispose();api.current=null;setFb(TEX.dataPage(latest.current).toDataURL('image/jpeg',.95));setState('fallback');}
+    })();
+    return()=>{dead=true;api.current?.dispose();api.current=null;};
+  },[]);
+  useEffect(()=>{let cancelled=false;loadPhoto(person).then(()=>{if(cancelled||latest.current!==person)return;if(api.current)api.current.setPersona(person);else if(state==='fallback')setFb(TEX.dataPage(person).toDataURL('image/jpeg',.95));});return()=>{cancelled=true;};},[person.id]);
+  useEffect(()=>{
+    if(!expanded)return;
+    const previous=document.activeElement,hidden=[];
+    // Keep the viewer's ancestor path active while making every other branch inert.
+    for(let node=widget.current;node&&node!==document.body;node=node.parentElement){for(const sibling of node.parentElement?.children||[]){if(sibling!==node&&sibling instanceof HTMLElement){hidden.push([sibling,sibling.inert]);sibling.inert=true;}}}
+    const overflow=document.body.style.overflow,padding=document.body.style.paddingRight,scrollbar=innerWidth-document.documentElement.clientWidth;
+    document.body.style.overflow='hidden';if(scrollbar)document.body.style.paddingRight=scrollbar+'px';
+    api.current?.setInspection(true);
+    const frame=requestAnimationFrame(()=>closeButton.current?.focus());
+    return()=>{
+      cancelAnimationFrame(frame);for(const [node,inert] of hidden)node.inert=inert;
+      document.body.style.overflow=overflow;document.body.style.paddingRight=padding;
+      api.current?.setInspection(false);const target=expandButton.current||previous;if(target?.isConnected)target.focus({preventScroll:true});
+    };
+  },[expanded]);
+  const toggle=()=>api.current?.setOpen(!controls.open);
+  const key=e=>{
+    if(!api.current||e.ctrlKey||e.metaKey||e.altKey)return;
+    const move={ArrowLeft:[-.15,0],ArrowRight:[.15,0],ArrowUp:[0,-.1],ArrowDown:[0,.1]}[e.key];
+    if(move){e.preventDefault();api.current.nudge(...move);}
+    else if(e.key==='+'||e.key==='='){e.preventDefault();api.current.setZoom(controls.zoom+10);}
+    else if(e.key==='-'){e.preventDefault();api.current.setZoom(controls.zoom-10);}
+    else if(e.key==='Home'||e.key==='0'){e.preventDefault();api.current.reset();}
+    else if(e.key==='PageDown'||e.key==='PageUp'){e.preventDefault();api.current.setSpread(controls.spread+(e.key==='PageDown'?1:-1));}
+  };
+  const modalKey=e=>{
+    if(!expanded)return;e.stopPropagation();
+    if(e.key==='Escape'){e.preventDefault();setExpanded(false);}
+    else if(e.key==='Tab'){
+      const items=[...widget.current.querySelectorAll('button:not(:disabled),select:not(:disabled),input:not(:disabled),[tabindex="0"]')].filter(node=>node.getClientRects().length);
+      const first=items[0],last=items[items.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+    }
+  };
+  return html`<div className="passport-widget" style=${expanded?{height:slotHeight.current+'px'}:undefined}>
+    <div ref=${widget} className=${'vbox'+(expanded?' is-expanded':'')} role=${expanded?'dialog':'group'} aria-modal=${expanded?'true':undefined} aria-label=${'Interactive passport of '+person.name} onKeyDown=${modalKey}>
+      ${expanded&&html`<div className="vtitle"><div><b>${person.name}</b><span className="mono">${person.id} · Demo passport</span></div><button className="vbtn" type="button" ref=${closeButton} onClick=${()=>setExpanded(false)}>Close enlarged view</button></div>`}
+      <div className=${'viewer'+(controls.mode==='pan'?' pan-mode':'')} ref=${box} tabIndex="0" role="img" onKeyDown=${key} aria-label=${label||('Passport '+person.id+' of '+person.name)} aria-describedby=${uid+'-help'}>
+        ${state==='loading'&&html`<div className="vmsg" role="status">Loading the passport</div>`}
+        ${state==='fallback'&&html`<div className="vmsg"><img src=${fb} alt=${'Data page of demo passport '+person.id} /></div>`}
+      </div>
+      ${state==='ready'&&html`<div className="vtools">
+        <div className="vpages"><button className="vbtn" type="button" disabled=${controls.busy||controls.spread===0} onClick=${()=>api.current.setSpread(controls.spread-1)}>Previous pages</button><span className="vpage-status" role="status">${controls.busy?'Turning pages…':PASSPORT_SPREADS[controls.spread]}<small>Spread ${controls.spread+1} of ${PASSPORT_SPREADS.length}</small></span><button className="vbtn" type="button" disabled=${controls.busy||controls.spread===PASSPORT_SPREADS.length-1} onClick=${()=>api.current.setSpread(controls.spread+1)}>Next pages</button></div>
+        <div className="voptions">
+          <label className="vframe">View<select value=${controls.framing} onChange=${e=>api.current.setFraming(e.target.value)}><option value="spread">Whole passport</option><option value="left">Left page</option><option value="right">Right page</option></select></label>
+          <div className="vzoom"><button className="vbtn" type="button" aria-label="Zoom out" disabled=${controls.zoom<=100} onClick=${()=>api.current.setZoom(controls.zoom-10)}>−</button><label><span className="sr">Passport zoom</span><input type="range" min="100" max="250" step="1" value=${controls.zoom} aria-valuetext=${controls.zoom+' percent'} onChange=${e=>api.current.setZoom(Number(e.target.value))} /></label><output>${controls.zoom}%</output><button className="vbtn" type="button" aria-label="Zoom in" disabled=${controls.zoom>=250} onClick=${()=>api.current.setZoom(controls.zoom+10)}>+</button></div>
+        </div>
+        <div className="vactions"><div className="vmodes" role="group" aria-label="Drag action"><button className="vbtn" type="button" aria-pressed=${controls.mode==='rotate'} onClick=${()=>api.current.setMode('rotate')}>Rotate</button><button className="vbtn" type="button" aria-pressed=${controls.mode==='pan'} onClick=${()=>api.current.setMode('pan')}>Move</button></div><button className="vbtn" type="button" onClick=${toggle}>${controls.open?'Close passport':'Open passport'}</button><button className="vbtn" type="button" onClick=${()=>api.current.reset()}>Straighten</button>${!expanded&&html`<button className="vbtn" type="button" ref=${expandButton} onClick=${()=>{slotHeight.current=widget.current.getBoundingClientRect().height;setExpanded(true);}}>Enlarge passport</button>`}</div>
+      </div>`}
+      <p className="vhint" id=${uid+'-help'}>${state==='fallback'?'3D is not available in this browser. The data page is shown above.':expanded?'Drag to rotate; use Move to reposition. Pinch with two fingers to zoom. Arrow keys turn, +/− zoom, Page Up/Down turn pages. Escape closes this view.':'Drag sideways to rotate. Use View for a readable page. Arrow keys turn, +/− zoom, Page Up/Down turn pages.'}</p>
     </div>
   </div>`;
 }
+
 
 /* ---------- command palette ---------- */
 function Palette({onClose}){
