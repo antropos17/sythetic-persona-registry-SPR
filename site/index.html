@@ -155,6 +155,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card .no{font-family:var(--mono);font-size:14px;color:var(--muted)}
 .card .meta{font-size:14.5px;color:var(--muted)}
 .card-summary{font-size:14.5px;color:var(--muted);line-height:1.4;margin-top:5px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.card-channel{display:flex;align-items:center;gap:7px;min-width:0;margin-top:7px;color:var(--navy);font-size:13.5px;line-height:1.3}
+.card-channel svg{width:17px;height:17px;flex:0 0 17px}
+.card-channel span,.card-channel a{min-width:0;overflow-wrap:anywhere}
+.card-channel a{position:relative;z-index:1;color:var(--navy);font-weight:700;text-underline-offset:2px}
 .card-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin-top:8px}
 .card-actions .ntag{margin-top:0}
 .save-action{position:relative;z-index:1;font-size:14.5px}
@@ -531,7 +535,7 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .card h3{font-size:18px}
   .card .meta{font-size:14px}
   .card .meta + .meta{display:none}
-  .card-summary{display:none}
+  .card-summary{-webkit-line-clamp:2}
   .rec-images{margin-top:28px;padding:20px 16px}
   .rec-image-key{margin-top:20px}
   .ntag{margin-top:6px}
@@ -578,7 +582,14 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   footer ul{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .toast{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 }
-@media (max-width:359px){.grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .card{display:grid;grid-template-columns:112px minmax(0,1fr);grid-template-rows:6px auto}
+  .card .band{grid-column:1/-1}
+  .card .ph{grid-column:1;grid-row:2;aspect-ratio:auto;height:100%}
+  .card .bd{grid-column:2;grid-row:2;gap:3px}
+  .card-summary{-webkit-line-clamp:3}
+}
 @media (max-width:380px){
   .brand .wm b{font-size:19px}
   .ibtn.menu span{display:none}
@@ -1132,6 +1143,14 @@ function SocialIcon({platform}){
   if(platform==='X') return html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 4 20 20M20 4 4 20"></path></svg>`;
   return html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10 6"></path><path d="M14 11a5 5 0 0 0-7.07 0l-2.12 2.12a5 5 0 0 0 7.07 7.07L14 18"></path></svg>`;
 }
+function CardChannel({person}){
+  const channel=person.socials?.[0] || {platform:'Declared handle',handle:person.handle,url:null};
+  const href=socialHref(channel);
+  const label=channel.platform + ' ' + channel.handle;
+  return html`<div className="card-channel"><${SocialIcon} platform=${channel.platform} />
+    ${href ? html`<a href=${href} target="_blank" rel="noopener noreferrer nofollow" aria-label=${'Open ' + person.name + ' on ' + channel.platform + ' in a new tab'}>${label}</a>` : html`<span>${label}</span>`}
+  </div>`;
+}
 const hay = p => (p.name+' '+p.handle+' '+p.id+' '+p.holder+' '+p.lang).toLowerCase();
 const find = q => { q = q.trim().toLowerCase(); if(!q) return []; const exact = PEOPLE.filter(p => p.id.toLowerCase()===q || p.handle.toLowerCase()===q || p.handle.toLowerCase()==='@'+q); return exact.length ? exact : PEOPLE.filter(p => hay(p).includes(q)); };
 const navigate = token => { if(('#'+token)===location.hash){ window.dispatchEvent(new HashChangeEvent('hashchange')); } else { location.hash = token; } };
@@ -1350,6 +1369,7 @@ function Notices({savedRecords, toggleSaved}){
           <span className="meta">${p.role}, ${p.lang}</span>
           <span className="meta">Held by ${p.holder}</span>
           <p className="card-summary">${p.description}</p>
+          <${CardChannel} person=${p} />
           <div className="card-actions"><${NTag} status=${p.status} />
             <button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button>
           </div>
@@ -1429,7 +1449,7 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
     setStep(0); const g = REDUCED ? 0 : 380; checks.forEach((_,i) => timers.current.push(setTimeout(() => setStep(i+1), g*(i+1)))); };
   const done = step >= checks.length;
   const verdict = {Valid:'This demo record has a green notice. Review its open risks before working with this persona.', 'Under review':'This demo record is under review. Wait for a decision.', Suspended:'This demo record is suspended. Do not run campaigns with this persona.', Revoked:'This demo record is revoked. Do not use this persona.'}[person.status];
-  const channels = person.socials?.length ? person.socials : [{platform:'Main channel',handle:person.handle,url:null}];
+  const channels = person.socials?.length ? person.socials : [{platform:'Declared handle',handle:person.handle,url:null}];
   const hasProfileLink = channels.some(channel => socialHref(channel));
   const i = PEOPLE.indexOf(person), prev = PEOPLE[(i - 1 + PEOPLE.length) % PEOPLE.length], next = PEOPLE[(i + 1) % PEOPLE.length];
   const tabs = [['check','Check'],['history','History'],['risks','Open risks (' + person.risks.length + ')'],['stamps','Endorsements']];
