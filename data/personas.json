@@ -17,7 +17,13 @@
       "code": "AZE",
       "role": "Vocalist",
       "description": "A fictional Azerbaijani vocalist. This example highlights open questions about voice rights and the origin of the base model.",
-      "socials": [{ "platform": "TikTok", "handle": "@fidan.sings", "url": null }],
+      "socials": [
+        {
+          "platform": "TikTok",
+          "handle": "@fidan.sings",
+          "url": null
+        }
+      ],
       "holder": "Ruslan M.",
       "level": "Evidence-backed",
       "status": "Valid",
@@ -84,7 +90,67 @@
         "Voice made on a hosted service. Its commercial terms are not archived yet.",
         "The base model publisher has not disclosed its training data."
       ],
-      "portrait": "assets/portraits/PP-AZ-0001.jpg"
+      "portrait": "assets/portraits/PP-AZ-0001.jpg",
+      "claims": [
+        {
+          "title": "Identity root",
+          "statement": "EVIDENCE-BACKED",
+          "state": "recorded",
+          "recordedAt": null,
+          "basis": "The demo records identity evidence under this endorsement. Supporting identity files are not publicly supplied.",
+          "issue": null
+        },
+        {
+          "title": "Model lineage",
+          "statement": "DECLARED",
+          "state": "declared",
+          "recordedAt": null,
+          "basis": "The base model is declared without a documented upstream training-data source.",
+          "issue": "The base model publisher has not disclosed its training data."
+        },
+        {
+          "title": "Voice and music",
+          "statement": "OPEN RISK",
+          "state": "risk",
+          "recordedAt": null,
+          "basis": "The demo lists a hosted voice service. Its commercial terms have not been archived.",
+          "issue": "Commercial voice and music terms remain unresolved."
+        },
+        {
+          "title": "TikTok channel",
+          "statement": "OWNER VERIFIED",
+          "state": "recorded",
+          "recordedAt": "2026-10-10",
+          "basis": "A demo history event records channel ownership verification. No public profile URL or ownership proof is supplied.",
+          "issue": null
+        },
+        {
+          "title": "Content credentials",
+          "statement": "10 FILES SIGNED",
+          "state": "recorded",
+          "recordedAt": null,
+          "basis": "The endorsement states that ten files were signed. Those files, signing keys and credential manifests are not supplied for verification.",
+          "issue": null
+        }
+      ],
+      "samples": [
+        {
+          "id": "studio-note",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Post draft",
+          "title": "A voice starts with a phrase",
+          "text": "Some melodies need space. Picture a close, quiet vocal that opens into a brighter chorus as the arrangement grows. Which moment would you keep almost whispered?"
+        },
+        {
+          "id": "release-introduction",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Short video script",
+          "title": "Before the first listen",
+          "text": "I’m Fidan, a virtual vocalist. Let’s begin this imagined session with one phrase in Azerbaijani, then explore how its rhythm changes as the arrangement grows around it."
+        }
+      ]
     },
     {
       "id": "PP-TR-0004",
@@ -97,7 +163,13 @@
       "code": "TUR",
       "role": "Fashion host",
       "description": "A fictional Turkish fashion host. Her example record shows a completed review and an Instagram channel ownership claim.",
-      "socials": [{ "platform": "Instagram", "handle": "@leyla.kaya", "url": null }],
+      "socials": [
+        {
+          "platform": "Instagram",
+          "handle": "@leyla.kaya",
+          "url": null
+        }
+      ],
       "holder": "Studio Nur",
       "level": "Reviewed",
       "status": "Valid",
@@ -153,7 +225,59 @@
         }
       ],
       "risks": [],
-      "portrait": "assets/portraits/PP-TR-0004.jpg"
+      "portrait": "assets/portraits/PP-TR-0004.jpg",
+      "claims": [
+        {
+          "title": "Identity root",
+          "statement": "REVIEWED",
+          "state": "recorded",
+          "recordedAt": "2026-09-01",
+          "basis": "The demo history records a completed examiner review. The underlying identity review materials are not published.",
+          "issue": null
+        },
+        {
+          "title": "Model lineage",
+          "statement": "EVIDENCE-BACKED",
+          "state": "recorded",
+          "recordedAt": null,
+          "basis": "The demo endorsement records model-lineage evidence. Source model files and licence snapshots are not publicly supplied.",
+          "issue": null
+        },
+        {
+          "title": "Voice",
+          "statement": "LICENSED",
+          "state": "recorded",
+          "recordedAt": null,
+          "basis": "The voice endorsement is marked licensed. The licence document and its permitted uses are not published.",
+          "issue": null
+        },
+        {
+          "title": "Instagram",
+          "statement": "OWNER VERIFIED",
+          "state": "recorded",
+          "recordedAt": null,
+          "basis": "The demo endorsement records a channel ownership claim. No public profile URL or ownership proof is supplied.",
+          "issue": null
+        }
+      ],
+      "samples": [
+        {
+          "id": "style-note",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Post draft",
+          "title": "One silhouette, two settings",
+          "text": "Keep the silhouette, change the setting. Picture a structured jacket in soft studio light, then the same shape after dark. Which detail should lead: the collar, the fabric or the colour?"
+        },
+        {
+          "id": "behind-the-scenes",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Short video script",
+          "title": "Building a virtual look",
+          "text": "A virtual look begins with a choice: what should the eye notice first? For this concept, follow the outline, then the texture, then the light. I’m Leyla, a fictional AI fashion host."
+        }
+      ]
     },
     {
       "id": "PP-ES-0011",
@@ -216,7 +340,51 @@
       "risks": [
         "The model’s likeness consent expires on 30 Nov 2026."
       ],
-      "portrait": "assets/portraits/PP-ES-0011.jpg"
+      "portrait": "assets/portraits/PP-ES-0011.jpg",
+      "claims": [
+        {
+          "title": "Likeness consent",
+          "statement": "ON FILE",
+          "state": "recorded",
+          "recordedAt": "2026-07-15",
+          "basis": "The demo history records signed likeness consent being filed. The private consent document is not published.",
+          "issue": "The model’s likeness consent expires on 30 Nov 2026."
+        },
+        {
+          "title": "Model lineage",
+          "statement": "DECLARED",
+          "state": "declared",
+          "recordedAt": null,
+          "basis": "Model lineage is declared in the demo endorsement. Independent supporting model evidence is not supplied.",
+          "issue": null
+        },
+        {
+          "title": "Annual review",
+          "statement": "PENDING",
+          "state": "pending",
+          "recordedAt": "2026-10-10",
+          "basis": "The demo history records an annual review being opened; it does not record a completed renewal.",
+          "issue": "Consent renewal is pending."
+        }
+      ],
+      "samples": [
+        {
+          "id": "studio-introduction",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Post draft",
+          "title": "Inside a virtual studio",
+          "text": "Welcome to the virtual studio. Before a session begins, let’s explain its purpose, who it is designed for and which information needs a qualified source. I’m Mira, a fictional fitness persona."
+        },
+        {
+          "id": "production-note",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Caption draft",
+          "title": "A clear caption",
+          "text": "How was this scene made? This concept places an AI presenter in a constructed studio. A clear production note names the visual tools, explains the use of a likeness and makes any commercial relationship visible."
+        }
+      ]
     },
     {
       "id": "PP-JP-0016",
@@ -269,7 +437,43 @@
         "Model files have not been hashed.",
         "No licence snapshots on file."
       ],
-      "portrait": "assets/portraits/PP-JP-0016.jpg"
+      "portrait": "assets/portraits/PP-JP-0016.jpg",
+      "claims": [
+        {
+          "title": "Identity root",
+          "statement": "DECLARED",
+          "state": "declared",
+          "recordedAt": null,
+          "basis": "The identity root is a declaration in the demo. The listed model files have not been hashed.",
+          "issue": "Model files have not been hashed."
+        },
+        {
+          "title": "Examiner",
+          "statement": "EVIDENCE REQUESTED",
+          "state": "pending",
+          "recordedAt": "2026-10-16",
+          "basis": "The demo history explicitly requests model files and licences from the applicant.",
+          "issue": "No licence snapshots on file."
+        }
+      ],
+      "samples": [
+        {
+          "id": "stream-opening",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Presenter script",
+          "title": "Welcome to the next level",
+          "text": "Welcome, players. Today’s imagined challenge starts in a quiet puzzle room: one locked door, three clues and no timer. Where would you look first?"
+        },
+        {
+          "id": "community-prompt",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Post draft",
+          "title": "Choose the next challenge",
+          "text": "Choose your next challenge: a puzzle you can solve together, or an obstacle course where every second counts? Which format would you choose, and what would make it worth replaying?"
+        }
+      ]
     },
     {
       "id": "PP-MX-0019",
@@ -321,7 +525,43 @@
       "risks": [
         "Sponsored posts without disclosure on three channels."
       ],
-      "portrait": "assets/portraits/PP-MX-0019.jpg"
+      "portrait": "assets/portraits/PP-MX-0019.jpg",
+      "claims": [
+        {
+          "title": "Identity root",
+          "statement": "EVIDENCE-BACKED",
+          "state": "recorded",
+          "recordedAt": null,
+          "basis": "The identity endorsement records evidence in the demo. It does not resolve the separate disclosure breach.",
+          "issue": null
+        },
+        {
+          "title": "Status",
+          "statement": "SUSPENDED",
+          "state": "adverse",
+          "recordedAt": "2026-10-02",
+          "basis": "The demo history records suspension for sponsored posts without an AI or advertising label.",
+          "issue": "Sponsored posts without disclosure on three channels."
+        }
+      ],
+      "samples": [
+        {
+          "id": "disclosure-study",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Caption draft",
+          "title": "Put the disclosure first",
+          "text": "Advertising disclosure: fictional sponsorship example. I am Nova, an AI lifestyle persona. This space identifies the sponsor and what was provided before introducing any promotional message."
+        },
+        {
+          "id": "correction-format",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Notice draft",
+          "title": "Explain what changed",
+          "text": "Correction draft for a fictional scenario: an earlier caption did not clearly identify AI-generated content and advertising. The missing disclosure is under review. This draft does not announce that the registry suspension has ended."
+        }
+      ]
     },
     {
       "id": "PP-SE-0023",
@@ -377,7 +617,43 @@
       "risks": [
         "Revoked. The persona’s face could not be cleared."
       ],
-      "portrait": "assets/portraits/PP-SE-0023.jpg"
+      "portrait": "assets/portraits/PP-SE-0023.jpg",
+      "claims": [
+        {
+          "title": "Face comparison",
+          "statement": "MATCH FOUND",
+          "state": "adverse",
+          "recordedAt": "2026-09-21",
+          "basis": "The demo history records a close facial match to a real person. This interface does not perform a new face comparison.",
+          "issue": "The persona’s face could not be cleared."
+        },
+        {
+          "title": "Status",
+          "statement": "REVOKED",
+          "state": "adverse",
+          "recordedAt": "2026-09-24",
+          "basis": "The demo history records revocation after the facial-match finding.",
+          "issue": "The demo notice is revoked. Do not use this persona."
+        }
+      ],
+      "samples": [
+        {
+          "id": "archive-format",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Editorial study",
+          "title": "An archived travel concept",
+          "text": "Archived concept: a coastal route told through small details, from a quiet harbour to a path above the water. This is an imagined travel format; it describes no real journey or current collaboration."
+        },
+        {
+          "id": "withdrawal-format",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Notice draft",
+          "title": "Make the notice visible",
+          "text": "This persona carries a revoked demo notice. Keep the notice visible beside archived material and direct questions about the record to the registry. This draft does not claim that external posts have been removed."
+        }
+      ]
     },
     {
       "id": "PP-TR-0027",
@@ -401,14 +677,67 @@
       "record": "e27c916b",
       "sort": 20261018,
       "stamps": [
-        { "t": "Identity root", "v": "DECLARED", "c": "#2C3A8C", "k": "rect", "r": -3 },
-        { "t": "Evidence", "v": "REQUESTED", "c": "#A3570A", "k": "round", "r": 4 }
+        {
+          "t": "Identity root",
+          "v": "DECLARED",
+          "c": "#2C3A8C",
+          "k": "rect",
+          "r": -3
+        },
+        {
+          "t": "Evidence",
+          "v": "REQUESTED",
+          "c": "#A3570A",
+          "k": "round",
+          "r": 4
+        }
       ],
       "history": [
-        { "d": "18 Oct 2026", "e": "Demonstration application received" }
+        {
+          "d": "18 Oct 2026",
+          "e": "Demonstration application received"
+        }
       ],
-      "risks": ["Model lineage and usage rights have not been reviewed."],
-      "portrait": "assets/portraits/PP-TR-0027.jpg"
+      "risks": [
+        "Model lineage and usage rights have not been reviewed."
+      ],
+      "portrait": "assets/portraits/PP-TR-0027.jpg",
+      "claims": [
+        {
+          "title": "Identity root",
+          "statement": "DECLARED",
+          "state": "declared",
+          "recordedAt": null,
+          "basis": "The demo contains an identity declaration; it does not contain a completed review.",
+          "issue": "Model lineage and usage rights have not been reviewed."
+        },
+        {
+          "title": "Evidence",
+          "statement": "REQUESTED",
+          "state": "pending",
+          "recordedAt": null,
+          "basis": "The endorsement requests evidence. The history records receipt of an application, without a dated evidence decision.",
+          "issue": "Evidence is still requested."
+        }
+      ],
+      "samples": [
+        {
+          "id": "image-caption",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Caption draft",
+          "title": "Light across a quiet room",
+          "text": "One window, a pale wall and a strip of light across an empty room. In this imagined frame, the light is the subject. What would change if the camera moved one step to the left?"
+        },
+        {
+          "id": "process-note",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Post draft",
+          "title": "Show the making of an image",
+          "text": "Before calling an image finished, keep track of what shaped it: source material, tools, edits and usage rights. A striking frame still needs a clear account of how it was made."
+        }
+      ]
     },
     {
       "id": "PP-PT-0031",
@@ -432,14 +761,67 @@
       "record": "b4d73e29",
       "sort": 20261019,
       "stamps": [
-        { "t": "Identity root", "v": "DECLARED", "c": "#2C3A8C", "k": "round", "r": 2 },
-        { "t": "Examiner", "v": "EVIDENCE REQUESTED", "c": "#A3570A", "k": "double", "r": -4 }
+        {
+          "t": "Identity root",
+          "v": "DECLARED",
+          "c": "#2C3A8C",
+          "k": "round",
+          "r": 2
+        },
+        {
+          "t": "Examiner",
+          "v": "EVIDENCE REQUESTED",
+          "c": "#A3570A",
+          "k": "double",
+          "r": -4
+        }
       ],
       "history": [
-        { "d": "19 Oct 2026", "e": "Demonstration application received" }
+        {
+          "d": "19 Oct 2026",
+          "e": "Demonstration application received"
+        }
       ],
-      "risks": ["Identity evidence has not been reviewed."],
-      "portrait": "assets/portraits/PP-PT-0031.jpg"
+      "risks": [
+        "Identity evidence has not been reviewed."
+      ],
+      "portrait": "assets/portraits/PP-PT-0031.jpg",
+      "claims": [
+        {
+          "title": "Identity root",
+          "statement": "DECLARED",
+          "state": "declared",
+          "recordedAt": null,
+          "basis": "The demo contains an identity declaration without reviewed identity evidence.",
+          "issue": "Identity evidence has not been reviewed."
+        },
+        {
+          "title": "Examiner",
+          "statement": "EVIDENCE REQUESTED",
+          "state": "pending",
+          "recordedAt": null,
+          "basis": "The endorsement requests evidence. The history contains no dated examiner decision.",
+          "issue": "Evidence is still requested."
+        }
+      ],
+      "samples": [
+        {
+          "id": "opening-script",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Presenter script",
+          "title": "Introduce the subject clearly",
+          "text": "Hello, I’m Rafael, a virtual presenter. Today we’re asking a simple question: what can a digital record tell us about an AI persona? Let’s look at the claims, the evidence described and the questions still open."
+        },
+        {
+          "id": "segment-handoff",
+          "kind": "text-mockup",
+          "language": "English",
+          "format": "Presenter script",
+          "title": "From the overview to the detail",
+          "text": "We’ve seen the headline. Now let’s open the source: who made the claim, what supports it and when was it recorded? Keep those three questions in view as we move into the detail."
+        }
+      ]
     }
   ]
 }

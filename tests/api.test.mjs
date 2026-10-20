@@ -56,6 +56,34 @@ test('standalone fallback records match the API source', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(fallback)), source.map(({ portrait, ...record }) => record));
 });
 
+test('comparison routes retain two distinct known records and reject invalid pairs', () => {
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const route = page.match(/function parse\(\)\{[\s\S]*?\n\}/);
+  const people = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
+  const parseHash = hash => JSON.parse(JSON.stringify(runInNewContext(route[0] + '\nparse()', {
+    location: { hash }, PEOPLE: people, byId: id => people.find(person => person.id === id),
+  })));
+  assert.deepEqual(parseHash('#compare'), { name: 'compare', ids: ['PP-AZ-0001', 'PP-TR-0004'] });
+  assert.deepEqual(parseHash('#compare/PP-SE-0023/PP-AZ-0001'), { name: 'compare', ids: ['PP-SE-0023', 'PP-AZ-0001'] });
+  for (const hash of ['#compare/PP-AZ-0001/PP-AZ-0001', '#compare/PP-AZ-0001/missing', '#compare/PP-AZ-0001', '#compare/%E0%A4%A/PP-AZ-0001']) {
+    assert.deepEqual(parseHash(hash), { name: 'home' }, hash);
+  }
+});
+
+test('public claim context stays tied to existing demo endorsements and dated events', () => {
+  const records = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
+  for (const person of records) {
+    const historyDates = person.history.map(event => new Date(event.d + ' 00:00:00 GMT').toISOString().slice(0, 10));
+    assert.equal(person.claims.length, person.stamps.length, person.id);
+    for (const claim of person.claims) {
+      assert.ok(person.stamps.some(stamp => stamp.t === claim.title && stamp.v === claim.statement), `${person.id}: ${claim.title}`);
+      if (claim.recordedAt !== null) {
+        assert.ok(historyDates.includes(claim.recordedAt), `${person.id}: unsupported claim date ${claim.recordedAt}`);
+      }
+    }
+  }
+});
+
 test('social profile links require the matching HTTPS platform and handle', () => {
   const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
   const source = page.match(/function socialHref\(channel\)\{[\s\S]*?\n\}/);
