@@ -198,6 +198,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .catalog-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px;margin:0 0 18px}
 .catalog-filters label{display:block;font-size:14px;font-weight:700;margin-bottom:5px}
 .catalog-filters select{width:100%;min-width:0}
+.active-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
+.active-filters>b{font-size:13.5px;color:var(--muted)}
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0;min-width:0;max-width:100%}
+.filter-chips li{min-width:0;max-width:100%}
+.filter-chip{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;max-width:100%;padding:8px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--mist);color:var(--navy);font-size:14px;line-height:1.35;cursor:pointer;text-align:left}
+.filter-chip span:first-child{overflow-wrap:anywhere;min-width:0}
+.filter-chip span:last-child{font-size:20px;line-height:1;flex-shrink:0}
+.filter-chip:hover{background:#fff;border-color:var(--navy)}
 .compare-choice{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:14px;cursor:pointer;align-self:flex-start}
 .compare-choice input,.compare-differences input{width:18px;height:18px;accent-color:var(--navy);flex:0 0 18px}
 .compare-choice:has(input:disabled){color:var(--muted);cursor:default}
@@ -211,12 +219,20 @@ button,input,select,textarea{font:inherit;color:inherit}
 .record-nav .wrap{display:flex;flex-wrap:wrap;gap:0 20px;padding-block:4px}
 .record-nav a{display:inline-flex;align-items:center;min-height:44px;color:var(--navy);font-size:15px;font-weight:700;text-decoration:none}
 .record-nav a:hover{text-decoration:underline}
-.record-risk-link{display:inline-flex;align-items:center;min-height:36px;margin-left:12px;color:#784208;font-size:15px;font-weight:700}
+.record-nav a[aria-current="location"]{color:var(--ink);box-shadow:inset 0 -3px 0 var(--navy)}
+.record-risk-link{display:inline-flex;align-items:center;min-height:44px;color:#784208;font-size:15px;font-weight:700}
 .record-section h2,.rec-images h2,.record-details,.rec-head h1{scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px) + var(--record-nav-height,52px) + 16px)}
 .saved-filter{min-height:44px;padding:0 14px;border:1.5px solid #8C99AF;border-radius:2px;background:#fff;color:var(--navy);font-weight:700;cursor:pointer}
 .saved-filter[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
 .saved-filter:hover{border-color:var(--navy)}
-.rec-save{display:block;margin-top:10px}
+.rec-notice-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;margin-top:10px}
+.rec-notice-row .ntag{margin:0}
+.rec-actions{grid-column:2;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.rec-main-actions,.rec-utilities{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.rec-utilities{gap:4px 24px}
+.rec-utilities button{min-height:44px;font-size:14.5px}
+.rec-main-actions .btn[aria-pressed="true"]{background:var(--mist-2);border-color:var(--navy);color:var(--navy)}
+@media(max-width:760px){.rec-actions{grid-column:1/-1}.rec-main-actions{width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.rec-main-actions .btn:first-child{grid-column:1/-1}.rec-main-actions .btn{padding-inline:10px;font-size:15px}}
 .ntag{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--ni);background:var(--nt);padding:3px 9px 3px 8px;align-self:flex-start;margin-top:8px;border-radius:2px}
 .ntag i{width:9px;height:9px;background:var(--nc);display:inline-block}
 .tbl-box{overflow-x:auto;border-top:2px solid var(--ink)}
@@ -251,8 +267,9 @@ td a{font-weight:700;color:var(--ink)}
 .rec-top{border-top:8px solid var(--nc);background:var(--mist)}
 .crumbs{display:flex;flex-wrap:wrap;list-style:none;margin:0;padding:18px 0 0;gap:4px 10px;font-size:15px}
 .crumbs li+li::before{content:"/";color:var(--muted);margin-right:10px}
-.rec-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:20px 28px;align-items:end;padding-block:24px 32px}
-@media (max-width:1100px){.rec-head{grid-template-columns:auto minmax(0,1fr)}.rec-head .acts{grid-column:1/-1}}
+.rec-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 28px;align-items:start;padding-block:24px 28px}
+.rec-head>.rec-photo{grid-row:1/3}
+@media(max-width:760px){.rec-head>.rec-photo{grid-row:auto}}
 .rec-photo{width:132px;aspect-ratio:4/5;object-fit:cover;object-position:50% 32%;background:#fff;border:1px solid var(--rule);display:block}
 @media (max-width:520px){.rec-photo{width:92px}}
 .rec-head h1{font-stretch:122%;font-weight:850;font-size:clamp(34px,5vw,64px);line-height:.98;letter-spacing:-.015em}
@@ -369,6 +386,11 @@ td a{font-weight:700;color:var(--ink)}
 .tablist button[aria-selected="true"]{color:var(--ink);box-shadow:inset 0 -4px 0 var(--navy)}
 .tablist button:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
 .panel{padding-top:24px;min-height:180px;scroll-margin-top:96px}
+.record-section .checks{margin-top:20px}
+.record-section .hist{margin-top:20px}
+.record-section>p{max-width:76ch}
+.printed-endorsements{margin-top:24px;border-top:1px solid var(--rule);padding-top:16px}
+.printed-endorsements summary{cursor:pointer;min-height:44px;font-weight:700;color:var(--navy)}
 .checks{list-style:none;margin:0 0 20px;padding:0;max-width:760px}
 .checks li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--rule);color:var(--muted)}
 .checks li.done{color:var(--ink)}
@@ -1373,6 +1395,7 @@ function ClaimBasis({person}){
         ${claim.issue && html`<p className="claim-issue"><b>Unresolved issue:</b> ${claim.issue}</p>`}
       </div>
     </details>`)}</div>
+    <details className="printed-endorsements"><summary>Printed endorsements</summary><p className="sub">Labels reproduced on the demo passport. They do not represent a new evidence check.</p><dl className="hist">${person.stamps.map((stamp,index) => html`<div key=${index}><dt style=${{fontFamily:'var(--sans)',fontSize:'15px'}}>${stamp.t}</dt><dd><b>${stamp.v.charAt(0)+stamp.v.slice(1).toLowerCase()}</b>${stamp.sub ? ', '+stamp.sub : ''}</dd></div>`)}</dl></details>
   </section>`;
 }
 const comparisonRoute=(ids,onlyDifferences=false) => 'compare/'+ids.join('/')+(onlyDifferences ? '?differences=1' : '');
@@ -1618,6 +1641,7 @@ function Hero(){
 }
 
 function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catalog,setCatalog}){
+  const [filterMessage,setFilterMessage]=useState('');
   const {notice,q,sort,view,savedOnly,language,occupation,proof}=catalog;
   const field=key => value => setCatalog(current => ({...current,[key]:typeof value==='function' ? value(current[key]) : value}));
   const setNotice=field('notice'),setQ=field('q'),setSort=field('sort'),setView=field('view'),setSavedOnly=field('savedOnly'),setLanguage=field('language'),setOccupation=field('occupation'),setProof=field('proof');
@@ -1631,7 +1655,19 @@ function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catal
     return r.slice().sort(cmp);
   }, [notice, q, sort, savedOnly, savedRecords,language,occupation,proof]);
   const filtered = notice!=='All' || q.trim() || savedOnly || language || occupation || proof;
-  const clearFilters=() => { setNotice('All'); setQ(''); setSavedOnly(false); setLanguage(''); setOccupation(''); setProof(''); requestAnimationFrame(() => document.getElementById('nq')?.focus()); };
+  const activeFilters=[
+    notice!=='All' && {key:'notice',label:'Notice: '+NOTICE[notice].name,reset:'All',control:'notice-'+NOTICE[notice].key},
+    q.trim() && {key:'q',label:'Search: “'+q.trim()+'”',reset:'',control:'nq'},
+    savedOnly && {key:'savedOnly',label:'Saved records',reset:false,control:'catalog-saved'},
+    language && {key:'language',label:'Language: '+language,reset:'',control:'catalog-language'},
+    occupation && {key:'occupation',label:'Occupation: '+occupation,reset:'',control:'catalog-occupation'},
+    proof && {key:'proof',label:'Proof level: '+proof,reset:'',control:'catalog-proof'},
+  ].filter(Boolean);
+  const removeFilter=(filter,index) => {
+    setCatalog(current => ({...current,[filter.key]:filter.reset}));setFilterMessage(filter.label+' filter removed.');
+    requestAnimationFrame(() => {const chips=document.querySelectorAll('[data-filter-chip]');const target=chips[Math.min(index,chips.length-1)] || document.getElementById(filter.control) || document.getElementById('nq');target?.focus({preventScroll:true});});
+  };
+  const clearFilters=() => { setCatalog(current=>({...current,notice:'All',q:'',savedOnly:false,language:'',occupation:'',proof:''}));setFilterMessage('All filters cleared.');requestAnimationFrame(() => document.getElementById('nq')?.focus()); };
   const removeComparison=id => { toggleComparison(id); requestAnimationFrame(() => { const target=comparisonIds.length>1 ? document.querySelector('.compare-tray-list button') : document.getElementById('nq'); target?.focus(); }); };
   const clearComparison=() => { comparisonIds.forEach(toggleComparison); requestAnimationFrame(() => (document.querySelector('.compare-choice input:not(:disabled)') || document.getElementById('nq'))?.focus()); };
   return html`<section id="notices" className="sec" aria-labelledby="n-h"><div className="wrap">
@@ -1640,7 +1676,7 @@ function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catal
       <p className="sub">Every demo persona carries a notice. Its colour shows a sample decision and next step. Select a colour to filter.</p>
     </div><a className="btn line" href="#compare">Compare personas</a></div>
     <div className="key" role="group" aria-label="Filter by notice">
-      ${ORDER.map(s => html`<button key=${s} type="button" style=${nvars(s)} aria-pressed=${notice===s?'true':'false'} onClick=${() => setNotice(n => n===s ? 'All' : s)}>
+      ${ORDER.map(s => html`<button key=${s} id=${'notice-'+NOTICE[s].key} type="button" style=${nvars(s)} aria-pressed=${notice===s?'true':'false'} onClick=${() => setNotice(n => n===s ? 'All' : s)}>
         <span className="nm"><span>${NOTICE[s].name}</span><span className="ct">${counts[s] || 0}</span></span>
         <span className="ad">${NOTICE[s].meaning}. ${NOTICE[s].advice}</span></button>`)}
     </div>
@@ -1657,13 +1693,15 @@ function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catal
         <button type="button" aria-pressed=${view==='grid'?'true':'false'} onClick=${() => setView('grid')}>Cards</button>
         <button type="button" aria-pressed=${view==='list'?'true':'false'} onClick=${() => setView('list')}>Table</button>
       </div>
-      <button type="button" className="saved-filter" aria-pressed=${savedOnly?'true':'false'} onClick=${() => setSavedOnly(value => !value)}>Saved in this browser (${savedRecords.length})</button>
+      <button type="button" id="catalog-saved" className="saved-filter" aria-pressed=${savedOnly?'true':'false'} onClick=${() => setSavedOnly(value => !value)}>Saved in this browser (${savedRecords.length})</button>
     </div>
     <div className="catalog-filters">
       <div><label htmlFor="catalog-language">Language</label><select className="sel" id="catalog-language" value=${language} onChange=${e => setLanguage(e.target.value)}><option value="">All languages</option>${languages.map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
       <div><label htmlFor="catalog-occupation">Occupation</label><select className="sel" id="catalog-occupation" value=${occupation} onChange=${e => setOccupation(e.target.value)}><option value="">All occupations</option>${occupations.map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
       <div><label htmlFor="catalog-proof">Proof level</label><select className="sel" id="catalog-proof" value=${proof} onChange=${e => setProof(e.target.value)}><option value="">All proof levels</option>${LEVELS.filter(value => PEOPLE.some(p => p.level===value)).map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
     </div>
+    ${activeFilters.length>0 && html`<div className="active-filters" role="group" aria-label="Active filters"><b>Active filters</b><ul className="filter-chips">${activeFilters.map((filter,index)=>html`<li key=${filter.key}><button type="button" className="filter-chip" data-filter-chip=${filter.key} aria-label=${'Remove filter: '+filter.label} onClick=${()=>removeFilter(filter,index)}><span>${filter.label}</span><span aria-hidden="true">×</span></button></li>`)}</ul></div>`}
+    <p className="sr" role="status">${filterMessage}</p>
     <p className="status-line" aria-live="polite" style=${{marginBottom:'16px'}}>
       ${rows.length} of ${PEOPLE.length} personas${notice!=='All' ? ' with a ' + NOTICE[notice].name.toLowerCase() : ''}${q.trim() ? ' matching “' + q.trim() + '”' : ''}${savedOnly ? ' in your saved records' : ''}.
       ${filtered && html`<button type="button" className="tlink clear" onClick=${clearFilters}>Clear filters</button>`}
@@ -1731,23 +1769,39 @@ function Home({savedRecords, toggleSaved,comparisonIds,toggleComparison,catalog,
 
 /* ---------- record ---------- */
 const PROV_DATE_TIME = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const PROFILE_TARGETS={overview:'h1',check:'record-check-h',risks:'record-risks-h',basis:'claim-basis-h',images:'rec-images-h',history:'record-history-h'};
 function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
   const section=route.section;
+  const recordRoot=useRef(null);
   useMeasuredHeight('.record-nav','--record-nav-height');
-  const [tab,setTab] = useState('check'); const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]);
+  const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]),checkRun=useRef(0);
+  const [checking,setChecking]=useState(false),[activeSection,setActiveSection]=useState(section||'overview');
   const [provenance,setProvenance] = useState(null); const [provenanceError,setProvenanceError] = useState('');
-  useEffect(() => { timers.current.forEach(clearTimeout); timers.current = []; setStep(-1); setTab('check'); }, [person.id]);
+  useEffect(() => { checkRun.current++;timers.current.forEach(clearTimeout);timers.current=[];setStep(-1);setChecking(false);setCheckError('');setActiveSection(section||'overview');return()=>{checkRun.current++;timers.current.forEach(clearTimeout);}; }, [person.id]);
   useEffect(() => {
     if(!section) return;
-    if(section==='risks' || section==='history') setTab(section);
-    const targetId={overview:'h1',risks:'record-details',basis:'claim-basis-h',images:'rec-images-h',history:'record-details'}[section];
+    setActiveSection(section);
+    const targetId=PROFILE_TARGETS[section];
+    const target=document.getElementById(targetId);
+    let layoutFrame=0,observer,automatic=true,lastTop=target ? target.getBoundingClientRect().top+scrollY : 0;
+    const gestures=['wheel','touchstart','pointerdown','keydown'];
+    const stopAutomatic=()=>{automatic=false;observer?.disconnect();cancelAnimationFrame(layoutFrame);gestures.forEach(type=>window.removeEventListener(type,stopAutomatic,true));};
+    const alignAfterLayout=()=>{layoutFrame=0;if(!automatic||!target)return;const top=target.getBoundingClientRect().top+scrollY;if(Math.abs(top-lastTop)>1){lastTop=top;target.scrollIntoView({behavior:'instant',block:'start'});}};
+    if(window.ResizeObserver&&recordRoot.current){observer=new ResizeObserver(()=>{cancelAnimationFrame(layoutFrame);layoutFrame=requestAnimationFrame(alignAfterLayout);});observer.observe(recordRoot.current);}
+    gestures.forEach(type=>window.addEventListener(type,stopAutomatic,{capture:true,passive:true}));
     const frame=requestAnimationFrame(() => {
-      const target=document.getElementById(targetId);
       target?.scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth',block:'start'});
-      document.getElementById(section==='risks' || section==='history' ? 'tab-'+section : targetId)?.focus({preventScroll:true});
+      target?.focus({preventScroll:true});
     });
-    return () => cancelAnimationFrame(frame);
+    return () => {cancelAnimationFrame(frame);stopAutomatic();};
   },[person.id,route]);
+  useEffect(()=>{
+    let frame=0;
+    const update=()=>{frame=0;const edge=(document.querySelector('.record-nav')?.getBoundingClientRect().bottom||0)+28;let current='overview';for(const [key,id] of Object.entries(PROFILE_TARGETS)){const target=document.getElementById(id);if(target&&target.getBoundingClientRect().top<=edge)current=key;}if(scrollY+innerHeight>=document.documentElement.scrollHeight-2)current='history';setActiveSection(current);};
+    const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};
+    window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);schedule();
+    return()=>{cancelAnimationFrame(frame);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);};
+  },[person.id]);
   const goSection=(event,key) => { if(event.button===0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey){ event.preventDefault(); navigate(person.id+'/'+key); } };
   useEffect(() => {
     setProvenance(null); setProvenanceError('');
@@ -1768,23 +1822,21 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
     {l:'Notice', d:N.name, t:tone},
     {l:'Open risks on the record', d:person.risks.length ? String(person.risks.length) : 'None', t:person.risks.length ? 'warn' : 'ok'}
   ];
-  const run = async () => { setTab('check'); setCheckError(''); timers.current.forEach(clearTimeout); setStep(-1);
-    requestAnimationFrame(() => document.getElementById('tp-check')?.scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth',block:'start'}));
+  const run = async () => { if(checking || (step>=0 && step<checks.length))return;const version=++checkRun.current;setChecking(true);setCheckError('');timers.current.forEach(clearTimeout);setStep(-1);navigate(person.id+'/check');
     if(location.protocol!=='file:') {
       try { const r = await fetch('/api/v1/passports/' + encodeURIComponent(person.id) + '/check'); if(!r.ok) throw new Error('Registry lookup failed'); const data = await r.json();
         if(!data.registryRecordFound || data.passportId!==person.id || data.registryMode!=='demonstration' || data.cryptographicSignatureVerified!==false || data.faceComparisonPerformed!==false) throw new Error('Registry response could not be confirmed');
         if(data.notice!==person.status || data.openRiskCount!==person.risks.length || data.evidenceLevel!==person.level) throw new Error('This record has changed. Reload to see its current notice and risks.'); }
-      catch(e){ setCheckError(e.message?.startsWith('This record has changed.') ? e.message : 'The registry is unavailable. Please try again.'); return; }
+      catch(e){if(version!==checkRun.current)return;setChecking(false);setCheckError(e.message?.startsWith('This record has changed.') ? e.message : 'The registry is unavailable. Please try again.');return;}
     }
-    setStep(0); const g = REDUCED ? 0 : 380; checks.forEach((_,i) => timers.current.push(setTimeout(() => setStep(i+1), g*(i+1)))); };
+    if(version!==checkRun.current)return;setChecking(false);setStep(0);const g=REDUCED?0:380;checks.forEach((_,i)=>timers.current.push(setTimeout(()=>setStep(i+1),g*(i+1)))); };
   const done = step >= checks.length;
+  const busy=checking || (step>=0 && !done);
   const verdict = {Valid:'This demo record has a green notice. Review its open risks before working with this persona.', 'Under review':'This demo record is under review. Wait for a decision.', Suspended:'This demo record is suspended. Do not run campaigns with this persona.', Revoked:'This demo record is revoked. Do not use this persona.'}[person.status];
   const channels = person.socials?.length ? person.socials : [{platform:'Declared handle',handle:person.handle,url:null}];
   const hasProfileLink = channels.some(channel => socialHref(channel));
   const i = PEOPLE.indexOf(person), prev = PEOPLE[(i - 1 + PEOPLE.length) % PEOPLE.length], next = PEOPLE[(i + 1) % PEOPLE.length];
-  const tabs = [['check','Check'],['history','History'],['risks','Open risks (' + person.risks.length + ')'],['stamps','Endorsements']];
-  const tabKey = e => { const k = tabs.findIndex(t => t[0]===tab); if(e.key==='ArrowRight' || e.key==='ArrowLeft'){ e.preventDefault(); const n = tabs[(k + (e.key==='ArrowRight' ? 1 : tabs.length - 1)) % tabs.length][0]; setTab(n); setTimeout(() => { const b = document.getElementById('tab-' + n); b && b.focus(); }, 0); } };
-  return html`<div style=${nvars(person.status)}>
+  return html`<div ref=${recordRoot} style=${nvars(person.status)}>
     <div className="rec-top"><div className="wrap">
       <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#home">Registry</a></li><li><a href="#notices">Notices</a></li><li aria-current="page">${person.name}</li></ol>
       <div className="rec-head">
@@ -1792,19 +1844,21 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
         <div>
           <span className="no">${person.id}</span>
           <h1 id="h1" tabIndex="-1">${person.name}</h1>
-          <${NTag} status=${person.status} />
-          <a className="record-risk-link" href=${'#'+person.id+'/risks'} onClick=${e => goSection(e,'risks')}>${person.risks.length ? person.risks.length+' unresolved issue'+(person.risks.length===1 ? '' : 's') : 'No open risks listed'}</a>
-          <button type="button" className="tlink rec-save" aria-pressed=${savedRecords.includes(person.id)?'true':'false'} onClick=${() => toggleSaved(person.id)}>${savedRecords.includes(person.id) ? 'Remove from saved records' : 'Save record in this browser'}</button>
-          <a className="tlink rec-compare" href=${'#compare/'+person.id+'/'+next.id}>Compare with another persona</a>
+          <div className="rec-notice-row"><${NTag} status=${person.status} />
+          <a className="record-risk-link" href=${'#'+person.id+'/risks'} onClick=${e => goSection(e,'risks')}>${person.risks.length ? person.risks.length+' unresolved issue'+(person.risks.length===1 ? '' : 's') : 'No open risks listed'}</a></div>
         </div>
-        <div className="acts">
-          <button type="button" className="btn" onClick=${run}>Check this passport</button>
-          <button type="button" className="btn line" onClick=${() => copy(location.href.split('#')[0] + '#' + person.id, 'Link to this record', toast)}>Copy link</button>
-          <button type="button" className="btn line" onClick=${() => onReport(person)}>Report a concern</button>
+        <div className="rec-actions" role="group" aria-label="Record actions"><div className="rec-main-actions">
+          <button type="button" className="btn" onClick=${run} disabled=${busy} aria-busy=${busy?'true':undefined}>${busy?'Checking record…':'Check record'}</button>
+          <button type="button" className="btn line rec-save" aria-pressed=${savedRecords.includes(person.id)?'true':'false'} aria-label=${(savedRecords.includes(person.id)?'Saved record':'Save record')+' of '+person.name+' in this browser'} onClick=${() => toggleSaved(person.id)}>${savedRecords.includes(person.id)?'Saved record':'Save record'}</button>
+          <a className="btn line" href=${'#compare/'+person.id+'/'+next.id}>Compare persona</a>
+        </div><div className="rec-utilities">
+          <button type="button" className="tlink" onClick=${() => copy(location.href.split('#')[0] + '#' + person.id, 'Link to this record', toast)}>Copy link</button>
+          <button type="button" className="tlink" onClick=${() => onReport(person)}>Report a concern</button>
+        </div>
         </div>
       </div>
     </div></div>
-    <nav className="record-nav" aria-label="Profile sections"><div className="wrap">${[['overview','Overview'],['risks','Risks ('+person.risks.length+')'],['basis','Basis'],['images','Images'],['history','History']].map(([key,label]) => html`<a key=${key} href=${'#'+person.id+'/'+key} onClick=${e => goSection(e,key)}>${label}</a>`)}</div></nav>
+    <nav className="record-nav" aria-label="Profile sections"><div className="wrap">${[['overview','Overview'],['check','Check'],['risks','Risks ('+person.risks.length+')'],['basis','Basis'],['images','Images'],['history','History']].map(([key,label]) => html`<a key=${key} href=${'#'+person.id+'/'+key} aria-current=${activeSection===key?'location':undefined} onClick=${e => goSection(e,key)}>${label}</a>`)}</div></nav>
     <div className="wrap">
       <div className="rec-grid">
         <div className="rec-stage"><${Viewer} person=${person} /></div>
@@ -1831,24 +1885,19 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
           </dl>
         </div>
       </div>
-      <div className="tabs record-details" id="record-details">
-        <div className="tablist" role="tablist" aria-label="Record details" onKeyDown=${tabKey}>
-          ${tabs.map(([k,l]) => html`<button key=${k} type="button" role="tab" id=${'tab-'+k} aria-controls=${'tp-'+k} aria-selected=${tab===k?'true':'false'} tabIndex=${tab===k?0:-1} onClick=${() => setTab(k)}>${l}</button>`)}
-        </div>
-        <div className="panel" role="tabpanel" id=${'tp-'+tab} aria-labelledby=${'tab-'+tab}>
-          ${tab==='check' && html`<div>
-            ${step < 0 && html`<p className="sub" style=${{marginTop:0,marginBottom:'18px'}}>This demo lookup shows the stored record, notice and risks. It does not verify a cryptographic signature or run a new face comparison.</p>`}
+      <section className="record-section" aria-labelledby="record-check-h">
+        <h2 className="h2" id="record-check-h" tabIndex="-1">Record check</h2>
+            <p className="sub" style=${{marginBottom:'18px'}}>This demo lookup shows the stored record, notice and risks. It does not verify a cryptographic signature or run a new face comparison.</p>
             ${checkError && html`<p role="alert" className="risk">${checkError}</p>`}
             ${step >= 0 && html`<ul className="checks" aria-live="polite">${checks.map((c,k) => html`<li key=${k} className=${step>k ? 'done ' + c.t : step===k ? 'run' : ''}>
               <span className="mk" aria-hidden="true">${step>k ? (c.t==='ok' ? '✓' : '!') : ''}</span><span>${c.l}</span><span className="d">${step>k ? c.d : step===k ? 'Checking' : ''}</span></li>`)}</ul>`}
             ${done && html`<p className="verdict" role="status">${verdict}</p>`}
-            <button type="button" className="btn" onClick=${run} disabled=${step>=0 && !done}>${done ? 'Check again' : step>=0 ? 'Checking' : 'Check this passport'}</button>
-          </div>`}
-          ${tab==='history' && html`<dl className="hist">${person.history.map((h,k) => html`<div key=${k}><dt>${h.d}</dt><dd>${h.e}</dd></div>`)}</dl>`}
-          ${tab==='risks' && (person.risks.length ? html`<div>${person.risks.map((r,k) => html`<div key=${k} className="risk"><span className="ex" aria-hidden="true">!</span><p><span className="sr">Risk: </span>${r}</p></div>`)}</div>` : html`<p>There are no open risks on this record.</p>`)}
-          ${tab==='stamps' && html`<dl className="hist">${person.stamps.map((s,k) => html`<div key=${k}><dt style=${{fontFamily:'var(--sans)',fontSize:'15px',color:'var(--muted)'}}>${s.t}</dt><dd><b>${s.v.charAt(0) + s.v.slice(1).toLowerCase()}</b>${s.sub ? ', ' + s.sub : ''}</dd></div>`)}</dl>`}
-        </div>
-      </div>
+            <button type="button" className="btn" onClick=${run} disabled=${busy} aria-busy=${busy?'true':undefined}>${busy?'Checking record…':done?'Check again':'Run record check'}</button>
+      </section>
+      <section className="record-section" aria-labelledby="record-risks-h">
+        <h2 className="h2" id="record-risks-h" tabIndex="-1">Open risks (${person.risks.length})</h2>
+        ${person.risks.length ? html`<div>${person.risks.map((risk,index)=>html`<div key=${index} className="risk"><span className="ex" aria-hidden="true">!</span><p><span className="sr">Risk: </span>${risk}</p></div>`)}</div>` : html`<p className="sub">There are no open risks on this demo record. This does not establish that every risk has been resolved.</p>`}
+      </section>
       <${ClaimBasis} person=${person} />
       <section className="rec-images" aria-labelledby="rec-images-h">
         <div>
@@ -1882,6 +1931,10 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
           <aside className="prov-limits"><h3>What this check does not prove</h3><div><p><b>Basis for origin claim:</b> ${provenance.originBasis}</p>
             <p>Matching hashes show file consistency. They do not establish the creator, model lineage, consent, or a person’s identity.</p></div></aside>
         </div>`}
+      </section>
+      <section className="record-section" aria-labelledby="record-history-h">
+        <h2 className="h2" id="record-history-h" tabIndex="-1">Record history</h2>
+        <dl className="hist">${person.history.map((event,index)=>html`<div key=${index}><dt>${event.d}</dt><dd>${event.e}</dd></div>`)}</dl>
       </section>
       <nav className="pager" aria-label="Other records">
         <a href=${'#'+prev.id}><span>Previous record</span><b>${prev.name}</b></a>
@@ -2260,7 +2313,7 @@ function parse(){
   if(h==='compare' || h==='compare?differences=1') return {name:'compare',ids:PEOPLE.slice(0,2).map(p => p.id),...(h.endsWith('?differences=1') ? {differences:true} : {})};
   const comparison = /^compare\/([^/?]+)\/([^/?]+)(\?differences=1)?$/.exec(h);
   if(comparison && byId(comparison[1]) && byId(comparison[2]) && comparison[1]!==comparison[2]) return {name:'compare',ids:comparison.slice(1,3),...(comparison[3] ? {differences:true} : {})};
-  const recordSection=/^([^/]+)\/(overview|risks|basis|examples|images|history)$/.exec(h);
+  const recordSection=/^([^/]+)\/(overview|check|risks|basis|examples|images|history)$/.exec(h);
   if(recordSection && byId(recordSection[1].toUpperCase())) {
     const id=recordSection[1].toUpperCase();
     return recordSection[2]==='examples' ? {name:'record',id} : {name:'record',id,section:recordSection[2]};
