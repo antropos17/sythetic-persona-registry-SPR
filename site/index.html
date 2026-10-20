@@ -154,6 +154,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card:has(a:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
 .card .no{font-family:var(--mono);font-size:14px;color:var(--muted)}
 .card .meta{font-size:14.5px;color:var(--muted)}
+.card-summary{font-size:14.5px;color:var(--muted);line-height:1.4;margin-top:5px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 .card-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin-top:8px}
 .card-actions .ntag{margin-top:0}
 .save-action{position:relative;z-index:1;font-size:14.5px}
@@ -224,6 +225,20 @@ td a{font-weight:700;color:var(--ink)}
 .dl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
 .notice-box{display:flex;gap:14px;padding:16px 18px;background:var(--nt);border-left:6px solid var(--nc);margin-top:20px}
 .notice-box b{display:block;color:var(--ni);font-stretch:112%}
+.rec-about{margin-top:24px;padding:18px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.rec-about h2,.rec-social h2{font-size:20px;font-stretch:112%;line-height:1.25}
+.rec-about p{max-width:60ch;margin-top:7px}
+.rec-social{margin-top:22px}
+.rec-social-list{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--rule)}
+.rec-social-list li{display:flex;align-items:center;gap:12px;min-width:0;padding:12px 0;border-bottom:1px solid var(--rule)}
+.social-icon{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;color:var(--navy);background:var(--mist)}
+.social-icon svg{width:22px;height:22px}
+.social-identity{min-width:0;flex:1 1 auto;line-height:1.3}
+.social-identity b,.social-identity span{display:block;overflow-wrap:anywhere}
+.social-identity span{color:var(--muted);font-size:14px;margin-top:2px}
+.social-link{display:inline-flex;align-items:center;min-height:44px;white-space:nowrap;font-weight:700;font-size:15px}
+.social-unlinked{font-size:13.5px;color:var(--muted);text-align:right;max-width:13ch;line-height:1.25}
+.rec-social-note{color:var(--muted);font-size:13.5px;line-height:1.4;margin-top:11px;max-width:64ch}
 .tabs{margin-top:44px}
 .tablist{display:flex;flex-wrap:wrap;border-bottom:2px solid var(--ink);gap:4px}
 .tablist button{all:unset;cursor:pointer;padding:12px 18px;font-weight:700;color:var(--muted);box-shadow:inset 0 -4px 0 transparent;margin-bottom:-2px}
@@ -516,6 +531,7 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .card h3{font-size:18px}
   .card .meta{font-size:14px}
   .card .meta + .meta{display:none}
+  .card-summary{display:none}
   .rec-images{margin-top:28px;padding:20px 16px}
   .rec-image-key{margin-top:20px}
   .ntag{margin-top:6px}
@@ -531,6 +547,8 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .acts .btn:first-child{grid-column:1/-1}
   .acts .btn{padding:0 10px;font-size:15.5px}
   .rec-grid{padding-block:20px 0;gap:24px}
+  .rec-social-list li{align-items:flex-start;flex-wrap:wrap}
+  .social-link,.social-unlinked{margin-left:52px}
   .rec-stage{padding:0 8px 8px}
   .rec-stage .viewer{aspect-ratio:1.22}
   .tabs{margin-top:32px}
@@ -590,35 +608,35 @@ const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce
 const LEVELS = ['Declared','Evidence-backed','Reviewed','Controlled creation'];
 const G='#1E6B47', B='#2C3A8C', A='#A3570A', R='#9A2F2B';
 const PEOPLE = [
-  { id:'PP-AZ-0001', surname:'FIDAN', given:'', name:'Fidan', handle:'@fidan.sings', nature:'Fully synthetic', lang:'Azerbaijani', code:'AZE', role:'Vocalist', holder:'Ruslan M.', level:'Evidence-backed', status:'Valid', note:'', issued:'12 Oct 2026', expires:'12 Oct 2031', created:'261012', exp:'311012', record:'a91f7c02', sort:20261012,
+  { id:'PP-AZ-0001', surname:'FIDAN', given:'', name:'Fidan', handle:'@fidan.sings', nature:'Fully synthetic', lang:'Azerbaijani', code:'AZE', role:'Vocalist', description:'A fictional Azerbaijani vocalist. This example highlights open questions about voice rights and the origin of the base model.', socials:[{platform:'TikTok',handle:'@fidan.sings',url:null}], holder:'Ruslan M.', level:'Evidence-backed', status:'Valid', note:'', issued:'12 Oct 2026', expires:'12 Oct 2031', created:'261012', exp:'311012', record:'a91f7c02', sort:20261012,
     stamps:[{t:'Identity root',v:'EVIDENCE-BACKED',c:G,k:'rect',r:-5},{t:'Model lineage',v:'DECLARED',sub:'upstream unknown',c:B,k:'round',r:4},{t:'Voice and music',v:'OPEN RISK',c:A,k:'double',r:-3},{t:'TikTok channel',v:'OWNER VERIFIED',c:G,k:'pill',r:6},{t:'Content credentials',v:'10 FILES SIGNED',c:B,k:'dash',r:-2}],
     history:[{d:'12 Oct 2026',e:'Passport issued and published'},{d:'10 Oct 2026',e:'TikTok channel ownership verified'},{d:'02 Oct 2026',e:'Application received'}],
     risks:['Voice made on a hosted service. Its commercial terms are not archived yet.','The base model publisher has not disclosed its training data.'] },
-  { id:'PP-TR-0004', surname:'KAYA', given:'LEYLA', name:'Leyla Kaya', handle:'@leyla.kaya', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Fashion host', holder:'Studio Nur', level:'Reviewed', status:'Valid', note:'', issued:'03 Sep 2026', expires:'03 Sep 2031', created:'260903', exp:'310903', record:'3be041d9', sort:20260903,
+  { id:'PP-TR-0004', surname:'KAYA', given:'LEYLA', name:'Leyla Kaya', handle:'@leyla.kaya', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Fashion host', description:'A fictional Turkish fashion host. Her example record shows a completed review and an Instagram channel ownership claim.', socials:[{platform:'Instagram',handle:'@leyla.kaya',url:null}], holder:'Studio Nur', level:'Reviewed', status:'Valid', note:'', issued:'03 Sep 2026', expires:'03 Sep 2031', created:'260903', exp:'310903', record:'3be041d9', sort:20260903,
     stamps:[{t:'Identity root',v:'REVIEWED',c:G,k:'round',r:-4},{t:'Model lineage',v:'EVIDENCE-BACKED',c:G,k:'rect',r:3},{t:'Voice',v:'LICENSED',c:G,k:'pill',r:-2},{t:'Instagram',v:'OWNER VERIFIED',c:B,k:'double',r:4}],
     history:[{d:'03 Sep 2026',e:'Passport issued after examiner review'},{d:'01 Sep 2026',e:'Examiner review completed'},{d:'18 Aug 2026',e:'Application received'}],
     risks:[] },
-  { id:'PP-ES-0011', surname:'SOL', given:'MIRA', name:'Mira Sol', handle:'@mira.moves', nature:'Licensed likeness', lang:'Spanish', code:'ESP', role:'Fitness coach', holder:'Ola Media', level:'Evidence-backed', status:'Under review', note:'Consent renewal pending', issued:'28 Jul 2026', expires:'28 Jul 2031', created:'260728', exp:'310728', record:'c47a09e1', sort:20260728,
+  { id:'PP-ES-0011', surname:'SOL', given:'MIRA', name:'Mira Sol', handle:'@mira.moves', nature:'Licensed likeness', lang:'Spanish', code:'ESP', role:'Fitness coach', description:'A Spanish-language fitness coach portrayed with a licensed likeness. The example remains under review while consent renewal is pending.', holder:'Ola Media', level:'Evidence-backed', status:'Under review', note:'Consent renewal pending', issued:'28 Jul 2026', expires:'28 Jul 2031', created:'260728', exp:'310728', record:'c47a09e1', sort:20260728,
     stamps:[{t:'Likeness consent',v:'ON FILE',c:G,k:'rect',r:-3},{t:'Model lineage',v:'DECLARED',c:B,k:'round',r:5},{t:'Annual review',v:'PENDING',c:A,k:'double',r:-2}],
     history:[{d:'10 Oct 2026',e:'Annual review opened'},{d:'28 Jul 2026',e:'Passport issued'},{d:'15 Jul 2026',e:'Signed likeness consent filed'}],
     risks:['The model’s likeness consent expires on 30 Nov 2026.'] },
-  { id:'PP-JP-0016', surname:'MORI', given:'AIKO', name:'Aiko Mori', handle:'@aiko.plays', nature:'Fully synthetic', lang:'Japanese', code:'JPN', role:'Game streamer', holder:'Kumo Labs', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261014', exp:'000000', record:'5d12ee70', sort:20261014,
+  { id:'PP-JP-0016', surname:'MORI', given:'AIKO', name:'Aiko Mori', handle:'@aiko.plays', nature:'Fully synthetic', lang:'Japanese', code:'JPN', role:'Game streamer', description:'A Japanese-language game streamer. Model files and licence evidence are still requested in this example.', holder:'Kumo Labs', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261014', exp:'000000', record:'5d12ee70', sort:20261014,
     stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'round',r:3},{t:'Examiner',v:'EVIDENCE REQUESTED',c:A,k:'double',r:-4}],
     history:[{d:'16 Oct 2026',e:'Examiner requested model files and licences'},{d:'14 Oct 2026',e:'Application received'}],
     risks:['Model files have not been hashed.','No licence snapshots on file.'] },
-  { id:'PP-MX-0019', surname:'REYES', given:'NOVA', name:'Nova Reyes', handle:'@novareyes', nature:'Fully synthetic', lang:'Spanish', code:'MEX', role:'Lifestyle', holder:'Brightline', level:'Evidence-backed', status:'Suspended', note:'Undisclosed sponsored posts', issued:'19 May 2026', expires:'19 May 2031', created:'260519', exp:'310519', record:'88c31a4b', sort:20260519,
+  { id:'PP-MX-0019', surname:'REYES', given:'NOVA', name:'Nova Reyes', handle:'@novareyes', nature:'Fully synthetic', lang:'Spanish', code:'MEX', role:'Lifestyle', description:'A Spanish-language lifestyle persona. This example is suspended after sponsored posts appeared without the required disclosure.', holder:'Brightline', level:'Evidence-backed', status:'Suspended', note:'Undisclosed sponsored posts', issued:'19 May 2026', expires:'19 May 2031', created:'260519', exp:'310519', record:'88c31a4b', sort:20260519,
     stamps:[{t:'Identity root',v:'EVIDENCE-BACKED',c:G,k:'rect',r:-3},{t:'Status',v:'SUSPENDED',c:R,k:'double',r:7}],
     history:[{d:'02 Oct 2026',e:'Suspended for sponsored posts without an AI or ad label'},{d:'19 May 2026',e:'Passport issued'}],
     risks:['Sponsored posts without disclosure on three channels.'] },
-  { id:'PP-SE-0023', surname:'BERG', given:'ELIN', name:'Elin Berg', handle:'@elin.berg', nature:'Claimed synthetic', lang:'Swedish', code:'SWE', role:'Travel', holder:'North Pixel', level:'Declared', status:'Revoked', note:'Close match to a real person', issued:'02 Apr 2026', expires:'Revoked', created:'260402', exp:'000000', record:'0f6db52c', sort:20260402,
+  { id:'PP-SE-0023', surname:'BERG', given:'ELIN', name:'Elin Berg', handle:'@elin.berg', nature:'Claimed synthetic', lang:'Swedish', code:'SWE', role:'Travel', description:'A Swedish-language travel persona. The example notice was revoked after a recorded close facial match to a real person.', holder:'North Pixel', level:'Declared', status:'Revoked', note:'Close match to a real person', issued:'02 Apr 2026', expires:'Revoked', created:'260402', exp:'000000', record:'0f6db52c', sort:20260402,
     stamps:[{t:'Face comparison',v:'MATCH FOUND',c:R,k:'rect',r:-5},{t:'Status',v:'REVOKED',c:R,k:'double',r:5}],
     history:[{d:'24 Sep 2026',e:'Passport revoked'},{d:'21 Sep 2026',e:'Face comparison found a close match to a real person'},{d:'02 Apr 2026',e:'Passport issued'}],
     risks:['Revoked. The persona’s face could not be cleared.'] },
-  { id:'PP-TR-0027', surname:'DEMIR', given:'EMRE', name:'Emre Demir', handle:'@emre.frames', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Photographer', holder:'Emre Studio', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261018', exp:'000000', record:'e27c916b', sort:20261018,
+  { id:'PP-TR-0027', surname:'DEMIR', given:'EMRE', name:'Emre Demir', handle:'@emre.frames', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Photographer', description:'A Turkish-language photographer persona awaiting review of model lineage and usage rights.', holder:'Emre Studio', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261018', exp:'000000', record:'e27c916b', sort:20261018,
     stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'rect',r:-3},{t:'Evidence',v:'REQUESTED',c:A,k:'round',r:4}],
     history:[{d:'18 Oct 2026',e:'Demonstration application received'}],
     risks:['Model lineage and usage rights have not been reviewed.'] },
-  { id:'PP-PT-0031', surname:'COSTA', given:'RAFAEL', name:'Rafael Costa', handle:'@rafael.costa', nature:'Fully synthetic', lang:'Portuguese', code:'PRT', role:'Presenter', holder:'Costa Media', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261019', exp:'000000', record:'b4d73e29', sort:20261019,
+  { id:'PP-PT-0031', surname:'COSTA', given:'RAFAEL', name:'Rafael Costa', handle:'@rafael.costa', nature:'Fully synthetic', lang:'Portuguese', code:'PRT', role:'Presenter', description:'A Portuguese-language presenter persona whose identity evidence has not yet been reviewed.', holder:'Costa Media', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261019', exp:'000000', record:'b4d73e29', sort:20261019,
     stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'round',r:2},{t:'Examiner',v:'EVIDENCE REQUESTED',c:A,k:'double',r:-4}],
     history:[{d:'19 Oct 2026',e:'Demonstration application received'}],
     risks:['Identity evidence has not been reviewed.'] }
@@ -1092,6 +1110,28 @@ const NOTICE = {
 const ORDER = ['Valid','Under review','Suspended','Revoked'];
 const nvars = s => ({'--nc':NOTICE[s].nc,'--nt':NOTICE[s].nt,'--ni':NOTICE[s].ni});
 const byId = id => PEOPLE.find(p => p.id === id);
+function socialHref(channel){
+  const hosts = {TikTok:'tiktok.com',Instagram:'instagram.com',YouTube:'youtube.com',X:'x.com'};
+  if(!channel || typeof channel.url!=='string' || !hosts[channel.platform]) return null;
+  try {
+    const url = new URL(channel.url);
+    const host = url.hostname.toLowerCase(), allowed = hosts[channel.platform];
+    if(url.protocol!=='https:' || url.username || url.password || url.port || (host!==allowed && host!=='www.'+allowed) || url.pathname==='/') return null;
+    if(channel.platform!=='YouTube') {
+      const expected=channel.handle?.trim().replace(/^@/,'').toLowerCase();
+      const actual=decodeURIComponent(url.pathname.split('/')[1] || '').replace(/^@/,'').toLowerCase();
+      if(!expected || actual!==expected) return null;
+    }
+    return url.href;
+  } catch { return null; }
+}
+function SocialIcon({platform}){
+  if(platform==='Instagram') return html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>`;
+  if(platform==='TikTok') return html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3v11.5a4.5 4.5 0 1 1-4-4.47"></path><path d="M14 4c1 3 3 4.5 6 4.5"></path></svg>`;
+  if(platform==='YouTube') return html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"></rect><path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none"></path></svg>`;
+  if(platform==='X') return html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 4 20 20M20 4 4 20"></path></svg>`;
+  return html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10 6"></path><path d="M14 11a5 5 0 0 0-7.07 0l-2.12 2.12a5 5 0 0 0 7.07 7.07L14 18"></path></svg>`;
+}
 const hay = p => (p.name+' '+p.handle+' '+p.id+' '+p.holder+' '+p.lang).toLowerCase();
 const find = q => { q = q.trim().toLowerCase(); if(!q) return []; const exact = PEOPLE.filter(p => p.id.toLowerCase()===q || p.handle.toLowerCase()===q || p.handle.toLowerCase()==='@'+q); return exact.length ? exact : PEOPLE.filter(p => hay(p).includes(q)); };
 const navigate = token => { if(('#'+token)===location.hash){ window.dispatchEvent(new HashChangeEvent('hashchange')); } else { location.hash = token; } };
@@ -1309,6 +1349,7 @@ function Notices({savedRecords, toggleSaved}){
           <span className="no">${p.id}</span>
           <span className="meta">${p.role}, ${p.lang}</span>
           <span className="meta">Held by ${p.holder}</span>
+          <p className="card-summary">${p.description}</p>
           <div className="card-actions"><${NTag} status=${p.status} />
             <button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button>
           </div>
@@ -1388,6 +1429,8 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
     setStep(0); const g = REDUCED ? 0 : 380; checks.forEach((_,i) => timers.current.push(setTimeout(() => setStep(i+1), g*(i+1)))); };
   const done = step >= checks.length;
   const verdict = {Valid:'This demo record has a green notice. Review its open risks before working with this persona.', 'Under review':'This demo record is under review. Wait for a decision.', Suspended:'This demo record is suspended. Do not run campaigns with this persona.', Revoked:'This demo record is revoked. Do not use this persona.'}[person.status];
+  const channels = person.socials?.length ? person.socials : [{platform:'Main channel',handle:person.handle,url:null}];
+  const hasProfileLink = channels.some(channel => socialHref(channel));
   const i = PEOPLE.indexOf(person), prev = PEOPLE[(i - 1 + PEOPLE.length) % PEOPLE.length], next = PEOPLE[(i + 1) % PEOPLE.length];
   const tabs = [['check','Check'],['history','History'],['risks','Open risks (' + person.risks.length + ')'],['stamps','Endorsements']];
   const tabKey = e => { const k = tabs.findIndex(t => t[0]===tab); if(e.key==='ArrowRight' || e.key==='ArrowLeft'){ e.preventDefault(); const n = tabs[(k + (e.key==='ArrowRight' ? 1 : tabs.length - 1)) % tabs.length][0]; setTab(n); setTimeout(() => { const b = document.getElementById('tab-' + n); b && b.focus(); }, 0); } };
@@ -1414,9 +1457,17 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
         <div className="rec-stage"><${Viewer} person=${person} /></div>
         <div>
           <div className="notice-box" style=${{marginTop:0}}><div><b>${N.name}: ${N.meaning.toLowerCase()}</b><span>${N.advice}${person.note ? ' Reason: ' + person.note.toLowerCase() + '.' : ''}</span></div></div>
+          <section className="rec-about" aria-labelledby="rec-about-title"><h2 id="rec-about-title">About ${person.name}</h2><p>${person.description}</p></section>
+          <section className="rec-social" aria-labelledby="rec-social-title"><h2 id="rec-social-title">Channels</h2>
+            <ul className="rec-social-list">${channels.map((channel,index) => { const href=socialHref(channel); return html`<li key=${index}>
+              <span className="social-icon"><${SocialIcon} platform=${channel.platform} /></span>
+              <span className="social-identity"><b>${channel.platform}</b><span>${channel.handle}</span></span>
+              ${href ? html`<a className="social-link" href=${href} target="_blank" rel="noopener noreferrer nofollow" aria-label=${'Open ' + person.name + ' on ' + channel.platform + ' in a new tab'}>Open profile</a>` : html`<span className="social-unlinked">Profile URL not supplied</span>`}
+            </li>`; })}</ul>
+            <p className="rec-social-note">${hasProfileLink ? 'External profiles are listed for reference. A link alone does not prove account ownership.' : 'These demo handles have no public profile links. They do not prove account ownership.'}</p>
+          </section>
           <dl className="dl" style=${{marginTop:'24px'}}>
             <div><dt>Passport number</dt><dd><span className="mono">${person.id}</span> <button type="button" className="tlink" style=${{marginLeft:'8px',fontSize:'15px'}} onClick=${() => copy(person.id, 'Passport number', toast)}>Copy</button></dd></div>
-            <div><dt>Main channel</dt><dd>${person.handle}</dd></div>
             <div><dt>Nature</dt><dd>${person.nature}</dd></div>
             <div><dt>Occupation</dt><dd>${person.role}</dd></div>
             <div><dt>Language</dt><dd>${person.lang}</dd></div>

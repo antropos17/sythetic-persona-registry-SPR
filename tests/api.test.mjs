@@ -56,6 +56,19 @@ test('standalone fallback records match the API source', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(fallback)), source.map(({ portrait, ...record }) => record));
 });
 
+test('social profile links require the matching HTTPS platform and handle', () => {
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const source = page.match(/function socialHref\(channel\)\{[\s\S]*?\n\}/);
+  assert.ok(source);
+  const socialHref = runInNewContext(source[0] + '\nsocialHref', { URL, decodeURIComponent });
+  const channel = { platform: 'TikTok', handle: '@fidan.sings', url: 'https://www.tiktok.com/@fidan.sings' };
+  assert.equal(socialHref(channel), channel.url);
+  for (const url of ['http://www.tiktok.com/@fidan.sings', 'https://tiktok.com.evil.test/@fidan.sings',
+    'https://www.tiktok.com/@another.account', 'https://name@www.tiktok.com/@fidan.sings',
+    'https://www.tiktok.com:8443/@fidan.sings']) assert.equal(socialHref({ ...channel, url }), null, url);
+  assert.equal(socialHref({ ...channel, url: null }), null);
+});
+
 test('a malformed saved application cannot break the registration form', () => {
   const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
   const source = page.match(/const APPLY0 = [\s\S]*?function Apply\(/);

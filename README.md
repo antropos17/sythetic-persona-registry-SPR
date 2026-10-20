@@ -34,6 +34,8 @@ npm test
 
 The frontend fetches public records from the API when the server is available. Its embedded records remain a fallback for the standalone preview. Images are loaded from `assets/`: catalog cards and table rows lead with headshots, while each record shows its full-length image below the passport and details. The images are illustrations, not identity or review evidence.
 
+Each demo record has a short description. The record page shows its declared channel handle with a platform icon where the platform is known. A `socials` entry may include a full profile `url`; it stays `null` until an exact address is supplied. The interface links only to HTTPS URLs on the named platform whose path matches the declared handle (YouTube channel paths are allowed). It does not construct live profile addresses from fictional handles. A profile link by itself is not evidence of ownership.
+
 Visitors can save records from cards, the table, or a record page and filter the catalog to those saved records. The saved list contains only demonstration passport IDs and stays in that browser's local storage; it is not an account or a server-side watchlist.
 
 An unfinished application is saved in that browser's local storage so it can be resumed. The form includes **Clear draft**, and a successful submission removes the draft. Reports are not stored in browser local storage.
