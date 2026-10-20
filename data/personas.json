@@ -132,24 +132,6 @@
           "basis": "The endorsement states that ten files were signed. Those files, signing keys and credential manifests are not supplied for verification.",
           "issue": null
         }
-      ],
-      "samples": [
-        {
-          "id": "studio-note",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Post draft",
-          "title": "A voice starts with a phrase",
-          "text": "Some melodies need space. Picture a close, quiet vocal that opens into a brighter chorus as the arrangement grows. Which moment would you keep almost whispered?"
-        },
-        {
-          "id": "release-introduction",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Short video script",
-          "title": "Before the first listen",
-          "text": "I’m Fidan, a virtual vocalist. Let’s begin this imagined session with one phrase in Azerbaijani, then explore how its rhythm changes as the arrangement grows around it."
-        }
       ]
     },
     {
@@ -259,24 +241,6 @@
           "basis": "The demo endorsement records a channel ownership claim. No public profile URL or ownership proof is supplied.",
           "issue": null
         }
-      ],
-      "samples": [
-        {
-          "id": "style-note",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Post draft",
-          "title": "One silhouette, two settings",
-          "text": "Keep the silhouette, change the setting. Picture a structured jacket in soft studio light, then the same shape after dark. Which detail should lead: the collar, the fabric or the colour?"
-        },
-        {
-          "id": "behind-the-scenes",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Short video script",
-          "title": "Building a virtual look",
-          "text": "A virtual look begins with a choice: what should the eye notice first? For this concept, follow the outline, then the texture, then the light. I’m Leyla, a fictional AI fashion host."
-        }
       ]
     },
     {
@@ -366,24 +330,6 @@
           "basis": "The demo history records an annual review being opened; it does not record a completed renewal.",
           "issue": "Consent renewal is pending."
         }
-      ],
-      "samples": [
-        {
-          "id": "studio-introduction",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Post draft",
-          "title": "Inside a virtual studio",
-          "text": "Welcome to the virtual studio. Before a session begins, let’s explain its purpose, who it is designed for and which information needs a qualified source. I’m Mira, a fictional fitness persona."
-        },
-        {
-          "id": "production-note",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Caption draft",
-          "title": "A clear caption",
-          "text": "How was this scene made? This concept places an AI presenter in a constructed studio. A clear production note names the visual tools, explains the use of a likeness and makes any commercial relationship visible."
-        }
       ]
     },
     {
@@ -455,24 +401,6 @@
           "basis": "The demo history explicitly requests model files and licences from the applicant.",
           "issue": "No licence snapshots on file."
         }
-      ],
-      "samples": [
-        {
-          "id": "stream-opening",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Presenter script",
-          "title": "Welcome to the next level",
-          "text": "Welcome, players. Today’s imagined challenge starts in a quiet puzzle room: one locked door, three clues and no timer. Where would you look first?"
-        },
-        {
-          "id": "community-prompt",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Post draft",
-          "title": "Choose the next challenge",
-          "text": "Choose your next challenge: a puzzle you can solve together, or an obstacle course where every second counts? Which format would you choose, and what would make it worth replaying?"
-        }
       ]
     },
     {
@@ -542,24 +470,6 @@
           "recordedAt": "2026-10-02",
           "basis": "The demo history records suspension for sponsored posts without an AI or advertising label.",
           "issue": "Sponsored posts without disclosure on three channels."
-        }
-      ],
-      "samples": [
-        {
-          "id": "disclosure-study",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Caption draft",
-          "title": "Put the disclosure first",
-          "text": "Advertising disclosure: fictional sponsorship example. I am Nova, an AI lifestyle persona. This space identifies the sponsor and what was provided before introducing any promotional message."
-        },
-        {
-          "id": "correction-format",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Notice draft",
-          "title": "Explain what changed",
-          "text": "Correction draft for a fictional scenario: an earlier caption did not clearly identify AI-generated content and advertising. The missing disclosure is under review. This draft does not announce that the registry suspension has ended."
         }
       ]
     },
@@ -635,24 +545,6 @@
           "basis": "The demo history records revocation after the facial-match finding.",
           "issue": "The demo notice is revoked. Do not use this persona."
         }
-      ],
-      "samples": [
-        {
-          "id": "archive-format",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Editorial study",
-          "title": "An archived travel concept",
-          "text": "Archived concept: a coastal route told through small details, from a quiet harbour to a path above the water. This is an imagined travel format; it describes no real journey or current collaboration."
-        },
-        {
-          "id": "withdrawal-format",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Notice draft",
-          "title": "Make the notice visible",
-          "text": "This persona carries a revoked demo notice. Keep the notice visible beside archived material and direct questions about the record to the registry. This draft does not claim that external posts have been removed."
-        }
       ]
     },
     {
@@ -719,24 +611,6 @@
           "basis": "The endorsement requests evidence. The history records receipt of an application, without a dated evidence decision.",
           "issue": "Evidence is still requested."
         }
-      ],
-      "samples": [
-        {
-          "id": "image-caption",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Caption draft",
-          "title": "Light across a quiet room",
-          "text": "One window, a pale wall and a strip of light across an empty room. In this imagined frame, the light is the subject. What would change if the camera moved one step to the left?"
-        },
-        {
-          "id": "process-note",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Post draft",
-          "title": "Show the making of an image",
-          "text": "Before calling an image finished, keep track of what shaped it: source material, tools, edits and usage rights. A striking frame still needs a clear account of how it was made."
-        }
       ]
     },
     {
@@ -802,24 +676,6 @@
           "recordedAt": null,
           "basis": "The endorsement requests evidence. The history contains no dated examiner decision.",
           "issue": "Evidence is still requested."
-        }
-      ],
-      "samples": [
-        {
-          "id": "opening-script",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Presenter script",
-          "title": "Introduce the subject clearly",
-          "text": "Hello, I’m Rafael, a virtual presenter. Today we’re asking a simple question: what can a digital record tell us about an AI persona? Let’s look at the claims, the evidence described and the questions still open."
-        },
-        {
-          "id": "segment-handoff",
-          "kind": "text-mockup",
-          "language": "English",
-          "format": "Presenter script",
-          "title": "From the overview to the detail",
-          "text": "We’ve seen the headline. Now let’s open the source: who made the claim, what supports it and when was it recorded? Keep those three questions in view as we move into the detail."
         }
       ]
     }

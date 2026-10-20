@@ -280,13 +280,6 @@ td a{font-weight:700;color:var(--ink)}
 .claim-body dt{font-size:13.5px;color:var(--muted)}
 .claim-body dd{margin:3px 0 0;font-weight:600;overflow-wrap:anywhere}
 .claim-issue{border-left:3px solid #A3570A;padding-left:12px;margin-top:14px;font-size:15px}
-.sample-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:22px}
-.content-sample{border:1px solid var(--rule);padding:24px;min-width:0}
-.sample-format{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:18px;font-size:13.5px;color:var(--muted)}
-.sample-format b{color:var(--navy);background:var(--mist);padding:3px 7px}
-.content-sample h3{font-size:23px;font-stretch:112%;line-height:1.2;margin-bottom:12px}
-.content-sample p{max-width:60ch;line-height:1.6}
-.sample-notice{margin-top:18px;border-left:3px solid var(--nc);padding:10px 14px;background:var(--nt);font-size:15px}
 .compare-main{padding-block:28px 64px}
 .compare-main h1{font-size:clamp(32px,5vw,48px);font-stretch:112%;line-height:1.1}
 .compare-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:28px;max-width:900px}
@@ -320,8 +313,7 @@ td a{font-weight:700;color:var(--ink)}
 .compare-channel span{overflow-wrap:anywhere;min-width:0}
 @media (max-width:640px){
   .claim-body{padding-inline:6px}
-  .claim-body dl,.sample-grid{grid-template-columns:minmax(0,1fr)}
-  .content-sample{padding:20px}
+  .claim-body dl{grid-template-columns:minmax(0,1fr)}
   .compare-controls{gap:14px;grid-template-columns:minmax(0,1fr)}
   .compare-head-grid,.compare-row{display:block}
   .compare-label{padding:14px 0}
@@ -718,49 +710,41 @@ const G='#1E6B47', B='#2C3A8C', A='#A3570A', R='#9A2F2B';
 const PEOPLE = [
   { id:'PP-AZ-0001', surname:'FIDAN', given:'', name:'Fidan', handle:'@fidan.sings', nature:'Fully synthetic', lang:'Azerbaijani', code:'AZE', role:'Vocalist', description:'A fictional Azerbaijani vocalist. This example highlights open questions about voice rights and the origin of the base model.', socials:[{platform:'TikTok',handle:'@fidan.sings',url:null}], holder:'Ruslan M.', level:'Evidence-backed', status:'Valid', note:'', issued:'12 Oct 2026', expires:'12 Oct 2031', created:'261012', exp:'311012', record:'a91f7c02', sort:20261012,
     claims:[{"title":"Identity root","statement":"EVIDENCE-BACKED","state":"recorded","recordedAt":null,"basis":"The demo records identity evidence under this endorsement. Supporting identity files are not publicly supplied.","issue":null},{"title":"Model lineage","statement":"DECLARED","state":"declared","recordedAt":null,"basis":"The base model is declared without a documented upstream training-data source.","issue":"The base model publisher has not disclosed its training data."},{"title":"Voice and music","statement":"OPEN RISK","state":"risk","recordedAt":null,"basis":"The demo lists a hosted voice service. Its commercial terms have not been archived.","issue":"Commercial voice and music terms remain unresolved."},{"title":"TikTok channel","statement":"OWNER VERIFIED","state":"recorded","recordedAt":"2026-10-10","basis":"A demo history event records channel ownership verification. No public profile URL or ownership proof is supplied.","issue":null},{"title":"Content credentials","statement":"10 FILES SIGNED","state":"recorded","recordedAt":null,"basis":"The endorsement states that ten files were signed. Those files, signing keys and credential manifests are not supplied for verification.","issue":null}],
-    samples:[{"id":"studio-note","kind":"text-mockup","language":"English","format":"Post draft","title":"A voice starts with a phrase","text":"Some melodies need space. Picture a close, quiet vocal that opens into a brighter chorus as the arrangement grows. Which moment would you keep almost whispered?"},{"id":"release-introduction","kind":"text-mockup","language":"English","format":"Short video script","title":"Before the first listen","text":"I’m Fidan, a virtual vocalist. Let’s begin this imagined session with one phrase in Azerbaijani, then explore how its rhythm changes as the arrangement grows around it."}],
     stamps:[{t:'Identity root',v:'EVIDENCE-BACKED',c:G,k:'rect',r:-5},{t:'Model lineage',v:'DECLARED',sub:'upstream unknown',c:B,k:'round',r:4},{t:'Voice and music',v:'OPEN RISK',c:A,k:'double',r:-3},{t:'TikTok channel',v:'OWNER VERIFIED',c:G,k:'pill',r:6},{t:'Content credentials',v:'10 FILES SIGNED',c:B,k:'dash',r:-2}],
     history:[{d:'12 Oct 2026',e:'Passport issued and published'},{d:'10 Oct 2026',e:'TikTok channel ownership verified'},{d:'02 Oct 2026',e:'Application received'}],
     risks:['Voice made on a hosted service. Its commercial terms are not archived yet.','The base model publisher has not disclosed its training data.'] },
   { id:'PP-TR-0004', surname:'KAYA', given:'LEYLA', name:'Leyla Kaya', handle:'@leyla.kaya', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Fashion host', description:'A fictional Turkish fashion host. Her example record shows a completed review and an Instagram channel ownership claim.', socials:[{platform:'Instagram',handle:'@leyla.kaya',url:null}], holder:'Studio Nur', level:'Reviewed', status:'Valid', note:'', issued:'03 Sep 2026', expires:'03 Sep 2031', created:'260903', exp:'310903', record:'3be041d9', sort:20260903,
     claims:[{"title":"Identity root","statement":"REVIEWED","state":"recorded","recordedAt":"2026-09-01","basis":"The demo history records a completed examiner review. The underlying identity review materials are not published.","issue":null},{"title":"Model lineage","statement":"EVIDENCE-BACKED","state":"recorded","recordedAt":null,"basis":"The demo endorsement records model-lineage evidence. Source model files and licence snapshots are not publicly supplied.","issue":null},{"title":"Voice","statement":"LICENSED","state":"recorded","recordedAt":null,"basis":"The voice endorsement is marked licensed. The licence document and its permitted uses are not published.","issue":null},{"title":"Instagram","statement":"OWNER VERIFIED","state":"recorded","recordedAt":null,"basis":"The demo endorsement records a channel ownership claim. No public profile URL or ownership proof is supplied.","issue":null}],
-    samples:[{"id":"style-note","kind":"text-mockup","language":"English","format":"Post draft","title":"One silhouette, two settings","text":"Keep the silhouette, change the setting. Picture a structured jacket in soft studio light, then the same shape after dark. Which detail should lead: the collar, the fabric or the colour?"},{"id":"behind-the-scenes","kind":"text-mockup","language":"English","format":"Short video script","title":"Building a virtual look","text":"A virtual look begins with a choice: what should the eye notice first? For this concept, follow the outline, then the texture, then the light. I’m Leyla, a fictional AI fashion host."}],
     stamps:[{t:'Identity root',v:'REVIEWED',c:G,k:'round',r:-4},{t:'Model lineage',v:'EVIDENCE-BACKED',c:G,k:'rect',r:3},{t:'Voice',v:'LICENSED',c:G,k:'pill',r:-2},{t:'Instagram',v:'OWNER VERIFIED',c:B,k:'double',r:4}],
     history:[{d:'03 Sep 2026',e:'Passport issued after examiner review'},{d:'01 Sep 2026',e:'Examiner review completed'},{d:'18 Aug 2026',e:'Application received'}],
     risks:[] },
   { id:'PP-ES-0011', surname:'SOL', given:'MIRA', name:'Mira Sol', handle:'@mira.moves', nature:'Licensed likeness', lang:'Spanish', code:'ESP', role:'Fitness coach', description:'A Spanish-language fitness coach portrayed with a licensed likeness. The example remains under review while consent renewal is pending.', holder:'Ola Media', level:'Evidence-backed', status:'Under review', note:'Consent renewal pending', issued:'28 Jul 2026', expires:'28 Jul 2031', created:'260728', exp:'310728', record:'c47a09e1', sort:20260728,
     claims:[{"title":"Likeness consent","statement":"ON FILE","state":"recorded","recordedAt":"2026-07-15","basis":"The demo history records signed likeness consent being filed. The private consent document is not published.","issue":"The model’s likeness consent expires on 30 Nov 2026."},{"title":"Model lineage","statement":"DECLARED","state":"declared","recordedAt":null,"basis":"Model lineage is declared in the demo endorsement. Independent supporting model evidence is not supplied.","issue":null},{"title":"Annual review","statement":"PENDING","state":"pending","recordedAt":"2026-10-10","basis":"The demo history records an annual review being opened; it does not record a completed renewal.","issue":"Consent renewal is pending."}],
-    samples:[{"id":"studio-introduction","kind":"text-mockup","language":"English","format":"Post draft","title":"Inside a virtual studio","text":"Welcome to the virtual studio. Before a session begins, let’s explain its purpose, who it is designed for and which information needs a qualified source. I’m Mira, a fictional fitness persona."},{"id":"production-note","kind":"text-mockup","language":"English","format":"Caption draft","title":"A clear caption","text":"How was this scene made? This concept places an AI presenter in a constructed studio. A clear production note names the visual tools, explains the use of a likeness and makes any commercial relationship visible."}],
     stamps:[{t:'Likeness consent',v:'ON FILE',c:G,k:'rect',r:-3},{t:'Model lineage',v:'DECLARED',c:B,k:'round',r:5},{t:'Annual review',v:'PENDING',c:A,k:'double',r:-2}],
     history:[{d:'10 Oct 2026',e:'Annual review opened'},{d:'28 Jul 2026',e:'Passport issued'},{d:'15 Jul 2026',e:'Signed likeness consent filed'}],
     risks:['The model’s likeness consent expires on 30 Nov 2026.'] },
   { id:'PP-JP-0016', surname:'MORI', given:'AIKO', name:'Aiko Mori', handle:'@aiko.plays', nature:'Fully synthetic', lang:'Japanese', code:'JPN', role:'Game streamer', description:'A Japanese-language game streamer. Model files and licence evidence are still requested in this example.', holder:'Kumo Labs', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261014', exp:'000000', record:'5d12ee70', sort:20261014,
     claims:[{"title":"Identity root","statement":"DECLARED","state":"declared","recordedAt":null,"basis":"The identity root is a declaration in the demo. The listed model files have not been hashed.","issue":"Model files have not been hashed."},{"title":"Examiner","statement":"EVIDENCE REQUESTED","state":"pending","recordedAt":"2026-10-16","basis":"The demo history explicitly requests model files and licences from the applicant.","issue":"No licence snapshots on file."}],
-    samples:[{"id":"stream-opening","kind":"text-mockup","language":"English","format":"Presenter script","title":"Welcome to the next level","text":"Welcome, players. Today’s imagined challenge starts in a quiet puzzle room: one locked door, three clues and no timer. Where would you look first?"},{"id":"community-prompt","kind":"text-mockup","language":"English","format":"Post draft","title":"Choose the next challenge","text":"Choose your next challenge: a puzzle you can solve together, or an obstacle course where every second counts? Which format would you choose, and what would make it worth replaying?"}],
     stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'round',r:3},{t:'Examiner',v:'EVIDENCE REQUESTED',c:A,k:'double',r:-4}],
     history:[{d:'16 Oct 2026',e:'Examiner requested model files and licences'},{d:'14 Oct 2026',e:'Application received'}],
     risks:['Model files have not been hashed.','No licence snapshots on file.'] },
   { id:'PP-MX-0019', surname:'REYES', given:'NOVA', name:'Nova Reyes', handle:'@novareyes', nature:'Fully synthetic', lang:'Spanish', code:'MEX', role:'Lifestyle', description:'A Spanish-language lifestyle persona. This example is suspended after sponsored posts appeared without the required disclosure.', holder:'Brightline', level:'Evidence-backed', status:'Suspended', note:'Undisclosed sponsored posts', issued:'19 May 2026', expires:'19 May 2031', created:'260519', exp:'310519', record:'88c31a4b', sort:20260519,
     claims:[{"title":"Identity root","statement":"EVIDENCE-BACKED","state":"recorded","recordedAt":null,"basis":"The identity endorsement records evidence in the demo. It does not resolve the separate disclosure breach.","issue":null},{"title":"Status","statement":"SUSPENDED","state":"adverse","recordedAt":"2026-10-02","basis":"The demo history records suspension for sponsored posts without an AI or advertising label.","issue":"Sponsored posts without disclosure on three channels."}],
-    samples:[{"id":"disclosure-study","kind":"text-mockup","language":"English","format":"Caption draft","title":"Put the disclosure first","text":"Advertising disclosure: fictional sponsorship example. I am Nova, an AI lifestyle persona. This space identifies the sponsor and what was provided before introducing any promotional message."},{"id":"correction-format","kind":"text-mockup","language":"English","format":"Notice draft","title":"Explain what changed","text":"Correction draft for a fictional scenario: an earlier caption did not clearly identify AI-generated content and advertising. The missing disclosure is under review. This draft does not announce that the registry suspension has ended."}],
     stamps:[{t:'Identity root',v:'EVIDENCE-BACKED',c:G,k:'rect',r:-3},{t:'Status',v:'SUSPENDED',c:R,k:'double',r:7}],
     history:[{d:'02 Oct 2026',e:'Suspended for sponsored posts without an AI or ad label'},{d:'19 May 2026',e:'Passport issued'}],
     risks:['Sponsored posts without disclosure on three channels.'] },
   { id:'PP-SE-0023', surname:'BERG', given:'ELIN', name:'Elin Berg', handle:'@elin.berg', nature:'Claimed synthetic', lang:'Swedish', code:'SWE', role:'Travel', description:'A Swedish-language travel persona. The example notice was revoked after a recorded close facial match to a real person.', holder:'North Pixel', level:'Declared', status:'Revoked', note:'Close match to a real person', issued:'02 Apr 2026', expires:'Revoked', created:'260402', exp:'000000', record:'0f6db52c', sort:20260402,
     claims:[{"title":"Face comparison","statement":"MATCH FOUND","state":"adverse","recordedAt":"2026-09-21","basis":"The demo history records a close facial match to a real person. This interface does not perform a new face comparison.","issue":"The persona’s face could not be cleared."},{"title":"Status","statement":"REVOKED","state":"adverse","recordedAt":"2026-09-24","basis":"The demo history records revocation after the facial-match finding.","issue":"The demo notice is revoked. Do not use this persona."}],
-    samples:[{"id":"archive-format","kind":"text-mockup","language":"English","format":"Editorial study","title":"An archived travel concept","text":"Archived concept: a coastal route told through small details, from a quiet harbour to a path above the water. This is an imagined travel format; it describes no real journey or current collaboration."},{"id":"withdrawal-format","kind":"text-mockup","language":"English","format":"Notice draft","title":"Make the notice visible","text":"This persona carries a revoked demo notice. Keep the notice visible beside archived material and direct questions about the record to the registry. This draft does not claim that external posts have been removed."}],
     stamps:[{t:'Face comparison',v:'MATCH FOUND',c:R,k:'rect',r:-5},{t:'Status',v:'REVOKED',c:R,k:'double',r:5}],
     history:[{d:'24 Sep 2026',e:'Passport revoked'},{d:'21 Sep 2026',e:'Face comparison found a close match to a real person'},{d:'02 Apr 2026',e:'Passport issued'}],
     risks:['Revoked. The persona’s face could not be cleared.'] },
   { id:'PP-TR-0027', surname:'DEMIR', given:'EMRE', name:'Emre Demir', handle:'@emre.frames', nature:'Fully synthetic', lang:'Turkish', code:'TUR', role:'Photographer', description:'A Turkish-language photographer persona awaiting review of model lineage and usage rights.', holder:'Emre Studio', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261018', exp:'000000', record:'e27c916b', sort:20261018,
     claims:[{"title":"Identity root","statement":"DECLARED","state":"declared","recordedAt":null,"basis":"The demo contains an identity declaration; it does not contain a completed review.","issue":"Model lineage and usage rights have not been reviewed."},{"title":"Evidence","statement":"REQUESTED","state":"pending","recordedAt":null,"basis":"The endorsement requests evidence. The history records receipt of an application, without a dated evidence decision.","issue":"Evidence is still requested."}],
-    samples:[{"id":"image-caption","kind":"text-mockup","language":"English","format":"Caption draft","title":"Light across a quiet room","text":"One window, a pale wall and a strip of light across an empty room. In this imagined frame, the light is the subject. What would change if the camera moved one step to the left?"},{"id":"process-note","kind":"text-mockup","language":"English","format":"Post draft","title":"Show the making of an image","text":"Before calling an image finished, keep track of what shaped it: source material, tools, edits and usage rights. A striking frame still needs a clear account of how it was made."}],
     stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'rect',r:-3},{t:'Evidence',v:'REQUESTED',c:A,k:'round',r:4}],
     history:[{d:'18 Oct 2026',e:'Demonstration application received'}],
     risks:['Model lineage and usage rights have not been reviewed.'] },
   { id:'PP-PT-0031', surname:'COSTA', given:'RAFAEL', name:'Rafael Costa', handle:'@rafael.costa', nature:'Fully synthetic', lang:'Portuguese', code:'PRT', role:'Presenter', description:'A Portuguese-language presenter persona whose identity evidence has not yet been reviewed.', holder:'Costa Media', level:'Declared', status:'Under review', note:'Evidence requested', issued:'Pending', expires:'Pending', created:'261019', exp:'000000', record:'b4d73e29', sort:20261019,
     claims:[{"title":"Identity root","statement":"DECLARED","state":"declared","recordedAt":null,"basis":"The demo contains an identity declaration without reviewed identity evidence.","issue":"Identity evidence has not been reviewed."},{"title":"Examiner","statement":"EVIDENCE REQUESTED","state":"pending","recordedAt":null,"basis":"The endorsement requests evidence. The history contains no dated examiner decision.","issue":"Evidence is still requested."}],
-    samples:[{"id":"opening-script","kind":"text-mockup","language":"English","format":"Presenter script","title":"Introduce the subject clearly","text":"Hello, I’m Rafael, a virtual presenter. Today we’re asking a simple question: what can a digital record tell us about an AI persona? Let’s look at the claims, the evidence described and the questions still open."},{"id":"segment-handoff","kind":"text-mockup","language":"English","format":"Presenter script","title":"From the overview to the detail","text":"We’ve seen the headline. Now let’s open the source: who made the claim, what supports it and when was it recorded? Keep those three questions in view as we move into the detail."}],
     stamps:[{t:'Identity root',v:'DECLARED',c:B,k:'round',r:2},{t:'Examiner',v:'EVIDENCE REQUESTED',c:A,k:'double',r:-4}],
     history:[{d:'19 Oct 2026',e:'Demonstration application received'}],
     risks:['Identity evidence has not been reviewed.'] }
@@ -1289,7 +1273,6 @@ function comparisonValue(person,key){
     channels:(person.socials?.length ? person.socials : [{platform:'Declared handle',handle:person.handle,url:null}]).map(channel => [channel.platform,channel.handle,socialHref(channel)]).sort(),
     risks:[...person.risks].sort(),
     claims:(person.claims || []).map(claim => [claim.title,claim.state]).sort(),
-    samples:person.samples?.length || 0,
     latest:person.history[0] ? [person.history[0].e,person.history[0].d] : null,
   };
   return JSON.stringify(values[key]);
@@ -1314,17 +1297,6 @@ function ClaimBasis({person}){
     </details>`)}</div>
   </section>`;
 }
-function ContentExamples({person}){
-  return html`<section className="record-section" aria-labelledby="content-examples-h">
-    <h2 className="h2" id="content-examples-h" tabIndex="-1">Content examples</h2>
-    <p className="sub">English text mockups created for this registry demo. These are new illustrative drafts, not published posts, recordings or evidence of past work.</p>
-    ${(person.status==='Suspended' || person.status==='Revoked') && html`<p className="sample-notice"><b>${NOTICE[person.status].name}.</b> ${NOTICE[person.status].advice} These mockups do not change the notice.</p>`}
-    <div className="sample-grid">${(person.samples || []).map(sample => html`<article className="content-sample" key=${person.id+sample.id}>
-      <div className="sample-format"><b>Demo text</b><span>${sample.format}</span></div>
-      <h3>${sample.title}</h3><p lang="en">${sample.text}</p>
-    </article>`)}</div>
-  </section>`;
-}
 function Compare({ids,toast}){
   const [onlyDifferences,setOnlyDifferences]=useState(false);
   const first=byId(ids[0]) || PEOPLE[0];
@@ -1342,7 +1314,6 @@ function Compare({ids,toast}){
     ['channels','Channels and handles',p => html`<div>${(p.socials?.length ? p.socials : [{platform:'Declared handle',handle:p.handle,url:null}]).map((channel,index) => { const href=socialHref(channel); return html`<div className="compare-channel" key=${index}><${SocialIcon} platform=${channel.platform} /><span>${channel.platform}<br />${href ? html`<a href=${href} target="_blank" rel="noopener noreferrer nofollow" aria-label=${'Open '+p.name+' on '+channel.platform+' in a new tab'}>${channel.handle}</a>` : channel.handle}</span></div>`; })}<p className="compare-muted">${p.socials?.some(socialHref) ? 'A link alone does not prove ownership.' : 'No public profile URL supplied.'}</p></div>`],
     ['risks','Open risks',p => p.risks.length ? html`<ul>${p.risks.map((risk,index) => html`<li key=${index}>${risk}</li>`)}</ul>` : html`<p>No open risks listed in this demo record.</p><p className="compare-muted">This does not guarantee that every risk is resolved.</p>`],
     ['claims','Basis of claims',p => html`<ul>${(p.claims || []).map(claim => html`<li key=${claim.title}><b>${claim.title}:</b> ${CLAIM_STATES[claim.state]}</li>`)}</ul>`],
-    ['samples','Content examples',p => html`<p>${p.samples?.length || 0} illustrative text mockups</p><p className="compare-muted">Available in the full record. No published work is implied.</p>`],
     ['latest','Latest demo event',p => html`<p>${p.history[0]?.e || 'No event supplied'}</p><p className="compare-muted">${p.history[0]?.d || 'Date not supplied'}</p>`],
   ];
   const different=key => comparisonValue(first,key)!==comparisonValue(second,key);
@@ -1655,7 +1626,7 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
   useEffect(() => {
     if(!section) return;
     if(section==='risks' || section==='history') setTab(section);
-    const targetId={overview:'h1',risks:'record-details',basis:'claim-basis-h',examples:'content-examples-h',images:'rec-images-h',history:'record-details'}[section];
+    const targetId={overview:'h1',risks:'record-details',basis:'claim-basis-h',images:'rec-images-h',history:'record-details'}[section];
     const frame=requestAnimationFrame(() => {
       const target=document.getElementById(targetId);
       target?.scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth',block:'start'});
@@ -1719,7 +1690,7 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
         </div>
       </div>
     </div></div>
-    <nav className="record-nav" aria-label="Profile sections"><div className="wrap">${[['overview','Overview'],['risks','Risks ('+person.risks.length+')'],['basis','Basis'],['examples','Examples'],['images','Images'],['history','History']].map(([key,label]) => html`<a key=${key} href=${'#'+person.id+'/'+key} onClick=${e => goSection(e,key)}>${label}</a>`)}</div></nav>
+    <nav className="record-nav" aria-label="Profile sections"><div className="wrap">${[['overview','Overview'],['risks','Risks ('+person.risks.length+')'],['basis','Basis'],['images','Images'],['history','History']].map(([key,label]) => html`<a key=${key} href=${'#'+person.id+'/'+key} onClick=${e => goSection(e,key)}>${label}</a>`)}</div></nav>
     <div className="wrap">
       <div className="rec-grid">
         <div className="rec-stage"><${Viewer} person=${person} /></div>
@@ -1765,7 +1736,6 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
         </div>
       </div>
       <${ClaimBasis} person=${person} />
-      <${ContentExamples} person=${person} />
       <section className="rec-images" aria-labelledby="rec-images-h">
         <div>
           <h2 className="h2" id="rec-images-h" tabIndex="-1">Persona images</h2>
@@ -2177,7 +2147,10 @@ function parse(){
   const comparison = /^compare\/([^/]+)\/([^/]+)$/.exec(h);
   if(comparison && byId(comparison[1]) && byId(comparison[2]) && comparison[1]!==comparison[2]) return {name:'compare',ids:comparison.slice(1)};
   const recordSection=/^([^/]+)\/(overview|risks|basis|examples|images|history)$/.exec(h);
-  if(recordSection && byId(recordSection[1].toUpperCase())) return {name:'record',id:recordSection[1].toUpperCase(),section:recordSection[2]};
+  if(recordSection && byId(recordSection[1].toUpperCase())) {
+    const id=recordSection[1].toUpperCase();
+    return recordSection[2]==='examples' ? {name:'record',id} : {name:'record',id,section:recordSection[2]};
+  }
   const id = h.toUpperCase();
   if(byId(id)) return {name:'record', id};
   if(h==='apply' || h==='report' || h==='notices' || h==='case-status' || h==='review') return {name:h};
