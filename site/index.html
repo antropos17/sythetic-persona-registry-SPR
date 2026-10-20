@@ -144,7 +144,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--rule);transition:border-color .15s var(--ease)}
 .card:hover{border-color:var(--navy)}
 .card .band{height:6px;background:var(--nc)}
-.card .ph{aspect-ratio:4/5;background:var(--mist);overflow:hidden}
+.card .ph{aspect-ratio:4/3;max-height:240px;background:var(--mist);overflow:hidden}
 .card .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
 .card .bd{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px}
 .card h3{font-stretch:112%;font-weight:800;font-size:20px;line-height:1.15}
@@ -152,6 +152,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card h3 a::after{content:"";position:absolute;inset:0}
 .card h3 a:focus-visible{outline:none}
 .card:has(a:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+.card-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
+.card-title .ntag{margin-top:0}
+.card-actions .save-action{min-height:44px;display:inline-flex;align-items:center}
 .card .no{font-family:var(--mono);font-size:14px;color:var(--muted)}
 .card .meta{font-size:14.5px;color:var(--muted)}
 .card-summary{font-size:14.5px;color:var(--muted);line-height:1.4;margin-top:5px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
@@ -162,6 +165,24 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;margin-top:8px}
 .card-actions .ntag{margin-top:0}
 .save-action{position:relative;z-index:1;font-size:14.5px}
+.catalog-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px;margin:0 0 18px}
+.catalog-filters label{display:block;font-size:14px;font-weight:700;margin-bottom:5px}
+.catalog-filters select{width:100%;min-width:0}
+.compare-choice{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:14px;cursor:pointer;align-self:flex-start}
+.compare-choice input,.compare-differences input{width:18px;height:18px;accent-color:var(--navy);flex:0 0 18px}
+.compare-choice:has(input:disabled){color:var(--muted);cursor:default}
+.compare-tray{position:sticky;bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:22;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;margin-top:20px;padding:14px 16px;background:#fff;border:1px solid var(--rule);border-top:3px solid var(--navy);box-shadow:0 4px 18px rgba(7,26,58,.12)}
+.compare-tray.empty{display:none}
+.compare-tray-list{display:flex;flex-wrap:wrap;gap:6px 12px;list-style:none;margin:6px 0 0;padding:0}
+.compare-tray-list button{min-height:44px;font-size:14px}
+.compare-tray-actions{display:flex;gap:10px;flex-wrap:wrap}
+.compare-tray p{font-size:13.5px;color:var(--muted)}
+.record-nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px));z-index:21;background:#fff;border-bottom:1px solid var(--rule)}
+.record-nav .wrap{display:flex;flex-wrap:wrap;gap:0 20px;padding-block:4px}
+.record-nav a{display:inline-flex;align-items:center;min-height:44px;color:var(--navy);font-size:15px;font-weight:700;text-decoration:none}
+.record-nav a:hover{text-decoration:underline}
+.record-risk-link{display:inline-flex;align-items:center;min-height:36px;margin-left:12px;color:#784208;font-size:15px;font-weight:700}
+.record-section h2,.rec-images h2,.record-details,.rec-head h1{scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px) + var(--record-nav-height,52px) + 16px)}
 .saved-filter{min-height:44px;padding:0 14px;border:1.5px solid #8C99AF;border-radius:2px;background:#fff;color:var(--navy);font-weight:700;cursor:pointer}
 .saved-filter[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
 .saved-filter:hover{border-color:var(--navy)}
@@ -272,14 +293,18 @@ td a{font-weight:700;color:var(--ink)}
 .compare-controls .in{width:100%}
 .compare-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
 .compare-announcement{margin-top:18px;font-size:15px;color:var(--muted)}
-.compare-head-grid{display:grid;grid-template-columns:180px minmax(0,1fr);margin-top:30px;border-top:2px solid var(--ink)}
+.compare-head-grid{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px));z-index:20;background:#fff;display:grid;grid-template-columns:180px minmax(0,1fr);margin-top:30px;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
 .compare-label{padding:22px 12px 22px 0;color:var(--muted);font-size:14px}
 .compare-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-.compare-person{padding:22px 18px;min-width:0;background:var(--mist)}
-.compare-person img{width:64px;height:80px;object-fit:cover;object-position:50% 30%;margin-bottom:12px}
-.compare-person h2{font-size:22px;font-stretch:112%;line-height:1.15;overflow-wrap:anywhere}
+.compare-person{display:flex;align-items:center;gap:12px;padding:12px 18px;min-width:0;background:var(--mist)}
+.compare-person>div{min-width:0}
+.compare-person img{width:40px;height:50px;object-fit:cover;object-position:50% 30%;flex:0 0 40px}
+.compare-person h2{font-size:20px;font-stretch:112%;line-height:1.15;overflow-wrap:anywhere}
 .compare-person p{margin-top:6px;font-size:13px;overflow-wrap:anywhere}
-.compare-person a{display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700}
+.compare-person a{display:inline-flex;align-items:center;min-height:44px;font-size:inherit;font-weight:700;color:var(--navy)}
+.compare-differences{display:inline-flex;align-items:center;gap:9px;min-height:44px;font-size:15px;font-weight:700;cursor:pointer}
+.compare-row.is-different .compare-values{background:#F6F8FB}
+.comparison-difference{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:5px}
 .compare-row{display:grid;grid-template-columns:180px minmax(0,1fr);border-top:1px solid var(--rule)}
 .compare-row>h2{font-size:16px;padding:20px 12px 20px 0;line-height:1.4}
 .compare-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:0}
@@ -300,12 +325,20 @@ td a{font-weight:700;color:var(--ink)}
   .compare-controls{gap:14px;grid-template-columns:minmax(0,1fr)}
   .compare-head-grid,.compare-row{display:block}
   .compare-label{padding:14px 0}
-  .compare-person{padding:16px 10px}
+  .compare-head-grid .compare-label{display:none}
+  .compare-person{padding:8px;gap:7px}
+  .compare-person img{display:none}
   .compare-person h2{font-size:18px}
   .compare-row>h2{padding:14px 0 0}
   .compare-values>div{padding:14px 10px 20px;font-size:15px}
   .compare-actions .btn{flex:1 1 auto;padding-inline:12px}
   .compare-channel{font-size:14px}
+  .catalog-filters{grid-template-columns:minmax(0,1fr);gap:12px}
+  .record-nav .wrap{gap:0 18px}
+  .record-nav a{font-size:14px}
+  .record-risk-link{margin-left:0;display:flex;width:fit-content}
+  .compare-tray-actions{width:100%}
+  .compare-tray-actions .btn{flex:1;padding-inline:12px}
 }
 .tabs{margin-top:44px}
 .tablist{display:flex;flex-wrap:wrap;border-bottom:2px solid var(--ink);gap:4px}
@@ -594,7 +627,7 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .tools{gap:10px}
   .tools .viewsw{flex:0 0 auto}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .card .ph{aspect-ratio:4/5;height:auto;min-height:0}
+  .card .ph{aspect-ratio:4/3;height:auto;min-height:0;max-height:none}
   .card .bd{padding:10px 12px 12px;gap:2px}
   .card h3{font-size:18px}
   .card .meta{font-size:14px}
@@ -1233,9 +1266,44 @@ function CardChannel({person}){
 }
 const CLAIM_STATES = {declared:'Declared',recorded:'Recorded evidence',pending:'Review pending',risk:'Open risk',adverse:'Adverse finding'};
 const CLAIM_DATE = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'});
+function useMeasuredHeight(selector,property){
+  useEffect(() => {
+    const element=document.querySelector(selector);
+    if(!element) return;
+    const update=() => document.documentElement.style.setProperty(property,Math.ceil(element.getBoundingClientRect().height)+'px');
+    update();
+    const observer=typeof ResizeObserver==='function' ? new ResizeObserver(update) : null;
+    observer?.observe(element); window.addEventListener('resize',update);
+    return () => { observer?.disconnect(); window.removeEventListener('resize',update); document.documentElement.style.removeProperty(property); };
+  },[selector,property]);
+}
+function comparisonValue(person,key){
+  const values={
+    overview:person.description,
+    notice:[person.status,person.note],
+    nature:person.nature,
+    occupation:[person.role,person.lang],
+    holder:person.holder,
+    level:person.level,
+    dates:[person.issued,person.expires],
+    channels:(person.socials?.length ? person.socials : [{platform:'Declared handle',handle:person.handle,url:null}]).map(channel => [channel.platform,channel.handle,socialHref(channel)]).sort(),
+    risks:[...person.risks].sort(),
+    claims:(person.claims || []).map(claim => [claim.title,claim.state]).sort(),
+    samples:person.samples?.length || 0,
+    latest:person.history[0] ? [person.history[0].e,person.history[0].d] : null,
+  };
+  return JSON.stringify(values[key]);
+}
+function toggleComparisonSelection(current,id){
+  if(current.includes(id)) return current.filter(value => value!==id);
+  return current.length<2 && byId(id) ? [...current,id] : current;
+}
+function CompareChoice({person,ids,onToggle}){
+  return html`<label className="compare-choice"><input type="checkbox" checked=${ids.includes(person.id)} disabled=${!ids.includes(person.id) && ids.length>=2} onChange=${() => onToggle(person.id)} />Compare<span className="sr"> ${person.name}</span></label>`;
+}
 function ClaimBasis({person}){
   return html`<section className="record-section" aria-labelledby="claim-basis-h">
-    <h2 className="h2" id="claim-basis-h">Basis of the record</h2>
+    <h2 className="h2" id="claim-basis-h" tabIndex="-1">Basis of the record</h2>
     <p className="sub">These statements belong to a fictional demo record. Expand an item to see its basis, related date and unresolved issue. Supporting evidence files are not publicly supplied.</p>
     <div className="claim-list">${(person.claims || []).map((claim,index) => html`<details className="claim-item" key=${person.id+claim.title} open=${index===0}>
       <summary><span className="claim-summary"><b>${claim.title}</b><span className="claim-state" data-state=${claim.state}>${CLAIM_STATES[claim.state]}</span></span></summary>
@@ -1248,7 +1316,7 @@ function ClaimBasis({person}){
 }
 function ContentExamples({person}){
   return html`<section className="record-section" aria-labelledby="content-examples-h">
-    <h2 className="h2" id="content-examples-h">Content examples</h2>
+    <h2 className="h2" id="content-examples-h" tabIndex="-1">Content examples</h2>
     <p className="sub">English text mockups created for this registry demo. These are new illustrative drafts, not published posts, recordings or evidence of past work.</p>
     ${(person.status==='Suspended' || person.status==='Revoked') && html`<p className="sample-notice"><b>${NOTICE[person.status].name}.</b> ${NOTICE[person.status].advice} These mockups do not change the notice.</p>`}
     <div className="sample-grid">${(person.samples || []).map(sample => html`<article className="content-sample" key=${person.id+sample.id}>
@@ -1258,24 +1326,27 @@ function ContentExamples({person}){
   </section>`;
 }
 function Compare({ids,toast}){
+  const [onlyDifferences,setOnlyDifferences]=useState(false);
   const first=byId(ids[0]) || PEOPLE[0];
   const second=byId(ids[1]) && ids[1]!==first.id ? byId(ids[1]) : PEOPLE.find(p => p.id!==first.id);
   const pair=[first,second];
   const change=(side,id) => { if(id===pair[1-side].id) return; const next=pair.map(p => p.id); next[side]=id; navigate('compare/'+next.join('/')); };
   const rows=[
-    ['Overview',p => p.description],
-    ['Notice',p => html`<${NTag} status=${p.status} /><p className="compare-muted">${NOTICE[p.status].advice}${p.note ? ' '+p.note+'.' : ''}</p>`],
-    ['Nature',p => p.nature],
-    ['Occupation and language',p => html`<p>${p.role}</p><p className="compare-muted">${p.lang}</p>`],
-    ['Listed rights holder',p => p.holder],
-    ['Recorded proof level',p => html`<p>${p.level}</p><p className="compare-muted">Demo label. No new evidence check.</p>`],
-    ['Issue and expiry',p => html`<p>Issued: ${p.issued}</p><p className="compare-muted">Expires: ${p.expires}</p>`],
-    ['Channels and handles',p => html`<div>${(p.socials?.length ? p.socials : [{platform:'Declared handle',handle:p.handle,url:null}]).map((channel,index) => { const href=socialHref(channel); return html`<div className="compare-channel" key=${index}><${SocialIcon} platform=${channel.platform} /><span>${channel.platform}<br />${href ? html`<a href=${href} target="_blank" rel="noopener noreferrer nofollow" aria-label=${'Open '+p.name+' on '+channel.platform+' in a new tab'}>${channel.handle}</a>` : channel.handle}</span></div>`; })}<p className="compare-muted">${p.socials?.some(socialHref) ? 'A link alone does not prove ownership.' : 'No public profile URL supplied.'}</p></div>`],
-    ['Open risks',p => p.risks.length ? html`<ul>${p.risks.map((risk,index) => html`<li key=${index}>${risk}</li>`)}</ul>` : html`<p>No open risks listed in this demo record.</p><p className="compare-muted">This does not guarantee that every risk is resolved.</p>`],
-    ['Basis of claims',p => html`<ul>${(p.claims || []).map(claim => html`<li key=${claim.title}><b>${claim.title}:</b> ${CLAIM_STATES[claim.state]}</li>`)}</ul>`],
-    ['Content examples',p => html`<p>${p.samples?.length || 0} illustrative text mockups</p><p className="compare-muted">Available in the full record. No published work is implied.</p>`],
-    ['Latest demo event',p => html`<p>${p.history[0]?.e || 'No event supplied'}</p><p className="compare-muted">${p.history[0]?.d || 'Date not supplied'}</p>`],
+    ['overview','Overview',p => p.description],
+    ['notice','Notice',p => html`<${NTag} status=${p.status} /><p className="compare-muted">${NOTICE[p.status].advice}${p.note ? ' '+p.note+'.' : ''}</p>`],
+    ['nature','Nature',p => p.nature],
+    ['occupation','Occupation and language',p => html`<p>${p.role}</p><p className="compare-muted">${p.lang}</p>`],
+    ['holder','Listed rights holder',p => p.holder],
+    ['level','Recorded proof level',p => html`<p>${p.level}</p><p className="compare-muted">Demo label. No new evidence check.</p>`],
+    ['dates','Issue and expiry',p => html`<p>Issued: ${p.issued}</p><p className="compare-muted">Expires: ${p.expires}</p>`],
+    ['channels','Channels and handles',p => html`<div>${(p.socials?.length ? p.socials : [{platform:'Declared handle',handle:p.handle,url:null}]).map((channel,index) => { const href=socialHref(channel); return html`<div className="compare-channel" key=${index}><${SocialIcon} platform=${channel.platform} /><span>${channel.platform}<br />${href ? html`<a href=${href} target="_blank" rel="noopener noreferrer nofollow" aria-label=${'Open '+p.name+' on '+channel.platform+' in a new tab'}>${channel.handle}</a>` : channel.handle}</span></div>`; })}<p className="compare-muted">${p.socials?.some(socialHref) ? 'A link alone does not prove ownership.' : 'No public profile URL supplied.'}</p></div>`],
+    ['risks','Open risks',p => p.risks.length ? html`<ul>${p.risks.map((risk,index) => html`<li key=${index}>${risk}</li>`)}</ul>` : html`<p>No open risks listed in this demo record.</p><p className="compare-muted">This does not guarantee that every risk is resolved.</p>`],
+    ['claims','Basis of claims',p => html`<ul>${(p.claims || []).map(claim => html`<li key=${claim.title}><b>${claim.title}:</b> ${CLAIM_STATES[claim.state]}</li>`)}</ul>`],
+    ['samples','Content examples',p => html`<p>${p.samples?.length || 0} illustrative text mockups</p><p className="compare-muted">Available in the full record. No published work is implied.</p>`],
+    ['latest','Latest demo event',p => html`<p>${p.history[0]?.e || 'No event supplied'}</p><p className="compare-muted">${p.history[0]?.d || 'Date not supplied'}</p>`],
   ];
+  const different=key => comparisonValue(first,key)!==comparisonValue(second,key);
+  const visibleRows=onlyDifferences ? rows.filter(([key]) => different(key)) : rows;
   return html`<div className="wrap compare-main">
     <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#notices">Notices</a></li><li aria-current="page">Compare personas</li></ol>
     <h1 id="h1" tabIndex="-1">Compare personas</h1>
@@ -1284,13 +1355,14 @@ function Compare({ids,toast}){
       <label htmlFor=${'compare-'+side}>${side===0 ? 'First persona' : 'Second persona'}</label>
       <select className="in" id=${'compare-'+side} value=${person.id} onChange=${e => change(side,e.target.value)}>${PEOPLE.map(p => html`<option key=${p.id} value=${p.id} disabled=${p.id===pair[1-side].id}>${p.name} (${p.id})</option>`)}</select>
     </div>`)}</div>
-    <div className="compare-actions"><button className="btn line" type="button" onClick=${() => navigate('compare/'+second.id+'/'+first.id)}>Swap sides</button><button className="btn line" type="button" onClick=${() => copy(location.href.split('#')[0]+'#compare/'+first.id+'/'+second.id,'Comparison link',toast)}>Copy comparison link</button></div>
-    <p className="compare-announcement" role="status">Comparing ${first.name} and ${second.name}. All entries are demonstration data.</p>
+    <div className="compare-actions"><button className="btn line" type="button" onClick=${() => navigate('compare/'+second.id+'/'+first.id)}>Swap sides</button><button className="btn line" type="button" onClick=${() => copy(location.href.split('#')[0]+'#compare/'+first.id+'/'+second.id,'Comparison link',toast)}>Copy comparison link</button><label className="compare-differences"><input type="checkbox" checked=${onlyDifferences} onChange=${e => setOnlyDifferences(e.target.checked)} />Show differences only</label></div>
+    <p className="compare-announcement" role="status">Comparing ${first.name} and ${second.name}. Showing ${visibleRows.length} of ${rows.length} fields${onlyDifferences ? ' with different values' : ''}. All entries are demonstration data.</p>
     <div className="compare-head-grid"><p className="compare-label">Selected personas</p><div className="compare-people">${pair.map(p => html`<div className="compare-person" key=${p.id}>
-      <img src=${p.src} alt="" /><h2>${p.name}</h2><p className="mono">${p.id}</p><a href=${'#'+p.id} aria-label=${'Open record for '+p.name}>Open record</a>
+      <img src=${p.src} alt="" /><div><h2><a href=${'#'+p.id} aria-label=${'Open record for '+p.name}>${p.name}</a></h2><p className="mono">${p.id}</p></div>
     </div>`)}</div></div>
-    ${rows.map(([label,render],index) => html`<section className="compare-row" aria-labelledby=${'compare-row-'+index} key=${label}>
-      <h2 id=${'compare-row-'+index}>${label}</h2><dl className="compare-values">${pair.map(p => html`<div style=${nvars(p.status)} key=${p.id}><dt className="sr">${p.name}</dt><dd>${render(p)}</dd></div>`)}</dl>
+    ${visibleRows.length===0 && html`<p className="empty" role="status">The displayed values match. Turn off “Show differences only” to see all fields.</p>`}
+    ${visibleRows.map(([key,label,render]) => html`<section className=${'compare-row'+(different(key) ? ' is-different' : '')} aria-labelledby=${'compare-row-'+key} key=${key}>
+      <h2 id=${'compare-row-'+key}>${label}${different(key) && html`<span className="comparison-difference">Different values</span>`}</h2><dl className="compare-values">${pair.map(p => html`<div style=${nvars(p.status)} key=${p.id}><dt className="sr">${p.name}</dt><dd>${render(p)}</dd></div>`)}</dl>
     </section>`)}
   </div>`;
 }
@@ -1460,18 +1532,23 @@ function Hero(){
   </div></section>`;
 }
 
-function Notices({savedRecords, toggleSaved}){
+function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison}){
   const saved = store.get('spr-view') || {};
   const [notice,setNotice] = useState('All'); const [q,setQ] = useState(''); const [sort,setSort] = useState('recent'); const [view,setView] = useState(saved.view || 'grid'); const [savedOnly,setSavedOnly] = useState(false);
+  const [language,setLanguage]=useState(''); const [occupation,setOccupation]=useState(''); const [proof,setProof]=useState('');
+  const languages=[...new Set(PEOPLE.map(p => p.lang))].sort(); const occupations=[...new Set(PEOPLE.map(p => p.role))].sort();
   useEffect(() => { store.set('spr-view', {view}); }, [view]);
   const counts = {}; PEOPLE.forEach(p => { counts[p.status] = (counts[p.status] || 0) + 1; });
   const rows = useMemo(() => {
     const ql = q.trim().toLowerCase();
-    let r = PEOPLE.filter(p => (notice==='All' || p.status===notice) && (!savedOnly || savedRecords.includes(p.id)) && (!ql || hay(p).includes(ql)));
+    let r = PEOPLE.filter(p => (notice==='All' || p.status===notice) && (!savedOnly || savedRecords.includes(p.id)) && (!ql || hay(p).includes(ql)) && (!language || p.lang===language) && (!occupation || p.role===occupation) && (!proof || p.level===proof));
     const cmp = { recent:(a,b) => b.sort-a.sort, name:(a,b) => a.name.localeCompare(b.name), notice:(a,b) => ORDER.indexOf(a.status)-ORDER.indexOf(b.status) || b.sort-a.sort }[sort];
     return r.slice().sort(cmp);
-  }, [notice, q, sort, savedOnly, savedRecords]);
-  const filtered = notice!=='All' || q.trim() || savedOnly;
+  }, [notice, q, sort, savedOnly, savedRecords,language,occupation,proof]);
+  const filtered = notice!=='All' || q.trim() || savedOnly || language || occupation || proof;
+  const clearFilters=() => { setNotice('All'); setQ(''); setSavedOnly(false); setLanguage(''); setOccupation(''); setProof(''); requestAnimationFrame(() => document.getElementById('nq')?.focus()); };
+  const removeComparison=id => { toggleComparison(id); requestAnimationFrame(() => { const target=comparisonIds.length>1 ? document.querySelector('.compare-tray-list button') : document.getElementById('nq'); target?.focus(); }); };
+  const clearComparison=() => { comparisonIds.forEach(toggleComparison); requestAnimationFrame(() => (document.querySelector('.compare-choice input:not(:disabled)') || document.getElementById('nq'))?.focus()); };
   return html`<section id="notices" className="sec" aria-labelledby="n-h"><div className="wrap">
     <div className="sec-h"><div>
       <h2 className="h2" id="n-h" tabIndex="-1">Notices</h2>
@@ -1497,44 +1574,55 @@ function Notices({savedRecords, toggleSaved}){
       </div>
       <button type="button" className="saved-filter" aria-pressed=${savedOnly?'true':'false'} onClick=${() => setSavedOnly(value => !value)}>Saved in this browser (${savedRecords.length})</button>
     </div>
+    <div className="catalog-filters">
+      <div><label htmlFor="catalog-language">Language</label><select className="sel" id="catalog-language" value=${language} onChange=${e => setLanguage(e.target.value)}><option value="">All languages</option>${languages.map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
+      <div><label htmlFor="catalog-occupation">Occupation</label><select className="sel" id="catalog-occupation" value=${occupation} onChange=${e => setOccupation(e.target.value)}><option value="">All occupations</option>${occupations.map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
+      <div><label htmlFor="catalog-proof">Proof level</label><select className="sel" id="catalog-proof" value=${proof} onChange=${e => setProof(e.target.value)}><option value="">All proof levels</option>${LEVELS.filter(value => PEOPLE.some(p => p.level===value)).map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
+    </div>
     <p className="status-line" aria-live="polite" style=${{marginBottom:'16px'}}>
       ${rows.length} of ${PEOPLE.length} personas${notice!=='All' ? ' with a ' + NOTICE[notice].name.toLowerCase() : ''}${q.trim() ? ' matching “' + q.trim() + '”' : ''}${savedOnly ? ' in your saved records' : ''}.
-      ${filtered && html`<button type="button" className="tlink clear" onClick=${() => { setNotice('All'); setQ(''); setSavedOnly(false); }}>Clear filters</button>`}
+      ${filtered && html`<button type="button" className="tlink clear" onClick=${clearFilters}>Clear filters</button>`}
     </p>
-    ${!rows.length && html`<p className="empty">${savedOnly && !savedRecords.length ? 'No saved records yet. Save a persona from a card to find it here.' : 'No persona matches these filters.'} <button type="button" className="tlink" onClick=${() => { setNotice('All'); setQ(''); setSavedOnly(false); }}>Show all notices</button></p>`}
+    <p className="sr" role="status">${comparisonIds.length===2 ? 'Two personas selected for comparison. Remove a selection to choose another persona.' : comparisonIds.length+' of 2 personas selected for comparison.'}</p>
+    ${!rows.length && html`<p className="empty">${savedOnly && !savedRecords.length ? 'No saved records yet. Save a persona from a card to find it here.' : 'No persona matches these filters.'} <button type="button" className="tlink" onClick=${clearFilters}>Show all notices</button></p>`}
     ${rows.length > 0 && view==='grid' && html`<ul className="grid" style=${{listStyle:'none',margin:0,padding:0}}>
       ${rows.map(p => html`<li key=${p.id} className="card" style=${nvars(p.status)}>
         <div className="band" aria-hidden="true"></div>
         <div className="ph"><img src=${p.src} alt=${'Portrait of ' + p.name} loading="lazy" decoding="async" /></div>
         <div className="bd">
-          <h3><a href=${'#'+p.id}>${p.name}</a></h3>
+          <div className="card-title"><h3><a href=${'#'+p.id}>${p.name}</a></h3><${NTag} status=${p.status} /></div>
           <span className="no">${p.id}</span>
           <span className="meta">${p.role}, ${p.lang}</span>
           <span className="meta">Held by ${p.holder}</span>
           <p className="card-summary">${p.description}</p>
           <${CardChannel} person=${p} />
-          <div className="card-actions"><${NTag} status=${p.status} />
+          <div className="card-actions">
             <button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button>
+            <${CompareChoice} person=${p} ids=${comparisonIds} onToggle=${toggleComparison} />
           </div>
         </div>
       </li>`)}
     </ul>`}
     ${rows.length > 0 && view==='list' && html`<div className="tbl-box"><table>
       <caption className="sr">Notices. Demonstration entries.</caption>
-      <thead><tr><th scope="col"><span className="sr">Portrait</span></th><th scope="col">Persona</th><th scope="col">Passport number</th><th scope="col">Rights holder</th><th scope="col">Notice</th><th scope="col">Issued</th><th scope="col">Save</th></tr></thead>
+      <thead><tr><th scope="col"><span className="sr">Portrait</span></th><th scope="col">Persona</th><th scope="col">Passport number</th><th scope="col">Rights holder</th><th scope="col">Notice</th><th scope="col">Issued</th><th scope="col">Save</th><th scope="col">Compare</th></tr></thead>
       <tbody>${rows.map(p => html`<tr key=${p.id}>
         <td><img className="thumb" src=${p.src} alt="" /></td>
         <td><a href=${'#'+p.id}>${p.name}</a><br /><span style=${{color:'var(--muted)',fontSize:'14.5px'}}>${p.handle}</span></td>
         <td className="mono">${p.id}</td><td>${p.holder}</td><td><${NTag} status=${p.status} /></td><td style=${{whiteSpace:'nowrap'}}>${p.issued}</td>
-        <td><button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button></td></tr>`)}</tbody>
+        <td><button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button></td><td><${CompareChoice} person=${p} ids=${comparisonIds} onToggle=${toggleComparison} /></td></tr>`)}</tbody>
     </table></div>`}
+    <aside className=${'compare-tray'+(comparisonIds.length ? '' : ' empty')} aria-label="Selected for comparison">
+      <div><b>${comparisonIds.length} of 2 selected</b><ul className="compare-tray-list">${comparisonIds.map(id => html`<li key=${id}><button type="button" className="tlink" aria-label=${'Remove '+byId(id).name+' from comparison'} onClick=${() => removeComparison(id)}>${byId(id).name} — remove</button></li>`)}</ul><p>Your selection is kept when filters change.</p></div>
+      <div className="compare-tray-actions"><button className="btn" type="button" disabled=${comparisonIds.length!==2} onClick=${() => navigate('compare/'+comparisonIds.join('/'))}>Compare selected</button><button className="btn line" type="button" onClick=${clearComparison}>Clear selection</button></div>
+    </aside>
   </div></section>`;
 }
 
-function Home({savedRecords, toggleSaved}){
+function Home({savedRecords, toggleSaved,comparisonIds,toggleComparison}){
   return html`<div>
     <${Hero} />
-    <${Notices} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />
+    <${Notices} savedRecords=${savedRecords} toggleSaved=${toggleSaved} comparisonIds=${comparisonIds} toggleComparison=${toggleComparison} />
     <section className="sec" style=${{background:'var(--mist)'}} aria-labelledby="s-h"><div className="wrap">
       <div className="sec-h"><div><h2 className="h2" id="s-h">How a persona would get a passport</h2>
         <p className="sub">The proposed five-stage process. Evidence review, signatures and renewals are not active in this demo.</p></div></div>
@@ -1558,10 +1646,24 @@ function Home({savedRecords, toggleSaved}){
 
 /* ---------- record ---------- */
 const PROV_DATE_TIME = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-function Record({person, toast, onReport, savedRecords, toggleSaved}){
+function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
+  const section=route.section;
+  useMeasuredHeight('.record-nav','--record-nav-height');
   const [tab,setTab] = useState('check'); const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]);
   const [provenance,setProvenance] = useState(null); const [provenanceError,setProvenanceError] = useState('');
   useEffect(() => { timers.current.forEach(clearTimeout); timers.current = []; setStep(-1); setTab('check'); }, [person.id]);
+  useEffect(() => {
+    if(!section) return;
+    if(section==='risks' || section==='history') setTab(section);
+    const targetId={overview:'h1',risks:'record-details',basis:'claim-basis-h',examples:'content-examples-h',images:'rec-images-h',history:'record-details'}[section];
+    const frame=requestAnimationFrame(() => {
+      const target=document.getElementById(targetId);
+      target?.scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth',block:'start'});
+      document.getElementById(section==='risks' || section==='history' ? 'tab-'+section : targetId)?.focus({preventScroll:true});
+    });
+    return () => cancelAnimationFrame(frame);
+  },[person.id,route]);
+  const goSection=(event,key) => { if(event.button===0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey){ event.preventDefault(); navigate(person.id+'/'+key); } };
   useEffect(() => {
     setProvenance(null); setProvenanceError('');
     if(location.protocol==='file:') return;
@@ -1606,6 +1708,7 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
           <span className="no">${person.id}</span>
           <h1 id="h1" tabIndex="-1">${person.name}</h1>
           <${NTag} status=${person.status} />
+          <a className="record-risk-link" href=${'#'+person.id+'/risks'} onClick=${e => goSection(e,'risks')}>${person.risks.length ? person.risks.length+' unresolved issue'+(person.risks.length===1 ? '' : 's') : 'No open risks listed'}</a>
           <button type="button" className="tlink rec-save" aria-pressed=${savedRecords.includes(person.id)?'true':'false'} onClick=${() => toggleSaved(person.id)}>${savedRecords.includes(person.id) ? 'Remove from saved records' : 'Save record in this browser'}</button>
           <a className="tlink rec-compare" href=${'#compare/'+person.id+'/'+next.id}>Compare with another persona</a>
         </div>
@@ -1616,6 +1719,7 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
         </div>
       </div>
     </div></div>
+    <nav className="record-nav" aria-label="Profile sections"><div className="wrap">${[['overview','Overview'],['risks','Risks ('+person.risks.length+')'],['basis','Basis'],['examples','Examples'],['images','Images'],['history','History']].map(([key,label]) => html`<a key=${key} href=${'#'+person.id+'/'+key} onClick=${e => goSection(e,key)}>${label}</a>`)}</div></nav>
     <div className="wrap">
       <div className="rec-grid">
         <div className="rec-stage"><${Viewer} person=${person} /></div>
@@ -1642,7 +1746,7 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
           </dl>
         </div>
       </div>
-      <div className="tabs">
+      <div className="tabs record-details" id="record-details">
         <div className="tablist" role="tablist" aria-label="Record details" onKeyDown=${tabKey}>
           ${tabs.map(([k,l]) => html`<button key=${k} type="button" role="tab" id=${'tab-'+k} aria-controls=${'tp-'+k} aria-selected=${tab===k?'true':'false'} tabIndex=${tab===k?0:-1} onClick=${() => setTab(k)}>${l}</button>`)}
         </div>
@@ -1664,7 +1768,7 @@ function Record({person, toast, onReport, savedRecords, toggleSaved}){
       <${ContentExamples} person=${person} />
       <section className="rec-images" aria-labelledby="rec-images-h">
         <div>
-          <h2 className="h2" id="rec-images-h">Persona images</h2>
+          <h2 className="h2" id="rec-images-h" tabIndex="-1">Persona images</h2>
           <p className="sub">The face portrait used in the catalog and this full-length studio image illustrate a fictional persona. They do not establish identity or represent a new face check.</p>
           <div className="rec-image-key">
             <img src=${person.src} alt="" loading="lazy" />
@@ -2072,14 +2176,19 @@ function parse(){
   if(h==='compare') return {name:'compare',ids:PEOPLE.slice(0,2).map(p => p.id)};
   const comparison = /^compare\/([^/]+)\/([^/]+)$/.exec(h);
   if(comparison && byId(comparison[1]) && byId(comparison[2]) && comparison[1]!==comparison[2]) return {name:'compare',ids:comparison.slice(1)};
+  const recordSection=/^([^/]+)\/(overview|risks|basis|examples|images|history)$/.exec(h);
+  if(recordSection && byId(recordSection[1].toUpperCase())) return {name:'record',id:recordSection[1].toUpperCase(),section:recordSection[2]};
   const id = h.toUpperCase();
   if(byId(id)) return {name:'record', id};
   if(h==='apply' || h==='report' || h==='notices' || h==='case-status' || h==='review') return {name:h};
   return {name:'home'};
 }
 function App(){
+  useMeasuredHeight('.hdr','--header-height');
   const [route,setRoute] = useState(parse); const routeRef = useRef(route); const prevRef = useRef(null); const [pal,setPal] = useState(false); const [menu,setMenu] = useState(false); const [reportFor,setReportFor] = useState(null); const [msg,toast] = useToast();
   const [savedRecords,setSavedRecords] = useState(() => restoreSaved(store.get(SAVED_KEY)));
+  const [comparisonIds,setComparisonIds]=useState([]);
+  const toggleComparison=id => setComparisonIds(current => toggleComparisonSelection(current,id));
   useEffect(() => { store.set(SAVED_KEY, savedRecords); }, [savedRecords]);
   const toggleSaved = id => setSavedRecords(current => current.includes(id) ? current.filter(saved => saved!==id) : [...current,id]);
   useEffect(() => {
@@ -2098,20 +2207,21 @@ function App(){
     const prev = prevRef.current; prevRef.current = route; routeRef.current = route;
     document.title = route.name==='record' ? byId(route.id).name + ' | Synthetic Persona Registry' : route.name==='compare' ? 'Compare personas | Synthetic Persona Registry' : route.name==='apply' ? 'Register a persona | Synthetic Persona Registry' : route.name==='report' ? 'Report a persona | Synthetic Persona Registry' : route.name==='notices' ? 'Notices | Synthetic Persona Registry' : route.name==='case' || route.name==='case-status' ? 'Case status | Synthetic Persona Registry' : route.name==='review' ? 'Review console | Synthetic Persona Registry' : 'Synthetic Persona Registry';
     if(prev && prev.name==='compare' && route.name==='compare') return;
+    if(route.name==='record' && route.section) return;
     if(route.name==='notices'){ const el = document.getElementById('notices'); el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth'}); document.getElementById('n-h')?.focus({preventScroll:true}); return; }
     if(prev && prev.name==='record' && route.name==='record'){ const st = document.querySelector('.rec-stage'); if(st){ const r = st.getBoundingClientRect(); if(r.top < 0 || r.top > window.innerHeight * .6) window.scrollTo({top: Math.max(0, window.scrollY + r.top - 90), behavior: REDUCED ? 'auto' : 'smooth'}); } }
     else window.scrollTo(0, 0);
     const h = document.getElementById('h1'); if(h && route.name!=='home') h.focus({preventScroll:true});
   }, [route]);
   const onReport = p => { setReportFor(p); navigate('report'); };
-  const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} toast=${toast} onReport=${onReport} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`
+  const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} route=${route} toast=${toast} onReport=${onReport} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`
     : route.name==='compare' ? html`<${Compare} ids=${route.ids} toast=${toast} />`
     : route.name==='apply' ? html`<${Apply} toast=${toast} />`
     : route.name==='report' ? html`<${Report} prefill=${reportFor} toast=${toast} />`
     : route.name==='case-status' ? html`<${CaseAccess} />`
     : route.name==='case' ? html`<${CasePage} key=${route.id} caseId=${route.id} accessToken=${route.accessToken} toast=${toast} />`
     : route.name==='review' ? html`<${ReviewConsole} />`
-    : html`<${Home} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`;
+    : html`<${Home} savedRecords=${savedRecords} toggleSaved=${toggleSaved} comparisonIds=${comparisonIds} toggleComparison=${toggleComparison} />`;
   const cur = route.name==='record' || route.name==='notices' ? 'notices' : route.name;
   return html`<div>
     <a className="skip" href="#main" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined} onClick=${e => { e.preventDefault(); const m = document.getElementById('main'); m && m.focus(); }}>Skip to main content</a>

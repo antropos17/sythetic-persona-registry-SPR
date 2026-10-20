@@ -56,7 +56,7 @@ test('standalone fallback records match the API source', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(fallback)), source.map(({ portrait, ...record }) => record));
 });
 
-test('comparison routes retain two distinct known records and reject invalid pairs', () => {
+test('comparison and profile section routes retain valid targets and reject invalid ones', () => {
   const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
   const route = page.match(/function parse\(\)\{[\s\S]*?\n\}/);
   const people = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
@@ -65,9 +65,39 @@ test('comparison routes retain two distinct known records and reject invalid pai
   })));
   assert.deepEqual(parseHash('#compare'), { name: 'compare', ids: ['PP-AZ-0001', 'PP-TR-0004'] });
   assert.deepEqual(parseHash('#compare/PP-SE-0023/PP-AZ-0001'), { name: 'compare', ids: ['PP-SE-0023', 'PP-AZ-0001'] });
-  for (const hash of ['#compare/PP-AZ-0001/PP-AZ-0001', '#compare/PP-AZ-0001/missing', '#compare/PP-AZ-0001', '#compare/%E0%A4%A/PP-AZ-0001']) {
+  assert.deepEqual(parseHash('#pp-az-0001/risks'), { name: 'record', id: 'PP-AZ-0001', section: 'risks' });
+  assert.deepEqual(parseHash('#PP-AZ-0001/examples'), { name: 'record', id: 'PP-AZ-0001', section: 'examples' });
+  assert.deepEqual(parseHash('#PP-AZ-0001'), { name: 'record', id: 'PP-AZ-0001' });
+  for (const hash of ['#compare/PP-AZ-0001/PP-AZ-0001', '#compare/PP-AZ-0001/missing', '#compare/PP-AZ-0001', '#compare/%E0%A4%A/PP-AZ-0001', '#missing/risks', '#PP-AZ-0001/unknown']) {
     assert.deepEqual(parseHash(hash), { name: 'home' }, hash);
   }
+});
+
+test('comparison differences reflect visible values and ignore ordering of risks', () => {
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const source = page.match(/function comparisonValue\(person,key\)\{[\s\S]*?\n\}/);
+  const social = page.match(/function socialHref\(channel\)\{[\s\S]*?\n\}/);
+  const value = runInNewContext(social[0] + '\n' + source[0] + '\ncomparisonValue', { URL, decodeURIComponent });
+  const [first, second] = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
+  assert.equal(value(first, 'nature'), value(second, 'nature'));
+  assert.equal(value(first, 'samples'), value(second, 'samples'));
+  assert.notEqual(value(first, 'occupation'), value(second, 'occupation'));
+  assert.equal(value(first, 'risks'), value({ ...first, risks: [...first.risks].reverse() }, 'risks'));
+  assert.notEqual(value(first, 'risks'), value({ ...first, risks: [] }, 'risks'));
+  assert.notEqual(value(first, 'notice'), value({ ...first, note: 'Additional review pending' }, 'notice'));
+  assert.notEqual(value(first, 'channels'), value({ ...first, socials: [{ platform: 'Instagram', handle: first.handle, url: null }] }, 'channels'));
+});
+
+test('catalog comparison selection retains at most two distinct known records', () => {
+  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
+  const source = page.match(/function toggleComparisonSelection\(current,id\)\{[\s\S]*?\n\}/);
+  const people = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
+  const toggle = runInNewContext(source[0] + '\ntoggleComparisonSelection', { byId: id => people.find(person => person.id === id) });
+  let pair = toggle([], people[0].id);
+  pair = toggle(pair, people[1].id);
+  assert.deepEqual(Array.from(toggle(pair, people[2].id)), [people[0].id, people[1].id]);
+  assert.deepEqual(Array.from(toggle(pair, people[0].id)), [people[1].id]);
+  assert.deepEqual(Array.from(toggle([], 'unknown')), []);
 });
 
 test('public claim context stays tied to existing demo endorsements and dated events', () => {
