@@ -65,10 +65,12 @@ test('comparison and profile section routes retain valid targets and reject inva
   })));
   assert.deepEqual(parseHash('#compare'), { name: 'compare', ids: ['PP-AZ-0001', 'PP-TR-0004'] });
   assert.deepEqual(parseHash('#compare/PP-SE-0023/PP-AZ-0001'), { name: 'compare', ids: ['PP-SE-0023', 'PP-AZ-0001'] });
+  assert.deepEqual(parseHash('#compare?differences=1'), { name: 'compare', ids: ['PP-AZ-0001', 'PP-TR-0004'], differences: true });
+  assert.deepEqual(parseHash('#compare/PP-SE-0023/PP-AZ-0001?differences=1'), { name: 'compare', ids: ['PP-SE-0023', 'PP-AZ-0001'], differences: true });
   assert.deepEqual(parseHash('#pp-az-0001/risks'), { name: 'record', id: 'PP-AZ-0001', section: 'risks' });
   assert.deepEqual(parseHash('#PP-AZ-0001/examples'), { name: 'record', id: 'PP-AZ-0001' });
   assert.deepEqual(parseHash('#PP-AZ-0001'), { name: 'record', id: 'PP-AZ-0001' });
-  for (const hash of ['#compare/PP-AZ-0001/PP-AZ-0001', '#compare/PP-AZ-0001/missing', '#compare/PP-AZ-0001', '#compare/%E0%A4%A/PP-AZ-0001', '#missing/risks', '#PP-AZ-0001/unknown']) {
+  for (const hash of ['#compare/PP-AZ-0001/PP-AZ-0001', '#compare/PP-AZ-0001/missing', '#compare/PP-AZ-0001', '#compare/%E0%A4%A/PP-AZ-0001', '#compare/PP-AZ-0001/PP-TR-0004?differences=0', '#compare/PP-AZ-0001/PP-TR-0004?differences=1&unknown=1', '#compare/PP-AZ-0001/PP-AZ-0001?differences=1', '#missing/risks', '#PP-AZ-0001/unknown']) {
     assert.deepEqual(parseHash(hash), { name: 'home' }, hash);
   }
 });
