@@ -1258,7 +1258,15 @@ function createViewer(el,onChange=()=>{}){
     const k=REDUCED?1:1-Math.exp(-18*dt);rotation.x+=(angle.x-rotation.x)*k;rotation.y+=(angle.y-rotation.y)*k;
     root.rotation.set(rotation.x,rotation.y,0);
     root.position.set(pan.x+(framing==='left'?.5:framing==='right'?-.5:0)*openP,pan.y,0);
-    const target=cameraTarget/zoom;cameraDistance+=(target-cameraDistance)*(REDUCED?1:1-Math.exp(-16*dt));camera.position.set(0,0,cameraDistance);camera.lookAt(0,0,0);
+    const tangent=Math.tan(camera.fov*Math.PI/360),halfWidth=(framing==='spread'?1.18+openP:1.13)/2,center=framing==='left'?-.5*openP:framing==='right'?.5*openP:0;
+    let distance=0;
+    // Fit the rotated inspection region; intentional user panning and zoom remain independent.
+    const corner=new T.Vector3();
+    for(const x of [-halfWidth,halfWidth])for(const y of [-.84,.84])for(const z of [-.1,.06]){
+      corner.set(center+x,y,z).applyEuler(root.rotation);corner.x-=center;
+      distance=Math.max(distance,Math.abs(corner.x)/(tangent*camera.aspect)+corner.z,Math.abs(corner.y)/tangent+corner.z);
+    }
+    const target=(distance+.12)/zoom;cameraDistance+=(target-cameraDistance)*(REDUCED?1:1-Math.exp(-16*dt));camera.position.set(0,0,cameraDistance);camera.lookAt(0,0,0);
     holoMat.uniforms.tilt.value.set(rotation.y,rotation.x);renderer.render(scene,camera);
     if(opening||turn||Math.abs(velocity.x)+Math.abs(velocity.y)>.001||Math.abs(rotation.x-angle.x)+Math.abs(rotation.y-angle.y)>.0001||Math.abs(cameraDistance-target)>.0001)invalidate();
   }
