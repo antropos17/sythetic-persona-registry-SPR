@@ -8,7 +8,7 @@ WORKDIR /app
 COPY --chown=node:node package.json ./
 COPY --chown=node:node server ./server
 COPY --chown=node:node site ./site
-COPY --chown=node:node data/personas.json ./data/personas.json
+COPY --chown=node:node data/personas.json data/media-provenance.json ./data/
 COPY --chown=node:node assets ./assets
 RUN mkdir -p /app/var && chown node:node /app/var
 USER node
