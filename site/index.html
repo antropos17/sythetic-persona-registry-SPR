@@ -19,6 +19,8 @@
   --r:#C3112B; --r-tint:#F9DDE1; --r-ink:#8E0B1F;
   --sans:Archivo,"Helvetica Neue",Arial,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --ease:cubic-bezier(.2,.8,.2,1);
+  --section-space:clamp(28px,4vw,40px);
+  --anchor-gap:16px;
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -56,7 +58,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .kbd{font-family:var(--mono);font-size:12px;padding:1px 6px;border:1px solid currentColor;border-radius:2px;opacity:.8}
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;border:0;border-radius:2px;background:var(--navy);color:#fff;font-weight:700;font-size:16.5px;text-decoration:none;cursor:pointer;transition:background-color .15s var(--ease)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:10px 22px;line-height:1.35;border:0;border-radius:2px;background:var(--navy);color:#fff;font-weight:700;font-size:16.5px;text-align:center;text-decoration:none;cursor:pointer;transition:background-color .15s var(--ease)}
 .btn:hover{background:var(--navy-2);color:#fff}
 .btn:active{background:var(--navy-deep)}
 .btn.light{background:#fff;color:var(--navy)}
@@ -77,6 +79,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .hero h1{font-stretch:118%;font-weight:800;font-size:clamp(36px,4.6vw,60px);line-height:1.02;letter-spacing:-.012em;max-width:14ch}
 .hero .lede{color:var(--on-navy-2);font-size:19px;max-width:42ch;margin-top:18px}
 .verify{margin-top:30px;max-width:540px;position:relative}
+.hero-browse{display:inline-flex;align-items:center;min-height:44px;margin-top:12px;color:#fff;font-weight:700;text-underline-offset:.2em}
+.passport-demo-note{margin:4px 0;color:var(--on-navy-2);font-size:14px}
 .verify label{display:block;font-weight:700;margin-bottom:8px}
 .verify .row{display:flex;gap:0}
 .verify input{flex:1 1 auto;min-width:0;min-height:56px;padding:0 16px;border:0;border-radius:2px 0 0 2px;background:#fff;color:var(--ink);font-family:var(--mono);font-size:17px}
@@ -107,12 +111,13 @@ button,input,select,textarea{font:inherit;color:inherit}
 .vbtn{min-height:44px;padding:0 16px;border-radius:2px;border:1px solid rgba(255,255,255,.35);background:rgba(7,26,58,.72);color:#fff;font-weight:600;font-size:14.5px;cursor:pointer}
 .vbtn:hover{border-color:#fff}
 .passport-widget{min-width:0;width:100%}
-.vtools{color:#fff;padding-top:12px;display:grid;gap:12px}
+.vtools{color:#fff;border:0;margin:0;padding:12px 0 0;min-width:0;display:grid;gap:12px}
+.vtools:disabled{opacity:.55}
 .vtools .vbtn{padding:8px 12px;line-height:1.25}
 .vbtn:disabled{opacity:.45;cursor:default}
 .vbtn[aria-pressed="true"]{background:#fff;color:var(--navy-deep);border-color:#fff}
 .vpages{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}
-.vpage-status{font-size:14px;text-align:center;line-height:1.35;min-width:0}
+.vpage-status{font-size:14px;text-align:center;line-height:1.35;min-width:0;min-height:calc(2.7em + 20px);display:flex;flex-direction:column;justify-content:center}
 .vpage-status small{display:block;color:var(--on-navy-2);font-size:12.5px;margin-top:3px}
 .voptions{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end}
 .vframe{display:flex;align-items:center;gap:8px;font-size:13px;flex:1 1 190px}
@@ -136,6 +141,31 @@ button,input,select,textarea{font:inherit;color:inherit}
 .vbox.is-expanded .vpages{flex:1 1 440px}
 .vbox.is-expanded .vactions{flex:1 1 440px}
 @media(max-width:480px){.vtools .vbtn{font-size:13px;padding:8px}.vpages{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr)}.vpage-status{font-size:12.5px}.vbox.is-expanded{inset:0;padding:10px}.vtitle{gap:8px}.vtitle b{font-size:17px}.vtitle .vbtn{max-width:140px;font-size:13px}.vbox.is-expanded .viewer{min-height:150px}.vbox.is-expanded .vtools{gap:8px}.vbox.is-expanded .vhint{padding-top:6px;font-size:11.5px}}
+/* Keep the passport and dismissal visible while its controls scroll. */
+@media(max-height:500px){
+  .vbox.is-expanded{display:grid;grid-template-columns:minmax(0,1fr) clamp(190px,34vw,280px);grid-template-rows:auto minmax(0,1fr);gap:8px 12px;padding:10px;overflow:hidden}
+  .vbox.is-expanded .vtitle{grid-column:1/-1;padding:0;min-width:0}
+  .vbox.is-expanded .vtitle b{font-size:17px}
+  .vbox.is-expanded .vtitle .vbtn{flex-shrink:0;max-width:140px;font-size:13px}
+  .vbox.is-expanded .viewer{min-height:0;height:100%;grid-column:1;grid-row:2}
+  .vbox.is-expanded .vpanel{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:2px 5px 8px 2px;grid-column:2;grid-row:2}
+  .vbox.is-expanded .vtools{display:grid;gap:10px;padding:0}
+  .vbox.is-expanded .vpages{grid-template-columns:1fr 1fr}
+  .vbox.is-expanded .vpage-status{grid-column:1/-1;grid-row:1;min-height:0}
+  .vbox.is-expanded .voptions{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  .vbox.is-expanded .vframe{display:block}
+  .vbox.is-expanded .vframe select{margin-top:4px}
+  .vbox.is-expanded .vzoom{gap:4px;flex-basis:0}
+  .vbox.is-expanded .vzoom label{min-width:20px}
+  .vbox.is-expanded .vtools .vbtn{font-size:13px;padding:8px}
+  .vbox.is-expanded .vhint{font-size:11.5px;margin:0;padding-top:10px}
+}
+@media(max-height:500px) and (max-width:420px){
+  .vbox.is-expanded{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(90px,1fr) minmax(0,1fr);gap:8px}
+  .vbox.is-expanded .vpanel{grid-column:1;grid-row:3}
+  .vbox.is-expanded .vpages{grid-template-columns:1fr 1.2fr 1fr}
+  .vbox.is-expanded .vpage-status{grid-column:2;grid-row:1}
+}
 
 /* sections */
 .sec{padding-block:72px}
@@ -166,7 +196,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .viewsw button{all:unset;cursor:pointer;min-height:43px;padding:0 14px;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;color:var(--muted)}
 .viewsw button[aria-pressed="true"]{background:var(--navy);color:#fff}
 .viewsw button:focus-visible{outline:3px solid var(--focus);outline-offset:0}
-.status-line{color:var(--muted);font-size:15px}
+.status-line{color:var(--muted);font-size:15px;overflow-wrap:anywhere}
 .clear{margin-left:6px}
 
 /* cards */
@@ -198,6 +228,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 .catalog-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px;margin:0 0 18px}
 .catalog-filters label{display:block;font-size:14px;font-weight:700;margin-bottom:5px}
 .catalog-filters select{width:100%;min-width:0}
+.catalog-search{display:block;margin-bottom:18px}
+.catalog-search label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.catalog-search .field-in{width:100%;max-width:560px}
+#notices{scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px))}
+.catalog-refine>summary{display:none}
+.notice-guide{display:none}
 .active-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
 .active-filters>b{font-size:13.5px;color:var(--muted)}
 .filter-chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0;min-width:0;max-width:100%}
@@ -221,7 +257,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .record-nav a:hover{text-decoration:underline}
 .record-nav a[aria-current="location"]{color:var(--ink);box-shadow:inset 0 -3px 0 var(--navy)}
 .record-risk-link{display:inline-flex;align-items:center;min-height:44px;color:#784208;font-size:15px;font-weight:700}
-.record-section h2,.rec-images h2,.record-details,.rec-head h1{scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px) + var(--record-nav-height,52px) + 16px)}
+.record-section h2,.rec-images h2,.record-details{scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px) + var(--record-nav-height,52px) + var(--anchor-gap))}
 .saved-filter{min-height:44px;padding:0 14px;border:1.5px solid #8C99AF;border-radius:2px;background:#fff;color:var(--navy);font-weight:700;cursor:pointer}
 .saved-filter[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
 .saved-filter:hover{border-color:var(--navy)}
@@ -242,6 +278,7 @@ td{padding:12px 18px 12px 0;border-bottom:1px solid var(--rule);vertical-align:m
 td .thumb{width:40px;height:48px;object-fit:cover;object-position:50% 32%;background:var(--mist);display:block}
 td a{font-weight:700;color:var(--ink)}
 .empty{padding:40px 0;color:var(--muted)}
+.empty p{margin:0 0 12px}.empty .btn{margin-right:16px}
 
 /* steps */
 .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:s;position:relative}
@@ -272,14 +309,31 @@ td a{font-weight:700;color:var(--ink)}
 @media(max-width:760px){.rec-head>.rec-photo{grid-row:auto}}
 .rec-photo{width:132px;aspect-ratio:4/5;object-fit:cover;object-position:50% 32%;background:#fff;border:1px solid var(--rule);display:block}
 @media (max-width:520px){.rec-photo{width:92px}}
-.rec-head h1{font-stretch:122%;font-weight:850;font-size:clamp(34px,5vw,64px);line-height:.98;letter-spacing:-.015em}
+.rec-head h1{font-stretch:122%;font-weight:850;font-size:clamp(34px,5vw,64px);line-height:1.08;letter-spacing:-.015em;overflow-wrap:break-word}
 .rec-head .no{font-family:var(--mono);font-size:16px;color:var(--muted);margin-bottom:8px;display:block}
 .acts{display:flex;flex-wrap:wrap;gap:10px}
-.rec-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px 48px;padding-block:36px 8px;align-items:start}
-@media (max-width:980px){.rec-grid{grid-template-columns:minmax(0,1fr)}}
+.rec-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"passport summary" "passport info";gap:24px 48px;padding-block:36px 8px;align-items:start}
+.rec-summary{grid-area:summary;min-width:0;border:1px solid var(--rule);padding:20px}
+.rec-summary h2{font-size:22px;line-height:1.2;margin-bottom:14px}
+.rec-summary .notice-box{margin-top:0}
+.rec-summary dl{margin:18px 0 0}
+.rec-summary dt{font-size:14px;color:var(--muted)}
+.rec-summary dd{margin:4px 0 0;font-weight:700}
+.rec-summary .proof-explanation{font-size:14px;color:var(--muted);margin-top:4px}
+.rec-summary-risks{margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}
+.rec-summary-risks h3{font-size:16px;line-height:1.3}
+.rec-summary-risks ul{padding-left:20px;margin:8px 0;font-size:15px}
+.rec-summary-risks li+li{margin-top:6px}
+.rec-summary-risks p,.rec-summary-limit{font-size:14px;color:var(--muted);margin-top:8px}
+.rec-summary a{display:inline-flex;align-items:center;min-height:44px;font-size:14px;font-weight:700}
+.rec-summary-limit{padding-top:14px;border-top:1px solid var(--rule)}
+.rec-info{grid-area:info;min-width:0}
+.rec-info .rec-about{margin-top:0}
+@media (max-width:980px){.rec-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"summary" "passport" "info"}}
 .rec-stage{background:var(--navy);padding:0 12px 12px;max-width:100%}
+.rec-grid>.rec-stage{grid-area:passport}
 .rec-stage .viewer{aspect-ratio:1.3}
-.rec-images{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr);gap:32px 48px;align-items:start;margin-top:40px;padding:32px;background:var(--mist);border-top:1px solid var(--rule)}
+.rec-images{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr);gap:24px 40px;align-items:start;margin-top:var(--section-space);padding:clamp(16px,3vw,32px);background:var(--mist);border-top:1px solid var(--rule)}
 .rec-images .h2{font-size:clamp(26px,2.8vw,36px)}
 .rec-images .sub{max-width:42ch}
 .rec-image-key{display:flex;align-items:center;gap:14px;margin-top:28px;max-width:400px;padding-top:18px;border-top:1px solid var(--rule)}
@@ -289,6 +343,83 @@ td a{font-weight:700;color:var(--ink)}
 .rec-full{margin:0;justify-self:center;width:min(100%,420px);background:#fff;border:1px solid var(--rule)}
 .rec-full img{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:contain}
 .rec-full figcaption{padding:10px 14px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}
+.image-open{display:block;padding:0;background:#fff;border:0;cursor:zoom-in;text-align:left;width:100%}
+.rec-image-key>.image-open{width:72px;flex:0 0 auto}
+.image-open-label{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border-top:1px solid var(--rule);color:var(--link);font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:.18em}
+.search-suggestions{margin:12px 0 18px;padding:14px 16px;background:var(--mist);border-left:3px solid var(--navy);color:var(--ink);font-size:15px}
+.search-suggestions p{color:var(--muted);font-size:14px}
+.search-suggestions ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px}
+.search-suggestions a,.search-suggestions button{min-height:44px;display:inline-flex;align-items:center}
+.lookup-heading{margin-top:16px;font-weight:700}
+.lookup-heading span{display:block;font-size:14px;font-weight:400;color:var(--on-navy-2)}
+.lookup-results{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.lookup-result{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--navy-line);border-left:4px solid var(--nc);background:var(--navy-deep);color:#fff;text-decoration:none}
+.lookup-result:hover{background:var(--navy-2)}
+.lookup-result img{width:44px;height:55px;object-fit:cover;flex:0 0 auto}
+.lookup-result .lookup-identity{min-width:0;flex:1}
+.lookup-result b,.lookup-result .mono{display:block}
+.lookup-result .mono{font-size:13px;color:var(--on-navy-2);overflow-wrap:anywhere}
+.lookup-result .ntag{margin-top:6px;font-size:13px}
+.report-draft{margin:24px 0;padding:16px 18px;border:1px solid var(--rule);background:var(--mist)}
+.report-draft p{font-size:14px;color:var(--muted)}
+.report-draft .draft-state{color:var(--ink);font-weight:700}
+.report-draft .draft-state[data-error="true"]{color:var(--r-ink)}
+.report-draft-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px;margin-top:8px}
+.report-drafts{margin:12px 0 0;padding-left:20px;font-size:15px}
+.report-drafts a{display:inline-flex;align-items:center;min-height:44px;overflow-wrap:anywhere}
+.ui-dialog{padding:0;border:1px solid var(--rule);border-top:4px solid var(--navy);color:var(--ink);background:#fff;width:min(640px,calc(100% - 32px));max-width:none;max-height:calc(100dvh - 32px);margin:auto;overflow:hidden;font-size:16px}
+.ui-dialog[open]{display:flex;flex-direction:column}
+.ui-dialog::backdrop{background:rgba(7,26,58,.72)}
+.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--rule);flex:0 0 auto}
+.dialog-head h2{font-size:22px;line-height:1.25;text-wrap:wrap}
+.dialog-head .btn{padding-inline:14px;flex:0 0 auto;min-height:44px}
+.dialog-body{padding:20px;overflow:auto;overscroll-behavior:contain;min-height:0}
+.compare-anchor{display:flex;align-items:center;gap:12px;padding:12px;background:var(--mist);margin-bottom:18px}
+.compare-anchor img,.persona-pick img{width:40px;height:50px;object-fit:cover;flex:0 0 auto}
+.compare-anchor small,.persona-pick small{display:block;color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.compare-anchor b{display:block}
+.picker-label{display:block;font-weight:700;margin-bottom:6px}
+.picker-count{font-size:14px;color:var(--muted);margin:12px 0}
+.persona-picks{list-style:none;padding:0;margin:0}
+.persona-picks li+li{border-top:1px solid var(--rule)}
+.persona-pick{display:flex;align-items:center;gap:12px;width:100%;padding:12px 8px;background:#fff;border:0;text-align:left;cursor:pointer;min-height:72px}
+.persona-pick:hover{background:var(--mist)}
+.persona-pick span{min-width:0;flex:1}
+.persona-pick .pick-action{color:var(--link);font-size:14px;font-weight:700;flex:0 0 auto}
+.image-dialog{width:min(1100px,calc(100% - 32px));height:min(900px,calc(100dvh - 32px))}
+.image-dialog .dialog-body{padding:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;flex:1;overflow:hidden}
+.image-tools{display:contents}
+.image-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:10px 20px;border-bottom:1px solid var(--rule);flex:0 0 auto}
+.image-toolbar{grid-row:1}
+.image-tabs,.image-zoom{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.image-toolbar button{min-width:44px;min-height:44px;padding:6px 12px;background:#fff;border:1px solid var(--rule);cursor:pointer;font-size:14px;font-weight:700}
+.image-toolbar button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.image-toolbar button:disabled{opacity:.45;cursor:default}
+.image-zoom output{min-width:44px;text-align:center;font:13px var(--mono)}
+.image-stage{grid-row:2;min-height:0;overflow:auto;overscroll-behavior:contain;background:var(--mist);touch-action:pan-x pan-y pinch-zoom;scrollbar-gutter:stable}
+.image-stage[data-zoomed="true"]{cursor:grab}
+.image-stage[data-dragging="true"]{cursor:grabbing}
+.image-canvas{display:grid;place-items:center;min-width:100%;min-height:100%;padding:16px}
+.image-canvas img{display:block;max-width:none;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.image-caption{grid-row:3;flex:0 0 auto;padding:10px 20px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+.image-caption b{color:var(--ink)}
+.image-caption p+p{margin-top:4px}
+.image-help summary{min-height:44px;display:list-item;align-content:center;cursor:pointer;color:var(--link);font-weight:700}
+.image-help p{padding-bottom:8px}
+@media(max-width:480px){.dialog-head{padding:12px}.dialog-head h2{font-size:19px}.dialog-body{padding:16px}.image-toolbar{padding:8px 12px}.image-toolbar button{padding-inline:8px}.image-caption{padding:8px 12px}.persona-pick{gap:8px}.persona-pick .pick-action{font-size:13px}}
+@media(max-height:500px){
+  .image-dialog{width:calc(100% - 16px);height:calc(100dvh - 16px);max-height:calc(100dvh - 16px)}
+  .image-dialog .dialog-head{padding:4px 12px;gap:8px}
+  .image-dialog .dialog-head h2{font-size:18px}
+  .image-dialog .dialog-body{grid-template-columns:minmax(0,1fr) clamp(160px,42vw,208px);grid-template-rows:minmax(0,1fr)}
+  .image-stage{grid-area:1/1;}
+  .image-tools{display:flex;flex-direction:column;grid-area:1/2;min-width:0;min-height:0;overflow:auto;overscroll-behavior:contain;border-left:1px solid var(--rule)}
+  .image-toolbar{padding:8px;gap:8px;align-items:stretch}
+  .image-tabs{display:grid;grid-template-columns:minmax(0,1fr);width:100%}
+  .image-zoom{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
+  .image-zoom button:last-child{grid-column:1/-1}
+  .image-caption{padding:8px;border-top:0}
+}
 @media (max-width:760px){.rec-images{grid-template-columns:minmax(0,1fr);gap:24px}.rec-full{justify-self:start}}
 .dl{margin:0;border-top:2px solid var(--ink)}
 .dl div{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.3fr);gap:2px 18px;padding:11px 0;border-bottom:1px solid var(--rule)}
@@ -312,7 +443,7 @@ td a{font-weight:700;color:var(--ink)}
 .social-unlinked{font-size:13.5px;color:var(--muted);text-align:right;max-width:13ch;line-height:1.25}
 .rec-social-note{color:var(--muted);font-size:13.5px;line-height:1.4;margin-top:11px;max-width:64ch}
 .rec-compare{display:inline-flex;align-items:center;min-height:44px;margin-top:4px;font-size:15px;font-weight:700}
-.record-section{margin-top:40px;padding-top:28px;border-top:2px solid var(--ink)}
+.record-section{margin-top:var(--section-space);padding-top:clamp(20px,3vw,28px);border-top:2px solid var(--ink)}
 .record-section .sub{max-width:76ch}
 .claim-list{margin-top:22px;border-top:1px solid var(--rule)}
 .claim-item{border-bottom:1px solid var(--rule)}
@@ -333,6 +464,8 @@ td a{font-weight:700;color:var(--ink)}
 .compare-controls .in{width:100%}
 .compare-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
 .compare-announcement{margin-top:18px;font-size:15px;color:var(--muted)}
+.compare-jump{display:none}
+.compare-head-grid{scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px) + 8px)}
 .compare-head-grid{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px));z-index:20;background:#fff;display:grid;grid-template-columns:180px minmax(0,1fr);margin-top:30px;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule)}
 .compare-label{padding:22px 12px 22px 0;color:var(--muted);font-size:14px}
 .compare-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -355,6 +488,7 @@ td a{font-weight:700;color:var(--ink)}
 .compare-values li+li{margin-top:10px}
 .compare-values .ntag{margin:0}
 .compare-muted{font-size:14px;color:var(--muted);margin-top:7px}
+.compare-risk-link{display:inline-flex;align-items:center;min-height:44px;font-size:14px}
 .compare-channel{display:flex;gap:7px;align-items:flex-start;margin-bottom:8px;font-size:15px}
 .compare-channel svg{width:18px;height:18px;flex:0 0 18px;margin-top:3px}
 .compare-channel span{overflow-wrap:anywhere;min-width:0}
@@ -362,6 +496,7 @@ td a{font-weight:700;color:var(--ink)}
   .claim-body{padding-inline:6px}
   .claim-body dl{grid-template-columns:minmax(0,1fr)}
   .compare-controls{gap:14px;grid-template-columns:minmax(0,1fr)}
+  .compare-jump{display:inline-flex;align-items:center;min-height:44px;margin-top:8px;font-weight:700;color:var(--navy);text-decoration:underline;text-underline-offset:.2em;background:none;border:0;cursor:pointer}
   .compare-head-grid,.compare-row{display:block}
   .compare-label{padding:14px 0}
   .compare-head-grid .compare-label{display:none}
@@ -369,7 +504,7 @@ td a{font-weight:700;color:var(--ink)}
   .compare-person img{display:none}
   .compare-person h2{font-size:18px}
   .compare-row>h2{padding:14px 0 0}
-  .compare-values>div{padding:14px 10px 20px;font-size:15px}
+  .compare-values>div{padding:14px 6px 20px;font-size:15px;line-height:1.5;hyphens:auto}
   .compare-actions .btn{flex:1 1 auto;padding-inline:12px}
   .compare-channel{font-size:14px}
   .catalog-filters{grid-template-columns:minmax(0,1fr);gap:12px}
@@ -385,7 +520,7 @@ td a{font-weight:700;color:var(--ink)}
 .tablist button:hover{color:var(--ink)}
 .tablist button[aria-selected="true"]{color:var(--ink);box-shadow:inset 0 -4px 0 var(--navy)}
 .tablist button:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
-.panel{padding-top:24px;min-height:180px;scroll-margin-top:96px}
+.panel{padding-top:24px;min-height:180px;scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px) + var(--anchor-gap))}
 .record-section .checks{margin-top:20px}
 .record-section .hist{margin-top:20px}
 .record-section>p{max-width:76ch}
@@ -470,6 +605,11 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 .formwrap .done h1{font-stretch:118%;font-size:clamp(30px,4vw,44px);font-weight:850}
 .formwrap .done .ref{font-family:var(--mono);font-size:28px;display:block;margin-top:8px}
 .private-note{padding:16px 18px;border-left:4px solid var(--navy);background:var(--mist);margin-top:24px;overflow-wrap:anywhere}
+.case-access-details{border-top:1px solid var(--rule);margin-top:28px}
+.case-access-details>summary{cursor:pointer;min-height:48px;padding:14px 0;font-weight:700;color:var(--navy)}
+.case-access-details .form{margin-top:12px}
+.case-access-details p+p{margin-top:12px}
+.case-secret-toggle{align-self:flex-start;min-height:44px}
 .case-page{max-width:940px;padding-block:30px 72px}
 .case-page h1,.review-page h1{font-stretch:118%;font-size:clamp(30px,4vw,46px);line-height:1.08}
 .case-heading h1{overflow-wrap:anywhere}
@@ -553,13 +693,19 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 .review-detail .review div{grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr)}
 .review-detail .review dd{grid-column:2}
 .review-detail .fg{margin-top:16px}
-.prov{margin-top:40px;padding:28px;border:1px solid var(--rule);background:#fff}
+.prov{margin-top:var(--section-space);padding:clamp(16px,3vw,28px);border:1px solid var(--rule);background:#fff}
 .prov h2{font-size:clamp(24px,2.6vw,32px)}
 .prov .sub{max-width:70ch}
 .prov-summary{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 20px;margin-top:24px;padding:14px 18px;border-left:4px solid var(--g);background:var(--g-tint)}
 .prov-summary strong{font-size:16px}
 .prov-summary span{font-size:14px;color:var(--muted)}
 .prov-summary.problem{border-left-color:var(--r);background:var(--r-tint)}
+.prov-summary.pending{border-left-color:var(--rule);background:var(--mist)}
+.technical-details{margin-top:20px;border-top:1px solid var(--rule)}
+.technical-details>summary{cursor:pointer;padding:14px 0;min-height:48px;font-weight:700;color:var(--navy)}
+.technical-details>summary::marker{color:var(--navy)}
+.technical-details .prov-grid{margin-top:0}
+.technical-details .prov-hash-head .tlink{min-height:44px}
 .prov-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
 .prov-asset{border:1px solid var(--rule);min-width:0}
 .prov-asset header{padding:16px 18px 14px;border-bottom:1px solid var(--rule)}
@@ -582,21 +728,24 @@ textarea.in{min-height:130px;padding:12px 14px;resize:vertical}
 @media (max-width:760px){.review-grid,.prov-grid,.prov-limits{grid-template-columns:minmax(0,1fr)}.prov{padding:20px 16px}.prov-limits{padding:16px}.prov-summary{padding:12px 14px}}
 
 /* palette */
-.pal-bg{position:fixed;inset:0;background:rgba(7,26,58,.55);z-index:70;display:flex;align-items:flex-start;justify-content:center;padding:calc(10vh + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
-.pal{position:relative;width:100%;max-width:640px;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);border-top:5px solid var(--navy)}
-.pal input{width:100%;min-height:60px;border:0;border-bottom:1px solid var(--rule);padding:0 86px 0 18px;font-size:19px}
+.pal-bg{position:fixed;inset:0;background:rgba(7,26,58,.55);z-index:70;display:flex;align-items:flex-start;justify-content:center;overscroll-behavior:contain;padding:calc(10vh + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.pal{position:relative;display:flex;flex-direction:column;width:100%;max-width:640px;max-height:100%;min-height:0;overflow:auto;background:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);border-top:5px solid var(--navy)}
+.pal input{flex:0 0 auto;width:100%;min-height:60px;border:0;border-bottom:1px solid var(--rule);padding:0 86px 0 18px;font-size:19px}
 .pal input:focus{outline:none;box-shadow:inset 0 -3px 0 var(--link)}
 .pal .close{position:absolute;top:13px;right:9px;min-width:65px;min-height:44px;border:1px solid var(--rule);background:#fff;font-size:14px;font-weight:700;cursor:pointer}
 .pal .close:hover{background:var(--mist)}
-.pal ul{list-style:none;margin:0;padding:6px;max-height:min(56vh,440px);overflow:auto}
-.pal li{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer}
+.pal ul{list-style:none;margin:0;padding:6px;flex:1 1 auto;min-height:64px;max-height:min(56dvh,440px);overflow:auto;overscroll-behavior:contain}
+.pal li{position:relative;display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer}
 .pal li[aria-selected="true"]{background:var(--mist)}
 .pal li img{width:34px;height:40px;object-fit:cover;object-position:50% 32%;background:var(--mist)}
 .pal li .sw{width:10px;height:10px;background:var(--nc)}
 .pal li .t{flex:1 1 auto;min-width:0}
 .pal li .t span{display:block;color:var(--muted);font-size:14px}
 .pal .grp{padding:10px 12px 4px;font-size:13px;font-weight:700;color:var(--muted)}
-.pal .foot{display:flex;gap:16px;padding:10px 18px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+.pal-browse{flex:0 0 auto;padding:4px 18px;border-top:1px solid var(--rule);font-size:14px}
+.pal-browse a{display:inline-flex;align-items:center;min-height:44px}
+.pal .foot{display:flex;flex:0 0 auto;flex-wrap:wrap;gap:6px 16px;padding:10px 18px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+@media(max-height:500px){.pal-bg{padding:calc(8px + env(safe-area-inset-top,0px)) max(8px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}}
 
 footer{background:var(--navy-deep);color:var(--on-navy-2);font-size:15px}
 footer .wrap{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px 48px;padding-block:44px 52px}
@@ -607,7 +756,7 @@ footer ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 /* ---------- responsive pass ---------- */
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scrollbar-gutter:stable}
 .u-short{display:none}
 .hbtns{display:none;gap:6px;align-items:center}
 .ibtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;padding:0 10px;background:transparent;border:1px solid var(--navy-line);border-radius:2px;color:#fff;cursor:pointer;font-weight:700;font-size:15px}
@@ -620,7 +769,7 @@ footer li a{display:inline-flex;align-items:center;min-height:44px}
 .crumbs li{display:flex;align-items:center}
 .try button{display:inline-flex;align-items:center;min-height:44px;padding:0 2px}
 .tlink{display:inline-flex;align-items:center;min-height:44px}
-h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
+h1,.esum,.fg,.in,.verdict{scroll-margin-top:calc(env(safe-area-inset-top,0px) + var(--header-height,72px) + var(--anchor-gap))}
 .tablist{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tablist::-webkit-scrollbar{display:none}
 .tablist button{white-space:nowrap;flex:0 0 auto}
@@ -660,11 +809,27 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .vctl .hint{font-size:13px}
   .h2{font-size:clamp(26px,7.4vw,32px)}
   .sec-h{margin-bottom:20px}
-  .key{grid-template-columns:minmax(0,1fr)!important;border-top:0}
-  .key button{border-left:0!important;border-top:1px solid var(--rule)!important;padding:12px 14px 12px 20px;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
-  .key button::before{top:0;bottom:0;left:0;right:auto;width:5px;height:auto}
-  .key .nm{flex:1 1 100%}
-  .key .ad{font-size:14.5px}
+  #notices .sec-h{margin-bottom:20px;gap:12px}
+  #notices .sec-h .sub{font-size:14px;margin-top:8px}
+  #notices .sec-h>.btn{min-height:44px;font-size:14px;padding-inline:14px}
+  .catalog-search{margin-bottom:14px}
+  .key{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:14px}
+  .key button{box-sizing:border-box;min-height:68px;padding:12px 10px 10px;gap:4px}
+  .key .nm{font-size:14px;gap:4px}
+  .key .ad{font-size:13px}
+  .key .notice-advice{display:none}
+  .catalog-refine{margin-bottom:14px;border-block:1px solid var(--rule)}
+  .catalog-refine>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:8px 0;color:var(--navy);font-weight:700;cursor:pointer;list-style:none}
+  .catalog-refine>summary::-webkit-details-marker{display:none}
+  .catalog-refine>summary::after{content:"+";font-size:22px}
+  .catalog-refine[open]>summary::after{content:"−"}
+  .catalog-refine>summary span{margin-right:auto;font-size:14px;font-weight:400;color:var(--muted)}
+  .catalog-refine-body{padding:10px 0 4px}
+  .notice-guide{display:block;margin:16px 0;border-top:1px solid var(--rule)}
+  .notice-guide>summary{cursor:pointer;min-height:44px;padding:10px 0;font-weight:700;font-size:14px}
+  .notice-guide dl{margin:0 0 12px;font-size:14px}
+  .notice-guide dt{font-weight:700;margin-top:12px}
+  .notice-guide dd{margin:4px 0 0;color:var(--muted)}
   .tools .l{flex:1 1 100%}
   .field-in{flex:1 1 100%;max-width:none}
   .tools .l .sel{flex:1 1 auto}
@@ -677,7 +842,7 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .card .meta{font-size:14px}
   .card .meta + .meta{display:none}
   .card-summary{-webkit-line-clamp:2}
-  .rec-images{margin-top:28px;padding:20px 16px}
+  .rec-images{padding:20px 16px}
   .rec-image-key{margin-top:20px}
   .ntag{margin-top:6px}
   .tbl-box table{font-size:15px}
@@ -692,6 +857,7 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .acts .btn:first-child{grid-column:1/-1}
   .acts .btn{padding:0 10px;font-size:15.5px}
   .rec-grid{padding-block:20px 0;gap:24px}
+  .rec-summary{padding:16px}
   .rec-social-list li{align-items:flex-start;flex-wrap:wrap}
   .social-link,.social-unlinked{margin-left:52px}
   .rec-stage{padding:0 8px 8px}
@@ -737,8 +903,7 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:96px}
   .acts .btn{font-size:14.5px}
 }
 
-::view-transition-old(root),::view-transition-new(root){animation-duration:.22s}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -758,6 +923,12 @@ const html = htm.bind(React.createElement);
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ---------- register data (demonstration entries) ---------- */
 const LEVELS = ['Declared','Evidence-backed','Reviewed','Controlled creation'];
+const PROOF_EXPLANATIONS = {
+  Declared:'The demo records a declaration. Independent supporting evidence is not supplied.',
+  'Evidence-backed':'The demo records supporting evidence. The underlying files are not publicly supplied.',
+  Reviewed:'A completed review is recorded in the demo. Review materials are not publicly supplied.',
+  'Controlled creation':'The demo records a controlled creation process. This page does not independently verify that process.'
+};
 const G='#1E6B47', B='#2C3A8C', A='#A3570A', R='#9A2F2B';
 const PEOPLE = [
   { id:'PP-AZ-0001', surname:'FIDAN', given:'', name:'Fidan', handle:'@fidan.sings', nature:'Fully synthetic', lang:'Azerbaijani', code:'AZE', role:'Vocalist', description:'A fictional Azerbaijani vocalist. This example highlights open questions about voice rights and the origin of the base model.', socials:[{platform:'TikTok',handle:'@fidan.sings',url:null}], holder:'Ruslan M.', level:'Evidence-backed', status:'Valid', note:'', issued:'12 Oct 2026', expires:'12 Oct 2031', created:'261012', exp:'311012', record:'a91f7c02', sort:20261012,
@@ -1118,25 +1289,29 @@ function passportCurve(progress,segments=64){
   }
   return points;
 }
-function createViewer(el,onChange=()=>{}){
+function createViewer(el,onChange=()=>{},onContextLost=()=>{}){
   const T=window.THREE;if(!T)throw new Error('3D library unavailable');
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'default'});
+  const dom=renderer.domElement,textures=new Set(),geometries=new Set(),materials=new Set(),cleanup=[];
+  let environment=null,env=null,pm=null,disposed=false;
+  const release=t=>{if(!t||!textures.has(t))return;t.dispose();if(t.image instanceof HTMLCanvasElement){t.image.width=1;t.image.height=1;}textures.delete(t);};
+  const listen=(target,type,handler,options)=>{target.addEventListener(type,handler,options);cleanup.push(()=>target.removeEventListener(type,handler,options));};
+  const dispose=()=>{if(disposed)return;disposed=true;for(const fn of cleanup.reverse())fn();for(const t of [...textures])release(t);for(const g of geometries)g.dispose();for(const m of materials)m.dispose();if(env)env.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});pm?.dispose();environment?.dispose();renderer.dispose();renderer.forceContextLoss?.();dom.remove();};
+  try{
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputColorSpace=T.SRGBColorSpace;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;
-  const dom=renderer.domElement;dom.setAttribute('aria-hidden','true');el.appendChild(dom);
-  const textures=new Set(),geometries=new Set(),materials=new Set();
+  dom.setAttribute('aria-hidden','true');el.appendChild(dom);
   const geometry=g=>{geometries.add(g);return g;};
   const material=m=>{materials.add(m);return m;};
   const texture=(canvas,srgb=true)=>{const t=new T.CanvasTexture(canvas);if(srgb)t.colorSpace=T.SRGBColorSpace;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());textures.add(t);return t;};
-  const release=t=>{if(!t||!textures.has(t))return;t.dispose();if(t.image instanceof HTMLCanvasElement){t.image.width=1;t.image.height=1;}textures.delete(t);};
   const scene=new T.Scene(),camera=new T.PerspectiveCamera(30,1,.1,50);
-  const env=new T.Scene(),pm=new T.PMREMGenerator(renderer);
+  env=new T.Scene();pm=new T.PMREMGenerator(renderer);
   env.add(new T.Mesh(new T.BoxGeometry(12,12,12),new T.MeshBasicMaterial({color:0xb1b5bd,side:T.BackSide})));
   for(const [w,h,pos,rotation,color] of [[6,3,[0,5,2],[Math.PI/2,0,0],0xffffff],[3,4,[-5,1,3],[0,Math.PI/2,0],0xffedce],[3,4,[5,0,3],[0,-Math.PI/2,0],0xc8dbff]]){
     const panel=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color,side:T.DoubleSide}));panel.position.set(...pos);panel.rotation.set(...rotation);env.add(panel);
   }
-  const environment=pm.fromScene(env,.025);scene.environment=environment.texture;pm.dispose();
-  env.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});
+  environment=pm.fromScene(env,.025);scene.environment=environment.texture;pm.dispose();pm=null;
+  env.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});env=null;
   scene.add(new T.HemisphereLight(0xffffff,0x6c7383,.6));
   const key=new T.DirectionalLight(0xfff8ec,1.5);key.position.set(-2,3,5);scene.add(key);
   const fill=new T.DirectionalLight(0xd8e7ff,.45);fill.position.set(3,-1,4);scene.add(fill);
@@ -1209,6 +1384,7 @@ function createViewer(el,onChange=()=>{}){
   let cameraDistance=0,cameraTarget=4;
   const emit=()=>onChange({zoom:Math.round(zoom*100),spread,open:wantOpen,busy,framing,mode});
   const stop=()=>{if(raf)cancelAnimationFrame(raf);raf=0;};
+  cleanup.push(()=>{alive=false;stop();});
   function invalidate(){if(alive&&visible&&!document.hidden&&!raf)raf=requestAnimationFrame(frame);}
   const ease=t=>t*t*(3-2*t);
   function applyOpen(){const p=ease(openP);coverPivot.rotation.y=-Math.PI*p;coverPivot.position.z=.034-.056*p;book.position.x=-.5*(1-p);holo.visible=spread===0&&openP>.8;}
@@ -1258,6 +1434,7 @@ function createViewer(el,onChange=()=>{}){
   function onMove(e){
     if(!pointers.has(e.pointerId)||!gesture)return;
     pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});const point=snapshot(),r=dom.getBoundingClientRect(),now=performance.now(),dt=Math.max(.008,(now-gesture.time)/1000),dx=point.x-gesture.x,dy=point.y-gesture.y;
+    if(pointers.size>=2&&!inspection){velocity.x=velocity.y=0;gesture={...point,time:now,mode:gesture.mode};return;}
     if(pointers.size>=2&&inspection){if(gesture.distance>0)setZoom(zoom*100*point.distance/gesture.distance);pan.x+=dx/r.width*2/zoom;pan.y-=dy/r.height*1.7/zoom;clampPan();}
     else if(gesture.mode==='pan'){pan.x+=dx/r.width*2/zoom;pan.y-=dy/r.height*1.7/zoom;clampPan();}
     else{const yaw=dx/r.width*Math.PI*2,pitch=dy/r.height*2;angle.y+=yaw;angle.x=Math.max(-1.25,Math.min(1.25,angle.x+pitch));velocity.y=Math.max(-4,Math.min(4,yaw/dt));velocity.x=Math.max(-2,Math.min(2,pitch/dt));}
@@ -1270,7 +1447,8 @@ function createViewer(el,onChange=()=>{}){
   }
   const onCancel=e=>{if(!pointers.has(e.pointerId))return;velocity.x=velocity.y=0;onUp(e);};
   const onWheel=e=>{if(!e.altKey||e.ctrlKey||e.metaKey)return;e.preventDefault();setZoom(zoom*100-e.deltaY*.08);};
-  dom.addEventListener('pointerdown',onDown);dom.addEventListener('pointermove',onMove);dom.addEventListener('pointerup',onUp);dom.addEventListener('pointercancel',onCancel);dom.addEventListener('lostpointercapture',onCancel);dom.addEventListener('dblclick',reset);dom.addEventListener('wheel',onWheel,{passive:false});
+  listen(dom,'pointerdown',onDown);listen(dom,'pointermove',onMove);listen(dom,'pointerup',onUp);listen(dom,'pointercancel',onCancel);listen(dom,'lostpointercapture',onCancel);listen(dom,'dblclick',reset);listen(dom,'wheel',onWheel,{passive:false});
+  listen(dom,'webglcontextlost',e=>{e.preventDefault();stop();onContextLost();});
   function frame(now){
     raf=0;if(!alive||!visible||document.hidden)return;
     const dt=Math.min(.04,(now-last)/1000);last=now;
@@ -1292,25 +1470,22 @@ function createViewer(el,onChange=()=>{}){
     holoMat.uniforms.tilt.value.set(rotation.y,rotation.x);renderer.render(scene,camera);
     if(opening||turn||Math.abs(velocity.x)+Math.abs(velocity.y)>.001||Math.abs(rotation.x-angle.x)+Math.abs(rotation.y-angle.y)>.0001||Math.abs(cameraDistance-target)>.0001)invalidate();
   }
-  const ro=new ResizeObserver(fit);ro.observe(el);
-  const io=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible){last=performance.now();invalidate();}else stop();});io.observe(el);
+  const ro=new ResizeObserver(fit);cleanup.push(()=>ro.disconnect());ro.observe(el);
+  const io=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(visible){last=performance.now();invalidate();}else stop();});cleanup.push(()=>io.disconnect());io.observe(el);
   const onVisibility=()=>{if(document.hidden)stop();else{last=performance.now();invalidate();}};
-  document.addEventListener('visibilitychange',onVisibility);applyOpen();fit();
+  listen(document,'visibilitychange',onVisibility);applyOpen();fit();
   return {setPersona,setOpen,setSpread,setZoom,setFraming,reset,
     setInspection:value=>{inspection=value;fit();},
     setMode:value=>{mode=value==='pan'?'pan':'rotate';emit();},
     nudge:(dx,dy)=>{velocity.x=velocity.y=0;angle.y+=dx;angle.x=Math.max(-1.25,Math.min(1.25,angle.x+dy));invalidate();},
-    dispose:()=>{
-      alive=false;stop();ro.disconnect();io.disconnect();document.removeEventListener('visibilitychange',onVisibility);
-      dom.removeEventListener('pointerdown',onDown);dom.removeEventListener('pointermove',onMove);dom.removeEventListener('pointerup',onUp);dom.removeEventListener('pointercancel',onCancel);dom.removeEventListener('lostpointercapture',onCancel);dom.removeEventListener('dblclick',reset);dom.removeEventListener('wheel',onWheel);
-      for(const t of [...textures])release(t);for(const g of geometries)g.dispose();for(const m of materials)m.dispose();environment.dispose();renderer.dispose();renderer.forceContextLoss?.();dom.remove();
-    }
+    dispose
   };
+  }catch(error){dispose();throw error;}
 }
 
 /* ---------- notices: the registry's colour language ---------- */
 const NOTICE = {
-  'Valid':       {name:'Green notice',  key:'green',  nc:'var(--g)', nt:'var(--g-tint)', ni:'var(--g-ink)', meaning:'Valid passport', advice:'Review open risks before collaborating.'},
+  'Valid':       {name:'Green notice',  key:'green',  nc:'var(--g)', nt:'var(--g-tint)', ni:'var(--g-ink)', meaning:'Valid passport', advice:'Review the record’s risks and evidence before collaborating.'},
   'Under review':{name:'Yellow notice', key:'yellow', nc:'var(--y)', nt:'var(--y-tint)', ni:'var(--y-ink)', meaning:'Under review', advice:'Wait until the review is finished.'},
   'Suspended':   {name:'Orange notice', key:'orange', nc:'var(--o)', nt:'var(--o-tint)', ni:'var(--o-ink)', meaning:'Suspended', advice:'Do not run campaigns until it is lifted.'},
   'Revoked':     {name:'Red notice',    key:'red',    nc:'var(--r)', nt:'var(--r-tint)', ni:'var(--r-ink)', meaning:'Revoked', advice:'Do not use. Report any copies you find.'}
@@ -1318,6 +1493,12 @@ const NOTICE = {
 const ORDER = ['Valid','Under review','Suspended','Revoked'];
 const nvars = s => ({'--nc':NOTICE[s].nc,'--nt':NOTICE[s].nt,'--ni':NOTICE[s].ni});
 const byId = id => PEOPLE.find(p => p.id === id);
+function recordAdvice(person){
+  const count=person.risks.length;
+  const risks=count ? count+' open risk'+(count===1?'':'s') : 'No open risks listed in this demo record. This does not guarantee that every risk is resolved.';
+  if(person.status==='Valid')return count ? risks+' — review before collaborating.' : risks;
+  return NOTICE[person.status].advice+' '+risks+(count?' listed.':'');
+}
 function socialHref(channel){
   const hosts = {TikTok:'tiktok.com',Instagram:'instagram.com',YouTube:'youtube.com',X:'x.com'};
   if(!channel || typeof channel.url!=='string' || !hosts[channel.platform]) return null;
@@ -1351,7 +1532,7 @@ function CardChannel({person}){
 const CLAIM_STATES = {declared:'Declared',recorded:'Recorded evidence',pending:'Review pending',risk:'Open risk',adverse:'Adverse finding'};
 const CLAIM_DATE = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'});
 function useMeasuredHeight(selector,property){
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     const element=document.querySelector(selector);
     if(!element) return;
     const update=() => document.documentElement.style.setProperty(property,Math.ceil(element.getBoundingClientRect().height)+'px');
@@ -1364,7 +1545,7 @@ function useMeasuredHeight(selector,property){
 function comparisonValue(person,key){
   const values={
     overview:person.description,
-    notice:[person.status,person.note],
+    notice:[person.status,person.note,person.risks.length],
     nature:person.nature,
     occupation:[person.role,person.lang],
     holder:person.holder,
@@ -1406,7 +1587,7 @@ function Compare({ids,onlyDifferences=false,toast}){
   const change=(side,id) => { if(id===pair[1-side].id) return; const next=pair.map(p => p.id); next[side]=id; navigate(comparisonRoute(next,onlyDifferences)); };
   const rows=[
     ['overview','Overview',p => p.description],
-    ['notice','Notice',p => html`<${NTag} status=${p.status} /><p className="compare-muted">${NOTICE[p.status].advice}${p.note ? ' '+p.note+'.' : ''}</p>`],
+    ['notice','Notice',p => html`<${NTag} status=${p.status} /><p className="compare-muted">${recordAdvice(p)}${p.note ? ' '+p.note+'.' : ''}</p>${p.risks.length>0 && html`<a className="compare-risk-link" href=${'#'+p.id+'/risks'} aria-label=${'View open risks for '+p.name}>View open risks</a>`}`],
     ['nature','Nature',p => p.nature],
     ['occupation','Occupation and language',p => html`<p>${p.role}</p><p className="compare-muted">${p.lang}</p>`],
     ['holder','Listed rights holder',p => p.holder],
@@ -1423,13 +1604,14 @@ function Compare({ids,onlyDifferences=false,toast}){
     <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#notices">Notices</a></li><li aria-current="page">Compare personas</li></ol>
     <h1 id="h1" tabIndex="-1">Compare personas</h1>
     <p className="sub">Compare two fictional registry records, including their notices, rights claims and open risks.</p>
+    <button className="compare-jump" type="button" onClick=${()=>{const results=document.getElementById('compare-results');results?.focus({preventScroll:true});results?.scrollIntoView({block:'start',behavior:REDUCED?'auto':'smooth'});}}>View comparison results</button>
     <div className="compare-controls">${pair.map((person,side) => html`<div className="fg" key=${side}>
       <label htmlFor=${'compare-'+side}>${side===0 ? 'First persona' : 'Second persona'}</label>
       <select className="in" id=${'compare-'+side} value=${person.id} onChange=${e => change(side,e.target.value)}>${PEOPLE.map(p => html`<option key=${p.id} value=${p.id} disabled=${p.id===pair[1-side].id}>${p.name} (${p.id})</option>`)}</select>
     </div>`)}</div>
     <div className="compare-actions"><button className="btn line" type="button" onClick=${() => navigate(comparisonRoute([second.id,first.id],onlyDifferences))}>Swap sides</button><button className="btn line" type="button" onClick=${() => copy(location.href.split('#')[0]+'#'+comparisonRoute([first.id,second.id],onlyDifferences),'Comparison link',toast)}>Copy comparison link</button><label className="compare-differences"><input type="checkbox" checked=${onlyDifferences} onChange=${e => navigate(comparisonRoute([first.id,second.id],e.target.checked))} />Show differences only</label></div>
     <p className="compare-announcement" role="status">Comparing ${first.name} and ${second.name}. Showing ${visibleRows.length} of ${rows.length} fields${onlyDifferences ? ' with different values' : ''}. All entries are demonstration data.</p>
-    <div className="compare-head-grid"><p className="compare-label">Selected personas</p><div className="compare-people">${pair.map(p => html`<div className="compare-person" key=${p.id}>
+    <div className="compare-head-grid" id="compare-results" tabIndex="-1" aria-label="Comparison results"><p className="compare-label">Selected personas</p><div className="compare-people">${pair.map(p => html`<div className="compare-person" key=${p.id}>
       <img src=${p.src} alt="" /><div><h2><a href=${'#'+p.id} aria-label=${'Open record for '+p.name}>${p.name}</a></h2><p className="mono">${p.id}</p></div>
     </div>`)}</div></div>
     ${visibleRows.length===0 && html`<p className="empty" role="status">The displayed values match. Turn off “Show differences only” to see all fields.</p>`}
@@ -1438,10 +1620,47 @@ function Compare({ids,onlyDifferences=false,toast}){
     </section>`)}
   </div>`;
 }
-const hay = p => (p.name+' '+p.handle+' '+p.id+' '+p.holder+' '+p.lang).toLowerCase();
-const find = q => { q = q.trim().toLowerCase(); if(!q) return []; const exact = PEOPLE.filter(p => p.id.toLowerCase()===q || p.handle.toLowerCase()===q || p.handle.toLowerCase()==='@'+q); return exact.length ? exact : PEOPLE.filter(p => hay(p).includes(q)); };
-const navigate = token => { if(('#'+token)===location.hash){ window.dispatchEvent(new HashChangeEvent('hashchange')); } else { location.hash = token; } };
-const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }, del(k){ try{ localStorage.removeItem(k); }catch(e){} } };
+/* Approximate names are suggestions only; identifiers never receive typo correction. */
+const normalizeSearch = value => value.trim().toLowerCase().normalize('NFD').replace(/\p{M}/gu,'').replace(/\s+/g,' ');
+const hay = p => normalizeSearch(p.name+' '+p.handle+' '+p.id+' '+p.holder+' '+p.lang);
+function nameDistance(a,b){
+  const matrix=Array.from({length:a.length+1},(_,i)=>[i]);
+  for(let j=0;j<=b.length;j++)matrix[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++){
+    matrix[i][j]=Math.min(matrix[i-1][j]+1,matrix[i][j-1]+1,matrix[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])matrix[i][j]=Math.min(matrix[i][j],matrix[i-2][j-2]+1);
+  }
+  return matrix[a.length][b.length];
+}
+function searchPeople(query,pool=PEOPLE){
+  const q=normalizeSearch(query);
+  if(!q)return {matches:[],suggestions:[]};
+  const exact=pool.filter(p=>[p.id.toLowerCase(),p.handle.toLowerCase(),p.handle.toLowerCase().replace(/^@/,'')].includes(q));
+  const matches=exact.length ? exact : pool.filter(p=>hay(p).includes(q));
+  if(matches.length||q.length<4||q.length>64||!/^\p{L}[\p{L} '\-]*$/u.test(q))return {matches,suggestions:[]};
+  const limit=q.length<=6?1:2;
+  const suggestions=pool.map(p=>{
+    const name=normalizeSearch(p.name);
+    const candidates=q.includes(' ')?[name]:[name,...name.split(' ')];
+    return {person:p,distance:Math.min(...candidates.map(value=>nameDistance(q,value)))};
+  }).filter(item=>item.distance<=limit).sort((a,b)=>a.distance-b.distance||a.person.name.localeCompare(b.person.name)).slice(0,3).map(item=>item.person);
+  return {matches,suggestions};
+}
+const navigate = token => {
+  const hash='#'+token;
+  // The router owns scrolling; native hash jumps must not run before it.
+  if(hash!==location.hash)history.pushState(null,'',hash);
+  window.dispatchEvent(new HashChangeEvent('hashchange'));
+};
+function handleRouteLink(event,noticesRoute='notices'){
+  if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  const link=event.target.closest('a[href^="#"]');
+  if(!link||link.hasAttribute('download')||(link.target&&link.target!=='_self'))return;
+  const hash=link.getAttribute('href');
+  if(!/^#(?:home|notices|apply|report|review|case-status|case|compare|PP-[A-Z]{2}-\d{4})(?:$|[/?])/i.test(hash))return;
+  event.preventDefault();navigate(hash==='#notices'?noticesRoute:hash.slice(1));
+}
+const store = { get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){return false;} }, del(k){ try{ localStorage.removeItem(k); return true; }catch(e){return false;} } };
 const SAVED_KEY = 'spr-saved-records';
 function restoreSaved(value){
   if(!Array.isArray(value)) return [];
@@ -1513,8 +1732,9 @@ function Viewer({person,label}){
   useEffect(()=>{let dead=false;
     (async()=>{
       await fontsReady();while(!dead){const selected=latest.current;await loadPhoto(selected);if(selected===latest.current)break;}if(dead)return;
-      try{api.current=createViewer(box.current,value=>{if(!dead)setControls(value);});api.current.setPersona(latest.current);setState('ready');}
-      catch(error){console.warn('Passport 3D could not start:',error);api.current?.dispose();api.current=null;setFb(TEX.dataPage(latest.current).toDataURL('image/jpeg',.95));setState('fallback');}
+      const fallback=()=>{if(dead)return;api.current?.dispose();api.current=null;setFb(TEX.dataPage(latest.current).toDataURL('image/jpeg',.95));setState('fallback');};
+      try{api.current=createViewer(box.current,value=>{if(!dead)setControls(value);},fallback);api.current.setPersona(latest.current);setState('ready');}
+      catch(error){console.warn('Passport 3D could not start:',error);fallback();}
     })();
     return()=>{dead=true;api.current?.dispose();api.current=null;};
   },[]);
@@ -1524,13 +1744,13 @@ function Viewer({person,label}){
     const previous=document.activeElement,hidden=[];
     // Keep the viewer's ancestor path active while making every other branch inert.
     for(let node=widget.current;node&&node!==document.body;node=node.parentElement){for(const sibling of node.parentElement?.children||[]){if(sibling!==node&&sibling instanceof HTMLElement){hidden.push([sibling,sibling.inert]);sibling.inert=true;}}}
-    const overflow=document.body.style.overflow,padding=document.body.style.paddingRight,scrollbar=innerWidth-document.documentElement.clientWidth;
-    document.body.style.overflow='hidden';if(scrollbar)document.body.style.paddingRight=scrollbar+'px';
+    const overflow=document.body.style.overflow;
+    document.body.style.overflow='hidden';
     api.current?.setInspection(true);
-    const frame=requestAnimationFrame(()=>closeButton.current?.focus());
+    const frame=requestAnimationFrame(()=>closeButton.current?.focus({preventScroll:true}));
     return()=>{
       cancelAnimationFrame(frame);for(const [node,inert] of hidden)node.inert=inert;
-      document.body.style.overflow=overflow;document.body.style.paddingRight=padding;
+      document.body.style.overflow=overflow;
       api.current?.setInspection(false);const target=expandButton.current||previous;if(target?.isConnected)target.focus({preventScroll:true});
     };
   },[expanded]);
@@ -1560,25 +1780,109 @@ function Viewer({person,label}){
         ${state==='loading'&&html`<div className="vmsg" role="status">Loading the passport</div>`}
         ${state==='fallback'&&html`<div className="vmsg"><img src=${fb} alt=${'Data page of demo passport '+person.id} /></div>`}
       </div>
-      ${state==='ready'&&html`<div className="vtools">
+      <div className="vpanel"><fieldset className="vtools" disabled=${state!=='ready'} aria-label="Passport controls">
         <div className="vpages"><button className="vbtn" type="button" disabled=${controls.busy||controls.spread===0} onClick=${()=>api.current.setSpread(controls.spread-1)}>Previous pages</button><span className="vpage-status" role="status">${controls.busy?'Turning pages…':PASSPORT_SPREADS[controls.spread]}<small>Spread ${controls.spread+1} of ${PASSPORT_SPREADS.length}</small></span><button className="vbtn" type="button" disabled=${controls.busy||controls.spread===PASSPORT_SPREADS.length-1} onClick=${()=>api.current.setSpread(controls.spread+1)}>Next pages</button></div>
         <div className="voptions">
           <label className="vframe">View<select value=${controls.framing} onChange=${e=>api.current.setFraming(e.target.value)}><option value="spread">Whole passport</option><option value="left">Left page</option><option value="right">Right page</option></select></label>
           <div className="vzoom"><button className="vbtn" type="button" aria-label="Zoom out" disabled=${controls.zoom<=100} onClick=${()=>api.current.setZoom(controls.zoom-10)}>−</button><label><span className="sr">Passport zoom</span><input type="range" min="100" max="250" step="1" value=${controls.zoom} aria-valuetext=${controls.zoom+' percent'} onChange=${e=>api.current.setZoom(Number(e.target.value))} /></label><output>${controls.zoom}%</output><button className="vbtn" type="button" aria-label="Zoom in" disabled=${controls.zoom>=250} onClick=${()=>api.current.setZoom(controls.zoom+10)}>+</button></div>
         </div>
         <div className="vactions"><div className="vmodes" role="group" aria-label="Drag action"><button className="vbtn" type="button" aria-pressed=${controls.mode==='rotate'} onClick=${()=>api.current.setMode('rotate')}>Rotate</button><button className="vbtn" type="button" aria-pressed=${controls.mode==='pan'} onClick=${()=>api.current.setMode('pan')}>Move</button></div><button className="vbtn" type="button" onClick=${toggle}>${controls.open?'Close passport':'Open passport'}</button><button className="vbtn" type="button" onClick=${()=>api.current.reset()}>Straighten</button>${!expanded&&html`<button className="vbtn" type="button" ref=${expandButton} onClick=${()=>{slotHeight.current=widget.current.getBoundingClientRect().height;setExpanded(true);}}>Enlarge passport</button>`}</div>
-      </div>`}
-      <p className="vhint" id=${uid+'-help'}>${state==='fallback'?'3D is not available in this browser. The data page is shown above.':expanded?'Drag to rotate; use Move to reposition. Pinch with two fingers to zoom. Arrow keys turn, +/− zoom, Page Up/Down turn pages. Escape closes this view.':'Drag sideways to rotate. Use View for a readable page. Arrow keys turn, +/− zoom, Page Up/Down turn pages.'}</p>
+      </fieldset>
+      <p className="vhint" id=${uid+'-help'}>${state==='fallback'?'3D is not available in this browser. The data page is shown above.':expanded?'Drag to rotate; use Move to reposition. Pinch with two fingers to zoom. Arrow keys turn, +/− zoom, Page Up/Down turn pages. Escape closes this view.':'Drag sideways to rotate. Use View for a readable page. Arrow keys turn, +/− zoom, Page Up/Down turn pages.'}</p></div>
     </div>
   </div>`;
 }
 
 
+/* Native dialogs keep background controls inert and contain keyboard focus. */
+function Dialog({title,className='',onClose,onKeyDown,children}){
+  const ref=useRef(null),closeAction=useRef(onClose),heading=React.useId();closeAction.current=onClose;
+  React.useLayoutEffect(()=>{
+    const dialog=ref.current,previous=document.activeElement,overflow=document.body.style.overflow;
+    const position={top:scrollY,left:scrollX,behavior:'instant'};
+    document.body.style.overflow='hidden';dialog.showModal();
+    (dialog.querySelector('[data-initial-focus]')||dialog.querySelector('button'))?.focus({preventScroll:true});
+    window.scrollTo(position);
+    const leave=()=>closeAction.current();window.addEventListener('hashchange',leave);
+    return()=>{window.removeEventListener('hashchange',leave);dialog.close();document.body.style.overflow=overflow;if(previous?.isConnected)previous.focus({preventScroll:true});};
+  },[]);
+  const key=e=>{
+    e.stopPropagation();
+    if(e.key==='Tab'){
+      const nodes=[...ref.current.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href],summary,[tabindex="0"]')].filter(node=>node.getClientRects().length);
+      const first=nodes[0],last=nodes[nodes.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+    }
+    onKeyDown?.(e);
+  };
+  return html`<dialog ref=${ref} className=${'ui-dialog '+className} aria-labelledby=${heading} onCancel=${e=>{e.preventDefault();onClose();}} onKeyDown=${key}>
+    <header className="dialog-head"><h2 id=${heading}>${title}</h2><button type="button" className="btn line" onClick=${onClose}>Close</button></header>
+    <div className="dialog-body">${children}</div>
+  </dialog>`;
+}
+function NameSuggestions({people,onSelect}){
+  if(!people.length)return null;
+  return html`<div className="search-suggestions"><b>Did you mean?</b><p>Similar names. Choose a suggestion to continue.</p><ul>${people.map(p=>html`<li key=${p.id}>${onSelect ? html`<button type="button" className="tlink" onClick=${()=>onSelect(p)}>${p.name}</button>` : html`<a href=${'#'+p.id}>${p.name}</a>`}</li>`)}</ul></div>`;
+}
+function ComparePicker({person,onClose}){
+  const [q,setQ]=useState('');
+  const pool=PEOPLE.filter(p=>p.id!==person.id),result=searchPeople(q,pool);
+  const rows=normalizeSearch(q)?(result.matches.length?result.matches:result.suggestions):pool;
+  const approximate=!result.matches.length&&result.suggestions.length>0;
+  const choose=p=>{onClose();navigate(comparisonRoute([person.id,p.id]));};
+  return html`<${Dialog} title="Choose a second persona" onClose=${onClose}>
+    <div className="compare-anchor"><img src=${person.src} alt="" /><div><small>First persona</small><b>${person.name}</b><small className="mono">${person.id}</small></div></div>
+    <label className="picker-label" htmlFor="compare-search">Find the second persona</label><input className="in" id="compare-search" type="search" autoComplete="off" data-initial-focus value=${q} onChange=${e=>setQ(e.target.value)} placeholder="Name, handle or passport number" aria-describedby="compare-picker-count" />
+    <p className="picker-count" id="compare-picker-count" role="status">${approximate?'No exact match. Similar names ('+rows.length+').':rows.length+' persona'+(rows.length===1?'':'s')+' available.'} ${rows.length?'Choose one to open the comparison.':'Try another name or show all choices.'}</p>
+    <ul className="persona-picks">${rows.map(p=>html`<li key=${p.id}><button className="persona-pick" type="button" onClick=${()=>choose(p)} aria-label=${'Compare '+person.name+' with '+p.name}><img src=${p.src} alt="" /><span><b>${p.name}</b><small>${p.role}</small><small className="mono">${p.id}</small></span><span className="pick-action" aria-hidden="true">Compare</span></button></li>`)}</ul>
+    ${!rows.length&&html`<p>No matching persona. <button type="button" className="tlink" onClick=${()=>{setQ('');document.getElementById('compare-search')?.focus();}}>Show all choices</button></p>`}
+  </Dialog>`;
+}
+function ImageViewer({person,initialIndex,onClose}){
+  const [index,setIndex]=useState(initialIndex),[zoom,setZoom]=useState(100),[bounds,setBounds]=useState({width:0,height:0}),[natural,setNatural]=useState(null),[error,setError]=useState(false),[dragging,setDragging]=useState(false);
+  const stage=useRef(null),drag=useRef(null);
+  const images=[{src:person.src,label:'Face portrait'},{src:person.bodySrc,label:'Full-length image'}],selected=images[index];
+  const select=value=>{if(value===index)return;setIndex(value);setZoom(100);setNatural(null);setError(false);};
+  const scale=value=>setZoom(current=>Math.max(100,Math.min(300,typeof value==='function'?value(current):value)));
+  useEffect(()=>{const node=stage.current;const measure=()=>setBounds({width:Math.max(1,node.clientWidth-32),height:Math.max(1,Math.floor(node.getBoundingClientRect().height)-32)});measure();const observer=new ResizeObserver(measure);observer.observe(node);return()=>observer.disconnect();},[]);
+  const dimensions=natural||{width:index===0?800:1000,height:index===0?1000:1500};
+  const fit=Math.min(bounds.width/dimensions.width,bounds.height/dimensions.height);
+  const width=Math.floor(dimensions.width*fit*zoom/100),height=Math.floor(dimensions.height*fit*zoom/100);
+  React.useLayoutEffect(()=>{const node=stage.current;if(node){node.scrollLeft=(node.scrollWidth-node.clientWidth)/2;node.scrollTop=(node.scrollHeight-node.clientHeight)/2;}},[zoom,index]);
+  const key=e=>{
+    if(e.ctrlKey||e.metaKey||e.altKey)return;
+    if(e.key==='+'||e.key==='='){e.preventDefault();scale(value=>value+25);}
+    else if(e.key==='-'){e.preventDefault();scale(value=>value-25);}
+    else if(e.key==='0'){e.preventDefault();scale(100);}
+    else if(e.key==='PageDown'||e.key==='PageUp'){e.preventDefault();select(1-index);}
+  };
+  const start=e=>{if(zoom<=100||e.pointerType!=='mouse'||e.button!==0)return;drag.current={x:e.clientX,y:e.clientY,left:e.currentTarget.scrollLeft,top:e.currentTarget.scrollTop};e.currentTarget.setPointerCapture(e.pointerId);setDragging(true);};
+  const move=e=>{if(!drag.current)return;e.currentTarget.scrollLeft=drag.current.left+drag.current.x-e.clientX;e.currentTarget.scrollTop=drag.current.top+drag.current.y-e.clientY;};
+  const end=()=>{drag.current=null;setDragging(false);};
+  return html`<${Dialog} title=${'Images of '+person.name} className="image-dialog" onClose=${onClose} onKeyDown=${key}>
+    <div className="image-tools">
+    <div className="image-toolbar"><div className="image-tabs" role="group" aria-label="Choose image">${images.map((item,i)=>html`<button type="button" key=${item.label} aria-pressed=${index===i} onClick=${()=>select(i)}>${item.label}</button>`)}</div>
+      <div className="image-zoom" role="group" aria-label="Image zoom"><button type="button" aria-label="Zoom out" disabled=${zoom<=100} onClick=${()=>scale(value=>value-25)}>−</button><output aria-label="Zoom level" aria-live="polite">${zoom}%</output><button type="button" aria-label="Zoom in" disabled=${zoom>=300} onClick=${()=>scale(value=>value+25)}>+</button><button type="button" onClick=${()=>scale(100)}>Fit image</button></div>
+    </div>
+    <div className="image-caption"><p role="status"><b>${index+1} of 2 · ${selected.label}.</b> AI-generated fictional illustration. Not identity evidence.</p><details className="image-help"><summary>Controls and shortcuts</summary><p id="image-help">Zoom with +/−, then scroll or drag to explore. Page Up/Down switches images. 0 fits the image. Esc closes.</p></details></div>
+    </div>
+    <div ref=${stage} className="image-stage" role="region" aria-label="Image area" aria-describedby="image-help" tabIndex="0" data-zoomed=${zoom>100} data-dragging=${dragging} onPointerDown=${start} onPointerMove=${move} onPointerUp=${end} onPointerCancel=${end} onLostPointerCapture=${end}>
+      <div className="image-canvas" style=${{width:width+32,height:height+32}}>${error?html`<p role="status">This image could not load. Try the other image or close and reopen this viewer.</p>`:html`<img key=${selected.src} src=${selected.src} alt=${selected.label+' of '+person.name} draggable="false" style=${{width,height}} onLoad=${e=>setNatural({width:e.currentTarget.naturalWidth,height:e.currentTarget.naturalHeight})} onError=${()=>setError(true)} />`}</div>
+    </div>
+  </Dialog>`;
+}
+
 /* ---------- command palette ---------- */
 function Palette({onClose}){
   const [q,setQ] = useState(''); const [act,setAct] = useState(0); const inp = useRef(null); const close = useRef(null); const prev = useRef(document.activeElement);
-  useEffect(() => { inp.current && inp.current.focus(); return () => { prev.current && prev.current.focus && prev.current.focus(); }; }, []);
-  const people = q.trim() ? find(q) : PEOPLE;
+  useEffect(() => {
+    const overflow=document.body.style.overflow;
+    document.body.style.overflow='hidden';inp.current?.focus({preventScroll:true});
+    return()=>{document.body.style.overflow=overflow;if(prev.current?.isConnected)prev.current.focus({preventScroll:true});};
+  }, []);
+  const result=searchPeople(q),approximate=!result.matches.length&&result.suggestions.length>0;
+  const people = q.trim() ? (approximate?result.suggestions:result.matches) : PEOPLE;
   const actions = [['Browse all notices','notices'],['Compare personas','compare'],['Register a persona','apply'],['Report a persona','report'],['Registry home','home']].filter(a => !q.trim() || a[0].toLowerCase().includes(q.trim().toLowerCase()));
   const items = [...people.map(p => ({k:p.id, go:p.id, p})), ...actions.map(a => ({k:a[1], go:a[1], label:a[0]}))];
   const go = it => { onClose(); navigate(it.go); };
@@ -1587,25 +1891,28 @@ function Palette({onClose}){
     else if(e.key==='ArrowUp'){ e.preventDefault(); setAct(a => Math.max(a-1, 0)); }
     else if(e.key==='Enter'){ e.preventDefault(); items[act] && go(items[act]); }
     else if(e.key==='Escape'){ e.preventDefault(); onClose(); }
-    else if(e.key==='Tab'){ e.preventDefault(); close.current && close.current.focus(); }
   };
+  useEffect(()=>{document.getElementById(items[act]?'pi-'+items[act].k:'')?.scrollIntoView({block:'nearest'});},[act,q]);
+  const dialogKey=e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();onClose();}if(e.key==='Tab'){const nodes=e.currentTarget.querySelectorAll('input,button,a[href]'),first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}};
   let idx = -1;
   const row = it => { idx++; const i = idx; const sel = i===act;
     return it.p ? html`<li key=${it.k} id=${'pi-'+it.k} role="option" aria-selected=${sel?'true':'false'} onMouseMove=${() => setAct(i)} onMouseDown=${e => { e.preventDefault(); go(it); }} style=${nvars(it.p.status)}>
         <img src=${it.p.src} alt="" /><span className="t"><b>${it.p.name}</b><span className="mono">${it.p.id}  ${it.p.handle}</span></span><span className="sw" aria-hidden="true"></span><span className="sr">${NOTICE[it.p.status].name}</span></li>`
       : html`<li key=${it.k} id=${'pi-'+it.k} role="option" aria-selected=${sel?'true':'false'} onMouseMove=${() => setAct(i)} onMouseDown=${e => { e.preventDefault(); go(it); }}><span className="t"><b>${it.label}</b></span></li>`; };
   return html`<div className="pal-bg" onMouseDown=${e => { if(e.target===e.currentTarget) onClose(); }}>
-    <div className="pal" role="dialog" aria-modal="true" aria-label="Search the registry">
-      <input ref=${inp} value=${q} onChange=${e => { setQ(e.target.value); setAct(0); }} onKeyDown=${key} placeholder="Name, handle, passport number or a page"
-        role="combobox" aria-expanded="true" aria-controls="pal-list" aria-activedescendant=${items[act] ? 'pi-'+items[act].k : undefined} aria-label="Search the registry" />
-      <button className="close" type="button" ref=${close} onClick=${onClose} onKeyDown=${e => { if(e.key==='Tab'){ e.preventDefault(); inp.current && inp.current.focus(); } else if(e.key==='Escape'){ e.preventDefault(); onClose(); } }}>Close</button>
+    <div className="pal" role="dialog" aria-modal="true" aria-label="Search the registry" onKeyDown=${dialogKey}>
+      <input ref=${inp} value=${q} onChange=${e => { setQ(e.target.value); const result=searchPeople(e.target.value);setAct(result.suggestions.length||result.matches.length>1?-1:0); }} onKeyDown=${key} placeholder="Name, handle, passport number or a page"
+        role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="pal-list" aria-describedby="pal-status" aria-activedescendant=${items[act] ? 'pi-'+items[act].k : undefined} aria-label="Search the registry" />
+      <button className="close" type="button" ref=${close} onClick=${onClose}>Close</button>
+      <p className="sr" id="pal-status" role="status">${approximate?people.length+' similar name suggestion'+(people.length===1?'':'s')+'. Use the arrow keys to choose a suggestion.':items.length+' result'+(items.length===1?'':'s')+'.'}</p>
       <ul id="pal-list" role="listbox" aria-label="Results">
-        ${people.length > 0 && html`<li className="grp" role="presentation">Personas</li>`}
+        ${people.length > 0 && html`<li className="grp" role="presentation">${approximate?'Did you mean? Similar names — choose one to open.':'Personas'}</li>`}
         ${items.filter(i => i.p).map(row)}
         ${actions.length > 0 && html`<li className="grp" role="presentation">Pages</li>`}
         ${items.filter(i => !i.p).map(row)}
         ${!items.length && html`<li className="grp" role="presentation">Nothing matches “${q}”. Try a passport number like PP-AZ-0001.</li>`}
       </ul>
+      <div className="pal-browse"><a href="#notices" onClick=${onClose}>Browse all personas</a></div>
       <div className="foot"><span><span className="kbd">↑</span> <span className="kbd">↓</span> to move</span><span><span className="kbd">Enter</span> to open</span><span><span className="kbd">Esc</span> to close</span></div>
     </div>
   </div>`;
@@ -1613,47 +1920,83 @@ function Palette({onClose}){
 
 /* ---------- home ---------- */
 function Hero(){
-  const [q,setQ] = useState(''); const [tried,setTried] = useState(false); const res = find(q); const top = res[0];
+  const [q,setQ] = useState(''); const [tried,setTried] = useState(false); const result=searchPeople(q),res=result.matches; const top = res.length===1?res[0]:null;
   const featured = PEOPLE[0];
-  const submit = e => { e.preventDefault(); if(top) navigate(top.id); else { setTried(true); document.getElementById('vq')?.focus(); } };
+  const submit = e => { e.preventDefault(); if(top) navigate(top.id); else if(res.length>1){const heading=document.getElementById('vresults-label');heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'nearest',behavior:REDUCED?'auto':'smooth'});} else { setTried(true); document.getElementById('vq')?.focus(); } };
   return html`<section className="hero" aria-labelledby="h1"><div className="wrap">
     <div>
       <h1 id="h1" tabIndex="-1">Check an AI persona before you work with it.</h1>
       <p className="lede">Explore fictional personas, listed rights holders and sample notices. This demo does not verify identity or evidence.</p>
+      <a className="hero-browse" href="#notices">Browse all personas</a>
       <form className="verify" role="search" onSubmit=${submit}>
         <label htmlFor="vq">Passport number, handle or name</label>
         <div className="row">
           <input id="vq" type="text" autoComplete="off" spellCheck="false" placeholder="PP-AZ-0001" value=${q} onChange=${e => { setQ(e.target.value); setTried(false); }} aria-invalid=${tried ? 'true' : undefined} aria-describedby="vres" />
-          <button className="btn" type="submit">Check</button>
+          <button className="btn" type="submit">${res.length>1?'Show matches':'Check'}</button>
         </div>
         <div className="try"><span>Try</span>${['PP-AZ-0001','@leyla.kaya','Elin Berg'].map(t => html`<button key=${t} type="button" onClick=${() => { setQ(t); setTried(false); }}>${t}</button>`)}</div>
         <div id="vres" aria-live="polite">
           ${tried && !q.trim() && html`<div className="vres" style=${{'--nc':'var(--focus)'}}><div className="t"><b>Enter a passport number, handle or name.</b></div></div>`}
-          ${q.trim() && (top ? html`<div className="vres" style=${{'--nc':NOTICE[top.status].nc}}>
-              <img src=${top.src} alt="" /><div className="t"><b>${top.name}</b><span>${NOTICE[top.status].name}. ${NOTICE[top.status].advice}${res.length > 1 ? ' ' + (res.length - 1) + ' more match.' : ''}</span></div>
+          ${res.length>1&&html`<p className="lookup-heading" id="vresults-label" tabIndex="-1">${res.length} personas match<span>Choose a persona to open its record.</span></p><ul className="lookup-results" aria-labelledby="vresults-label">${res.map(p=>html`<li key=${p.id}><a className="lookup-result" href=${'#'+p.id} style=${nvars(p.status)} aria-label=${'Open record for '+p.name+', '+p.id}><img src=${p.src} alt="" /><span className="lookup-identity"><b>${p.name}</b><span className="mono">${p.id}</span><${NTag} status=${p.status} /></span></a></li>`)}</ul>`}
+          ${q.trim() && res.length<=1 && (top ? html`<div className="vres" style=${{'--nc':NOTICE[top.status].nc}}>
+              <img src=${top.src} alt="" /><div className="t"><b>${top.name}</b><span>${NOTICE[top.status].name}. ${recordAdvice(top)}</span></div>
               <a className="btn light" href=${'#'+top.id}>Open record</a></div>`
-            : html`<div className="vres" style=${{'--nc':'#fff'}}><div className="t"><b>No passport found</b><span>No persona matches “${q.trim()}”. Unregistered personas have no passport. Check the spelling or the number.</span></div></div>`)}
+            : html`<div className="vres" style=${{'--nc':'#fff'}}><div className="t"><b>No exact match</b><span>No demo record matches “${q.trim()}”. Check the spelling or the number.</span></div></div>`)}
+          <${NameSuggestions} people=${result.suggestions} />
         </div>
       </form>
     </div>
-    <div className="stage"><${Globe} /><${Viewer} person=${featured} label=${'Sample passport ' + featured.id + ' of ' + featured.name + '. Arrow keys turn it.'} /></div>
+    <div className="stage"><p className="passport-demo-note">Sample passport · Endorsements are fictional and do not verify evidence.</p><${Globe} /><${Viewer} person=${featured} label=${'Sample passport ' + featured.id + ' of ' + featured.name + '. Arrow keys turn it.'} /></div>
   </div></section>`;
 }
 
+/* Only public filter values go into the URL; saved record IDs stay in this browser. */
+function readCatalogQuery(query=''){
+  const params=new URLSearchParams(query);
+  const known=(key,values,fallback='')=>values.includes(params.get(key))?params.get(key):fallback;
+  return {q:(params.get('q')||'').slice(0,200),notice:known('notice',ORDER,'All'),sort:known('sort',['recent','name','notice'],'recent'),language:known('language',PEOPLE.map(p=>p.lang)),occupation:known('occupation',PEOPLE.map(p=>p.role)),proof:known('proof',PEOPLE.map(p=>p.level)),savedOnly:params.get('saved')==='1'};
+}
+function catalogRoute(catalog){
+  const params=new URLSearchParams();
+  if(catalog.q)params.set('q',catalog.q);
+  if(catalog.notice!=='All')params.set('notice',catalog.notice);
+  if(catalog.sort!=='recent')params.set('sort',catalog.sort);
+  for(const key of ['language','occupation','proof'])if(catalog[key])params.set(key,catalog[key]);
+  if(catalog.savedOnly)params.set('saved','1');
+  return 'notices'+(params.size?'?'+params:'');
+}
+function withoutCatalogFilters(catalog){
+  return {...catalog,notice:'All',savedOnly:false,language:'',occupation:'',proof:''};
+}
+function writeCatalogHistory(catalog,{replace=false}={}){
+  const hash='#'+catalogRoute(catalog);
+  if(location.hash===hash)return;
+  history[replace?'replaceState':'pushState'](null,'',hash);
+}
 function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catalog,setCatalog}){
   const [filterMessage,setFilterMessage]=useState('');
-  const {notice,q,sort,view,savedOnly,language,occupation,proof}=catalog;
-  const field=key => value => setCatalog(current => ({...current,[key]:typeof value==='function' ? value(current[key]) : value}));
-  const setNotice=field('notice'),setQ=field('q'),setSort=field('sort'),setView=field('view'),setSavedOnly=field('savedOnly'),setLanguage=field('language'),setOccupation=field('occupation'),setProof=field('proof');
+  const [compact,setCompact]=useState(()=>matchMedia('(max-width:640px)').matches);
+  const refineRef=useRef(null);
+  const {notice,q,sort,savedOnly,language,occupation,proof,filtersOpen}=catalog;
+  const view=compact ? catalog.mobileView : catalog.view;
+  useEffect(()=>{
+    const media=matchMedia('(max-width:640px)');
+    const update=()=>{if(media.matches&&!filtersOpen&&refineRef.current?.contains(document.activeElement))refineRef.current.querySelector('summary')?.focus({preventScroll:true});setCompact(media.matches);};
+    media.addEventListener('change',update);update();return()=>media.removeEventListener('change',update);
+  },[filtersOpen]);
+  const field=key => value => setCatalog(current => ({...current,[key]:typeof value==='function' ? value(current[key]) : value}),{replace:key==='q'});
+  const setNotice=field('notice'),setQ=field('q'),setSort=field('sort'),setView=field(compact?'mobileView':'view'),setSavedOnly=field('savedOnly'),setLanguage=field('language'),setOccupation=field('occupation'),setProof=field('proof');
   const languages=[...new Set(PEOPLE.map(p => p.lang))].sort(); const occupations=[...new Set(PEOPLE.map(p => p.role))].sort();
-  useEffect(() => { store.set('spr-view', {view}); }, [view]);
+  useEffect(() => { store.set('spr-view',{view:catalog.view});store.set('spr-view-mobile',{view:catalog.mobileView}); }, [catalog.view,catalog.mobileView]);
   const counts = {}; PEOPLE.forEach(p => { counts[p.status] = (counts[p.status] || 0) + 1; });
+  const search=useMemo(()=>normalizeSearch(q)?searchPeople(q):{matches:PEOPLE,suggestions:[]},[q]);
+  const matches=search.matches;
   const rows = useMemo(() => {
-    const ql = q.trim().toLowerCase();
-    let r = PEOPLE.filter(p => (notice==='All' || p.status===notice) && (!savedOnly || savedRecords.includes(p.id)) && (!ql || hay(p).includes(ql)) && (!language || p.lang===language) && (!occupation || p.role===occupation) && (!proof || p.level===proof));
+    let r = matches.filter(p => (notice==='All' || p.status===notice) && (!savedOnly || savedRecords.includes(p.id)) && (!language || p.lang===language) && (!occupation || p.role===occupation) && (!proof || p.level===proof));
     const cmp = { recent:(a,b) => b.sort-a.sort, name:(a,b) => a.name.localeCompare(b.name), notice:(a,b) => ORDER.indexOf(a.status)-ORDER.indexOf(b.status) || b.sort-a.sort }[sort];
     return r.slice().sort(cmp);
-  }, [notice, q, sort, savedOnly, savedRecords,language,occupation,proof]);
+  }, [notice, matches, sort, savedOnly, savedRecords,language,occupation,proof]);
+  const suggestions=rows.length?[]:search.suggestions.filter(p=>(notice==='All'||p.status===notice)&&(!savedOnly||savedRecords.includes(p.id))&&(!language||p.lang===language)&&(!occupation||p.role===occupation)&&(!proof||p.level===proof));
   const filtered = notice!=='All' || q.trim() || savedOnly || language || occupation || proof;
   const activeFilters=[
     notice!=='All' && {key:'notice',label:'Notice: '+NOTICE[notice].name,reset:'All',control:'notice-'+NOTICE[notice].key},
@@ -1665,26 +2008,29 @@ function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catal
   ].filter(Boolean);
   const removeFilter=(filter,index) => {
     setCatalog(current => ({...current,[filter.key]:filter.reset}));setFilterMessage(filter.label+' filter removed.');
-    requestAnimationFrame(() => {const chips=document.querySelectorAll('[data-filter-chip]');const target=chips[Math.min(index,chips.length-1)] || document.getElementById(filter.control) || document.getElementById('nq');target?.focus({preventScroll:true});});
+    requestAnimationFrame(() => {const chips=document.querySelectorAll('[data-filter-chip]');const control=document.getElementById(filter.control);const target=chips[Math.min(index,chips.length-1)] || (control&&!control.closest('details:not([open])') ? control : document.getElementById('catalog-refine-toggle')) || document.getElementById('nq');target?.focus({preventScroll:true});});
   };
-  const clearFilters=() => { setCatalog(current=>({...current,notice:'All',q:'',savedOnly:false,language:'',occupation:'',proof:''}));setFilterMessage('All filters cleared.');requestAnimationFrame(() => document.getElementById('nq')?.focus()); };
+  const clearFilters=() => { setCatalog(current=>({...withoutCatalogFilters(current),q:''}));setFilterMessage('All filters and search cleared.');requestAnimationFrame(() => document.getElementById('nq')?.focus({preventScroll:true})); };
+  const showMatches=()=>{setCatalog(withoutCatalogFilters);setFilterMessage('Filters removed. Search kept.');requestAnimationFrame(()=>document.getElementById('nq')?.focus({preventScroll:true}));};
   const removeComparison=id => { toggleComparison(id); requestAnimationFrame(() => { const target=comparisonIds.length>1 ? document.querySelector('.compare-tray-list button') : document.getElementById('nq'); target?.focus(); }); };
   const clearComparison=() => { comparisonIds.forEach(toggleComparison); requestAnimationFrame(() => (document.querySelector('.compare-choice input:not(:disabled)') || document.getElementById('nq'))?.focus()); };
   return html`<section id="notices" className="sec" aria-labelledby="n-h"><div className="wrap">
     <div className="sec-h"><div>
       <h2 className="h2" id="n-h" tabIndex="-1">Notices</h2>
-      <p className="sub">Every demo persona carries a notice. Its colour shows a sample decision and next step. Select a colour to filter.</p>
+      <p className="sub">Browse demo personas. Filter by notice, name or handle.</p>
     </div><a className="btn line" href="#compare">Compare personas</a></div>
+    <div className="catalog-search"><label htmlFor="nq">Find a persona</label><input id="nq" className="field-in" type="search" maxLength="200" placeholder="Name, handle, passport or rights holder" value=${q} onChange=${e => setQ(e.target.value)} /></div>
     <div className="key" role="group" aria-label="Filter by notice">
       ${ORDER.map(s => html`<button key=${s} id=${'notice-'+NOTICE[s].key} type="button" style=${nvars(s)} aria-pressed=${notice===s?'true':'false'} onClick=${() => setNotice(n => n===s ? 'All' : s)}>
         <span className="nm"><span>${NOTICE[s].name}</span><span className="ct">${counts[s] || 0}</span></span>
-        <span className="ad">${NOTICE[s].meaning}. ${NOTICE[s].advice}</span></button>`)}
+        <span className="ad">${NOTICE[s].meaning}<span className="notice-advice">. ${NOTICE[s].advice}</span></span></button>`)}
     </div>
+    <details className="catalog-refine" ref=${refineRef} open=${!compact||filtersOpen} onToggle=${e=>{if(compact&&e.currentTarget.open!==filtersOpen)field('filtersOpen')(e.currentTarget.open);}}>
+    <summary id="catalog-refine-toggle">Filters <span>${activeFilters.length} active</span></summary>
+    <div className="catalog-refine-body">
     <div className="tools">
       <div className="l">
-        <label htmlFor="nq" className="sr">Filter notices</label>
-        <input id="nq" className="field-in" type="search" placeholder="Filter by name, handle or rights holder" value=${q} onChange=${e => setQ(e.target.value)} />
-        <label htmlFor="ns" className="sr">Sort by</label>
+        <label htmlFor="ns">Sort by</label>
         <select id="ns" className="sel" value=${sort} onChange=${e => setSort(e.target.value)}>
           <option value="recent">Newest first</option><option value="name">Name A to Z</option><option value="notice">Notice colour</option>
         </select>
@@ -1700,14 +2046,18 @@ function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catal
       <div><label htmlFor="catalog-occupation">Occupation</label><select className="sel" id="catalog-occupation" value=${occupation} onChange=${e => setOccupation(e.target.value)}><option value="">All occupations</option>${occupations.map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
       <div><label htmlFor="catalog-proof">Proof level</label><select className="sel" id="catalog-proof" value=${proof} onChange=${e => setProof(e.target.value)}><option value="">All proof levels</option>${LEVELS.filter(value => PEOPLE.some(p => p.level===value)).map(value => html`<option key=${value} value=${value}>${value}</option>`)}</select></div>
     </div>
+    <details className="notice-guide"><summary>What the notices mean</summary><dl>${ORDER.map(s=>html`<div key=${s}><dt>${NOTICE[s].name}: ${NOTICE[s].meaning}</dt><dd>${NOTICE[s].advice}</dd></div>`)}</dl></details>
+    </div></details>
     ${activeFilters.length>0 && html`<div className="active-filters" role="group" aria-label="Active filters"><b>Active filters</b><ul className="filter-chips">${activeFilters.map((filter,index)=>html`<li key=${filter.key}><button type="button" className="filter-chip" data-filter-chip=${filter.key} aria-label=${'Remove filter: '+filter.label} onClick=${()=>removeFilter(filter,index)}><span>${filter.label}</span><span aria-hidden="true">×</span></button></li>`)}</ul></div>`}
     <p className="sr" role="status">${filterMessage}</p>
     <p className="status-line" aria-live="polite" style=${{marginBottom:'16px'}}>
       ${rows.length} of ${PEOPLE.length} personas${notice!=='All' ? ' with a ' + NOTICE[notice].name.toLowerCase() : ''}${q.trim() ? ' matching “' + q.trim() + '”' : ''}${savedOnly ? ' in your saved records' : ''}.
+      ${suggestions.length ? suggestions.length+' similar name suggestion'+(suggestions.length===1?'':'s')+' below.' : ''}
       ${filtered && html`<button type="button" className="tlink clear" onClick=${clearFilters}>Clear filters</button>`}
     </p>
     <p className="sr" role="status">${comparisonIds.length===2 ? 'Two personas selected for comparison. Remove a selection to choose another persona.' : comparisonIds.length+' of 2 personas selected for comparison.'}</p>
-    ${!rows.length && html`<p className="empty">${savedOnly && !savedRecords.length ? 'No saved records yet. Save a persona from a card to find it here.' : 'No persona matches these filters.'} <button type="button" className="tlink" onClick=${clearFilters}>Show all notices</button></p>`}
+    ${!rows.length && html`<div className="empty"><p>${q.trim()&&matches.length ? matches.length+' persona'+(matches.length===1?' matches':'s match')+' your search outside the selected filters.' : savedOnly && !savedRecords.length ? 'No saved records yet. Save a persona from a card to find it here.' : 'No persona matches these filters.'}</p>${q.trim()&&matches.length>0 && html`<button type="button" className="btn line" onClick=${showMatches}>Show ${matches.length} matching persona${matches.length===1?'':'s'}</button>`}<button type="button" className="tlink" onClick=${clearFilters}>Clear search and filters</button></div>`}
+    <${NameSuggestions} people=${suggestions} onSelect=${p=>{setQ(p.name);requestAnimationFrame(()=>document.getElementById('nq')?.focus());}} />
     ${rows.length > 0 && view==='grid' && html`<ul className="grid" style=${{listStyle:'none',margin:0,padding:0}}>
       ${rows.map(p => html`<li key=${p.id} className="card" style=${nvars(p.status)}>
         <div className="band" aria-hidden="true"></div>
@@ -1730,7 +2080,7 @@ function Notices({savedRecords, toggleSaved,comparisonIds,toggleComparison,catal
       <caption className="sr">Notices. Demonstration entries.</caption>
       <thead><tr><th scope="col"><span className="sr">Portrait</span></th><th scope="col">Persona</th><th scope="col">Passport number</th><th scope="col">Rights holder</th><th scope="col">Notice</th><th scope="col">Issued</th><th scope="col">Save</th><th scope="col">Compare</th></tr></thead>
       <tbody>${rows.map(p => html`<tr key=${p.id}>
-        <td><img className="thumb" src=${p.src} alt="" /></td>
+        <td><img className="thumb" src=${'../assets/portrait-thumbs/'+p.id+'.jpg'} alt="" loading="lazy" decoding="async" /></td>
         <td><a href=${'#'+p.id} data-catalog-record=${p.id}>${p.name}</a><br /><span style=${{color:'var(--muted)',fontSize:'14.5px'}}>${p.handle}</span></td>
         <td className="mono">${p.id}</td><td>${p.holder}</td><td><${NTag} status=${p.status} /></td><td style=${{whiteSpace:'nowrap'}}>${p.issued}</td>
         <td><button type="button" className="tlink save-action" aria-pressed=${savedRecords.includes(p.id)?'true':'false'} aria-label=${savedRecords.includes(p.id) ? 'Remove ' + p.name + ' from saved records' : 'Save ' + p.name + ' for later'} onClick=${() => toggleSaved(p.id)}>${savedRecords.includes(p.id) ? 'Remove saved' : 'Save record'}</button></td><td><${CompareChoice} person=${p} ids=${comparisonIds} onToggle=${toggleComparison} /></td></tr>`)}</tbody>
@@ -1770,30 +2120,40 @@ function Home({savedRecords, toggleSaved,comparisonIds,toggleComparison,catalog,
 /* ---------- record ---------- */
 const PROV_DATE_TIME = new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
 const PROFILE_TARGETS={overview:'h1',check:'record-check-h',risks:'record-risks-h',basis:'claim-basis-h',images:'rec-images-h',history:'record-history-h'};
+function alignRecordHeading(target){
+  if(!target)return;
+  const header=document.querySelector('.hdr'),nav=document.querySelector('.record-nav');
+  const offset=(parseFloat(header&&getComputedStyle(header).top)||0)+(header?.getBoundingClientRect().height||0)+(nav?.getBoundingClientRect().height||0)+16;
+  window.scrollTo({top:Math.max(0,scrollY+target.getBoundingClientRect().top-offset),behavior:'instant'});
+}
 function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
   const section=route.section;
+  const [imageIndex,setImageIndex]=useState(null),[chooseComparison,setChooseComparison]=useState(false);
   const recordRoot=useRef(null);
   useMeasuredHeight('.record-nav','--record-nav-height');
   const [step,setStep] = useState(-1); const [checkError,setCheckError] = useState(''); const timers = useRef([]),checkRun=useRef(0);
   const [checking,setChecking]=useState(false),[activeSection,setActiveSection]=useState(section||'overview');
   const [provenance,setProvenance] = useState(null); const [provenanceError,setProvenanceError] = useState('');
   useEffect(() => { checkRun.current++;timers.current.forEach(clearTimeout);timers.current=[];setStep(-1);setChecking(false);setCheckError('');setActiveSection(section||'overview');return()=>{checkRun.current++;timers.current.forEach(clearTimeout);}; }, [person.id]);
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     if(!section) return;
     setActiveSection(section);
     const targetId=PROFILE_TARGETS[section];
     const target=document.getElementById(targetId);
+    if(section==='overview'){
+      window.scrollTo({top:0,behavior:'instant'});
+      target?.focus({preventScroll:true});
+      return;
+    }
     let layoutFrame=0,observer,automatic=true,lastTop=target ? target.getBoundingClientRect().top+scrollY : 0;
     const gestures=['wheel','touchstart','pointerdown','keydown'];
     const stopAutomatic=()=>{automatic=false;observer?.disconnect();cancelAnimationFrame(layoutFrame);gestures.forEach(type=>window.removeEventListener(type,stopAutomatic,true));};
-    const alignAfterLayout=()=>{layoutFrame=0;if(!automatic||!target)return;const top=target.getBoundingClientRect().top+scrollY;if(Math.abs(top-lastTop)>1){lastTop=top;target.scrollIntoView({behavior:'instant',block:'start'});}};
+    const alignAfterLayout=()=>{layoutFrame=0;if(!automatic||!target)return;const top=target.getBoundingClientRect().top+scrollY;if(Math.abs(top-lastTop)>1){lastTop=top;alignRecordHeading(target);}};
     if(window.ResizeObserver&&recordRoot.current){observer=new ResizeObserver(()=>{cancelAnimationFrame(layoutFrame);layoutFrame=requestAnimationFrame(alignAfterLayout);});observer.observe(recordRoot.current);}
     gestures.forEach(type=>window.addEventListener(type,stopAutomatic,{capture:true,passive:true}));
-    const frame=requestAnimationFrame(() => {
-      target?.scrollIntoView({behavior:REDUCED ? 'auto' : 'smooth',block:'start'});
-      target?.focus({preventScroll:true});
-    });
-    return () => {cancelAnimationFrame(frame);stopAutomatic();};
+    alignRecordHeading(target);
+    target?.focus({preventScroll:true});
+    return stopAutomatic;
   },[person.id,route]);
   useEffect(()=>{
     let frame=0;
@@ -1850,7 +2210,7 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
         <div className="rec-actions" role="group" aria-label="Record actions"><div className="rec-main-actions">
           <button type="button" className="btn" onClick=${run} disabled=${busy} aria-busy=${busy?'true':undefined}>${busy?'Checking record…':'Check record'}</button>
           <button type="button" className="btn line rec-save" aria-pressed=${savedRecords.includes(person.id)?'true':'false'} aria-label=${(savedRecords.includes(person.id)?'Saved record':'Save record')+' of '+person.name+' in this browser'} onClick=${() => toggleSaved(person.id)}>${savedRecords.includes(person.id)?'Saved record':'Save record'}</button>
-          <a className="btn line" href=${'#compare/'+person.id+'/'+next.id}>Compare persona</a>
+          <button type="button" className="btn line" aria-haspopup="dialog" onClick=${()=>setChooseComparison(true)}>Compare persona</button>
         </div><div className="rec-utilities">
           <button type="button" className="tlink" onClick=${() => copy(location.href.split('#')[0] + '#' + person.id, 'Link to this record', toast)}>Copy link</button>
           <button type="button" className="tlink" onClick=${() => onReport(person)}>Report a concern</button>
@@ -1861,9 +2221,20 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
     <nav className="record-nav" aria-label="Profile sections"><div className="wrap">${[['overview','Overview'],['check','Check'],['risks','Risks ('+person.risks.length+')'],['basis','Basis'],['images','Images'],['history','History']].map(([key,label]) => html`<a key=${key} href=${'#'+person.id+'/'+key} aria-current=${activeSection===key?'location':undefined} onClick=${e => goSection(e,key)}>${label}</a>`)}</div></nav>
     <div className="wrap">
       <div className="rec-grid">
+        <section className="rec-summary" aria-labelledby="rec-summary-h">
+          <h2 id="rec-summary-h">Record summary</h2>
+          <div className="notice-box"><div><b>${N.name}: ${N.meaning.toLowerCase()}</b><span>${recordAdvice(person)}</span>${person.note && html`<p>Reason: ${person.note}.</p>`}</div></div>
+          <dl><div><dt>Level of proof</dt><dd>${person.level} <span className="proof-explanation">(level ${LEVELS.indexOf(person.level)+1} of ${LEVELS.length})</span></dd></div></dl>
+          <p className="proof-explanation">${PROOF_EXPLANATIONS[person.level]}</p>
+          <a href=${'#'+person.id+'/basis'} onClick=${e=>goSection(e,'basis')}>See the recorded basis</a>
+          <div className="rec-summary-risks"><h3>${person.risks.length ? 'Open questions ('+person.risks.length+')' : 'No open risks listed'}</h3>
+            ${person.risks.length ? html`<ul>${person.risks.map((risk,index)=>html`<li key=${index}>${risk}</li>`)}</ul>` : html`<p>This demo record lists no open risks. That does not establish that every risk has been resolved.</p>`}
+            ${person.risks.length>0 && html`<a href=${'#'+person.id+'/risks'} onClick=${e=>goSection(e,'risks')}>Go to open risks</a>`}
+          </div>
+          <p className="rec-summary-limit">Demo record. This page does not independently verify identity, consent or usage rights.</p>
+        </section>
         <div className="rec-stage"><${Viewer} person=${person} /></div>
-        <div>
-          <div className="notice-box" style=${{marginTop:0}}><div><b>${N.name}: ${N.meaning.toLowerCase()}</b><span>${N.advice}${person.note ? ' Reason: ' + person.note.toLowerCase() + '.' : ''}</span></div></div>
+        <div className="rec-info">
           <section className="rec-about" aria-labelledby="rec-about-title"><h2 id="rec-about-title">About ${person.name}</h2><p>${person.description}</p></section>
           <section className="rec-social" aria-labelledby="rec-social-title"><h2 id="rec-social-title">Channels</h2>
             <ul className="rec-social-list">${channels.map((channel,index) => { const href=socialHref(channel); return html`<li key=${index}>
@@ -1881,7 +2252,6 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
             <div><dt>Rights holder</dt><dd>${person.holder}</dd></div>
             <div><dt>Date of issue</dt><dd>${person.issued}</dd></div>
             <div><dt>Date of expiry</dt><dd>${person.expires}</dd></div>
-            <div><dt>Level of proof</dt><dd>${person.level}, ${LEVELS.indexOf(person.level) + 1} of 4</dd></div>
           </dl>
         </div>
       </div>
@@ -1904,33 +2274,35 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
           <h2 className="h2" id="rec-images-h" tabIndex="-1">Persona images</h2>
           <p className="sub">The face portrait used in the catalog and this full-length studio image illustrate a fictional persona. They do not establish identity or represent a new face check.</p>
           <div className="rec-image-key">
-            <img src=${person.src} alt="" loading="lazy" />
-            <div><b>Face portrait</b><p>Used in the catalog and sample passport above.</p></div>
+            <button type="button" className="image-open" aria-haspopup="dialog" aria-label=${'Enlarge face portrait of '+person.name} onClick=${()=>setImageIndex(0)}><img src=${person.src} alt="" loading="lazy" /></button>
+            <div><b>Face portrait</b><p>Used in the catalog and sample passport above.</p><button type="button" className="tlink" aria-haspopup="dialog" onClick=${()=>setImageIndex(0)}>Enlarge portrait</button></div>
           </div>
         </div>
         <figure className="rec-full">
-          <img src=${person.bodySrc} alt=${'Full-length studio image of ' + person.name} loading="lazy" />
+          <button type="button" className="image-open" aria-haspopup="dialog" aria-label=${'Enlarge full-length image of '+person.name} onClick=${()=>setImageIndex(1)}><img src=${person.bodySrc} alt=${'Full-length studio image of ' + person.name} loading="lazy" /><span className="image-open-label" aria-hidden="true">Enlarge image</span></button>
           <figcaption>Full-length studio image of ${person.name}</figcaption>
         </figure>
       </section>
       <section className="prov" aria-labelledby="prov-h">
         <h2 id="prov-h">Image provenance and integrity</h2>
         <p className="sub">The project declares both images AI-generated. This section compares the server's image files with hashes recorded in this repository.</p>
-        ${provenanceError && html`<p className="risk" role="status">${provenanceError}</p>`}
-        ${!provenance && !provenanceError && html`<p className="sub" role="status">${location.protocol==='file:' ? 'Open the local server to check media hashes.' : 'Checking the media hashes…'}</p>`}
-        ${provenance && html`<div>
-          <div role="status" className=${'prov-summary' + (provenance.assets.length>0 && provenance.assets.every(asset => asset.integrity==='matches_manifest') ? '' : ' problem')}>
-            <strong>${provenance.assets.filter(asset => asset.integrity==='matches_manifest').length} of ${provenance.assets.length} image files match repository hashes</strong><span>File integrity check only</span>
+        <div>
+          <div role="status" className=${'prov-summary'+(provenanceError?' problem':!provenance?' pending':provenance.assets.length>0&&provenance.assets.every(asset=>asset.integrity==='matches_manifest')?'':' problem')}>
+            <strong>${provenance?provenance.assets.filter(asset=>asset.integrity==='matches_manifest').length+' of '+provenance.assets.length+' image files match repository hashes':provenanceError||(location.protocol==='file:'?'Open the local server to check media hashes.':'Checking the media hashes…')}</strong><span>File integrity check only</span>
           </div>
-          <div className="prov-grid">${provenance.assets.map(asset => html`<article className="prov-asset" key=${asset.role}>
+          <aside className="prov-limits"><h3>What this check does not prove</h3><div><p>Matching hashes show file consistency. They do not establish the creator, model lineage, consent, or a person’s identity.</p></div></aside>
+          <details className="technical-details" key=${person.id}><summary>Technical details</summary>
+          ${!provenance&&html`<p className="sub">${provenanceError||'Technical results will appear when the check finishes.'}</p>`}
+          ${provenance&&html`<div>
+          <p className="sub"><b>Basis for origin claim:</b> ${provenance.originBasis}</p>
+          <div className="prov-grid" style=${{marginTop:'18px'}}>${provenance.assets.map(asset => html`<article className="prov-asset" key=${asset.role}>
             <header><h3>${asset.role==='portrait' ? 'Face portrait' : 'Full-length image'}</h3>
               <p className=${'prov-result' + (asset.integrity==='matches_manifest' ? '' : ' integrity-bad')}>${asset.integrity==='matches_manifest' ? 'Matches recorded hash' : asset.integrity==='missing' ? 'File missing' : 'Hash mismatch'}</p></header>
             <dl className="prov-facts"><div><dt>Checked</dt><dd><time dateTime=${asset.checkedAt}>${PROV_DATE_TIME.format(new Date(asset.checkedAt))}</time></dd></div>
               <div><div className="prov-hash-head"><dt>Recorded SHA-256</dt><button type="button" className="tlink" aria-label=${'Copy SHA-256 hash for ' + (asset.role==='portrait' ? 'face portrait' : 'full-length image')} onClick=${() => copy(asset.sha256,'SHA-256 hash',toast)}>Copy hash</button></div><dd><code className="prov-digest">${asset.sha256}</code></dd></div></dl>
-          </article>`)}</div>
-          <aside className="prov-limits"><h3>What this check does not prove</h3><div><p><b>Basis for origin claim:</b> ${provenance.originBasis}</p>
-            <p>Matching hashes show file consistency. They do not establish the creator, model lineage, consent, or a person’s identity.</p></div></aside>
-        </div>`}
+          </article>`)}</div></div>`}
+          </details>
+        </div>
       </section>
       <section className="record-section" aria-labelledby="record-history-h">
         <h2 className="h2" id="record-history-h" tabIndex="-1">Record history</h2>
@@ -1942,6 +2314,8 @@ function Record({person, route,toast, onReport, savedRecords, toggleSaved}){
       </nav>
       <div style=${{height:'64px'}}></div>
     </div>
+    ${imageIndex!==null&&html`<${ImageViewer} key=${person.id} person=${person} initialIndex=${imageIndex} onClose=${()=>setImageIndex(null)} />`}
+    ${chooseComparison&&html`<${ComparePicker} key=${person.id} person=${person} onClose=${()=>setChooseComparison(false)} />`}
   </div>`;
 }
 
@@ -1952,6 +2326,21 @@ const EVIDENCE_KEYS = new Set(EVIDENCE.map(([key]) => key));
 const HANDLE_FORMAT = /^@?[\p{L}\p{N}_.]{2,80}$/u;
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const validEmail = value => value.length <= 254 && EMAIL_FORMAT.test(value.trim());
+function validateReport(data){
+  const errors={};
+  if(!data.who.trim() || data.who.trim().length>160) errors.who='Enter the persona’s name, handle or passport number (up to 160 characters)';
+  if(!data.what) errors.what='Select what the problem is';
+  if(data.details.trim().length<20 || data.details.trim().length>4000) errors.details='Describe what you saw in 20 to 4000 characters';
+  if(data.email.trim() && !validEmail(data.email)) errors.email='Enter an email address in the correct format, or leave it empty';
+  return errors;
+}
+function validateApplication(data,step){
+  const errors={};
+  if(step===1){ if(!data.name.trim() || data.name.trim().length>120) errors.name='Enter the persona’s public name (up to 120 characters)'; if(!HANDLE_FORMAT.test(data.handle.trim())) errors.handle='Enter a channel handle with 2 to 80 letters, numbers, dots or underscores'; if(!data.nature) errors.nature='Select whether the persona is based on a real person'; if(data.langs.length>160) errors.langs='Enter up to 160 characters for languages'; }
+  if(step===2){ if(!data.holderType) errors.holderType='Select whether a person or a company holds the rights'; if(!data.holder.trim() || data.holder.trim().length>160) errors.holder='Enter the rights holder name (up to 160 characters)'; if(!validEmail(data.email)) errors.email='Enter an email address in the correct format, like name@example.com'; }
+  if(step===3){ if(!data.evidence.length) errors.evidence='Select at least one piece of evidence you can send'; if(data.nature==='likeness' && !data.evidence.includes('consent')) errors.evidence='A persona based on a real person needs that person’s signed consent'; }
+  return errors;
+}
 function restoreApplication(raw){
   const draft = {...APPLY0, evidence:[]};
   if(!raw || typeof raw!=='object' || Array.isArray(raw)) return draft;
@@ -1959,28 +2348,40 @@ function restoreApplication(raw){
   if(Array.isArray(raw.evidence)) draft.evidence=[...new Set(raw.evidence.filter(key => EVIDENCE_KEYS.has(key)))];
   return draft;
 }
+function persistApplicationDraft(draft,step,reviewDraft){
+  const saved=store.set('spr-apply',draft),stepSaved=store.set('spr-apply-step',step),reviewSaved=reviewDraft ? store.set('spr-apply-review',reviewDraft) : store.del('spr-apply-review');
+  return saved&&stepSaved&&reviewSaved;
+}
+function finishApplicationDraft(result){
+  if(result.demo)return;
+  store.del('spr-apply');store.del('spr-apply-step');store.del('spr-apply-review');
+}
 function Apply({toast}){
   const [d,setD] = useState(() => restoreApplication(store.get('spr-apply')));
   const [step,setStep] = useState(() => { const value=store.get('spr-apply-step'); return Number.isInteger(value) && value>=1 && value<=4 ? value : 1; });
-  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [accessToken,setAccessToken] = useState(''); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
-  useEffect(() => { if(!ref){ store.set('spr-apply', d); store.set('spr-apply-step', step); } }, [d, step, ref]);
-  const set = k => e => setD(s => ({...s, [k]: e.target.value}));
-  const toggleEv = k => setD(s => ({...s, evidence: s.evidence.includes(k) ? s.evidence.filter(x => x!==k) : [...s.evidence, k]}));
-  const validate = n => { const e = {};
-    if(n===1){ if(!d.name.trim() || d.name.trim().length>120) e.name = 'Enter the persona’s public name (up to 120 characters)'; if(!HANDLE_FORMAT.test(d.handle.trim())) e.handle = 'Enter a channel handle with 2 to 80 letters, numbers, dots or underscores'; if(!d.nature) e.nature = 'Select whether the persona is based on a real person'; if(d.langs.length>160) e.langs = 'Enter up to 160 characters for languages'; }
-    if(n===2){ if(!d.holderType) e.holderType = 'Select whether a person or a company holds the rights'; if(!d.holder.trim() || d.holder.trim().length>160) e.holder = 'Enter the rights holder name (up to 160 characters)'; if(!validEmail(d.email)) e.email = 'Enter an email address in the correct format, like name@example.com'; }
-    if(n===3){ if(!d.evidence.length) e.evidence = 'Select at least one piece of evidence you can send'; if(d.nature==='likeness' && !d.evidence.includes('consent')) e.evidence = 'A persona based on a real person needs that person’s signed consent'; }
-    return e; };
+  const [reviewDraft,setReviewDraft] = useState(() => { const value=store.get('spr-apply-review'); return value && typeof value==='object' && !Array.isArray(value) ? restoreApplication(value) : null; });
+  const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [accessToken,setAccessToken] = useState(''); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const [draftStatus,setDraftStatus]=useState('idle'); const sum = useRef(null);
+  useEffect(() => { if(!ref)setDraftStatus(persistApplicationDraft(d,step,reviewDraft)?'saved':'unavailable'); }, [d, step, ref, reviewDraft]);
+  const update = next => { setD(next); setErr(current=>current===null ? null : validateApplication(next,step)); };
+  const set = k => e => update({...d,[k]:e.target.value});
+  const toggleEv = k => update({...d,evidence:d.evidence.includes(k) ? d.evidence.filter(x=>x!==k) : [...d.evidence,k]});
+  const validate = n => validateApplication(d,n);
   const focusTop = () => setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0);
-  const next = e => { e.preventDefault(); const er = validate(step); if(Object.keys(er).length){ setErr(er); setTimeout(() => sum.current && sum.current.focus(), 0); return; } setErr(null); setStep(step + 1); focusTop(); };
+  const showErrors = (section, errors) => { setStep(section); setErr(errors); setTimeout(() => sum.current && sum.current.focus(), 0); };
+  const validateReview = () => { for(const section of [1,2,3]){ const errors=validate(section); if(Object.keys(errors).length){ showErrors(section, errors); return false; } } return true; };
+  const edit = section => { setReviewDraft({...d,evidence:[...d.evidence]}); setErr(null); setServerError(''); setStep(section); focusTop(); };
+  const cancelEdit = () => { setD(reviewDraft); setReviewDraft(null); setErr(null); setStep(4); focusTop(); };
+  const next = e => { e.preventDefault(); const er = validate(step); if(Object.keys(er).length){ showErrors(step, er); return; }
+    if(reviewDraft && !validateReview()) return;
+    setErr(null); setStep(reviewDraft ? 4 : step + 1); setReviewDraft(null); focusTop(); };
   const back = () => { setErr(null); setStep(Math.max(1, step - 1)); focusTop(); };
-  const submit = async () => { if(pending) return; setPending(true); setServerError('');
-    try { const result = await submitToRegistry('/api/v1/applications', d); setRef(result.id); setAccessToken(result.accessToken || ''); setDemo(!!result.demo); store.del('spr-apply'); store.del('spr-apply-step'); focusTop(); }
+  const submit = async () => { if(pending) return; if(!validateReview()){ setReviewDraft({...d,evidence:[...d.evidence]}); return; } setPending(true); setServerError('');
+    try { const result = await submitToRegistry('/api/v1/applications', d); setRef(result.id); setAccessToken(result.accessToken || ''); setDemo(!!result.demo); finishApplicationDraft(result); focusTop(); }
     catch(e){ setServerError(e.message || 'The application could not be saved. Please try again.'); }
     finally { setPending(false); } };
-  const restart = () => { setD(APPLY0); setStep(1); setRef(null); setAccessToken(''); setErr(null); focusTop(); };
+  const restart = () => { setD(APPLY0); setStep(1); setReviewDraft(null); setRef(null); setAccessToken(''); setErr(null); focusTop(); };
   const clearDraft = () => { if(!window.confirm('Clear this saved application draft from this browser?')) return;
-    store.del('spr-apply'); store.del('spr-apply-step'); setD({...APPLY0, evidence:[]}); setStep(1); setErr(null); setServerError(''); focusTop(); };
+    store.del('spr-apply'); store.del('spr-apply-step'); store.del('spr-apply-review'); setD({...APPLY0, evidence:[]}); setReviewDraft(null); setStep(1); setErr(null); setServerError(''); focusTop(); };
   const fe = k => err && err[k];
   const Text = (k, label, hint, type, extra) => html`<div className=${'fg' + (fe(k) ? ' err' : '')}>
     <label htmlFor=${'f-'+k}>${label}</label>${hint && html`<span className="hint" id=${'h-'+k}>${hint}</span>`}
@@ -1993,7 +2394,7 @@ function Apply({toast}){
   if(ref) return html`<div className="wrap formwrap">
      <div className="done"><h1 id="h1" tabIndex="-1">${demo ? 'Application preview' : 'Application received'}</h1><p style=${{marginTop:'10px'}}>${demo ? 'Demo number' : 'Your case number'}</p><span className="ref">${ref}</span></div>
     <h2 className="h2" style=${{fontSize:'26px',marginTop:'36px'}}>What happens next</h2>
-     <p style=${{marginTop:'10px'}}>${demo ? 'This standalone preview did not save or send your answers.' : 'Your answers were stored. Review starts when an operator is configured and opens this case; no email is sent.'}</p>
+     <p style=${{marginTop:'10px'}}>${demo ? 'This standalone preview did not send your answers to the registry. Your draft remains in this browser if saving is available.' : 'Your answers were stored. Review starts when an operator is configured and opens this case; no email is sent.'}</p>
     ${accessToken && html`<div className="private-note"><b>Keep your private case link.</b><p>It lets anyone holding it view the status and upload evidence. It is shown only here and is not emailed.</p></div>
       <div className="rowbtns" style=${{marginTop:'20px'}}><a className="btn" href=${'#case/'+ref+'/'+accessToken}>View case and upload evidence</a><button type="button" className="btn line" onClick=${() => copy(location.href.split('#')[0] + '#case/' + ref + '/' + accessToken, 'Private case link', toast)}>Copy private link</button></div>`}
     <div className="rowbtns" style=${{marginTop:'28px'}}><a className="btn line" href="#notices">Back to notices</a><button type="button" className="tlink" onClick=${restart}>Start another application</button></div>
@@ -2010,10 +2411,10 @@ function Apply({toast}){
   return html`<div className="wrap formwrap">
     <ol className="crumbs" aria-label="Breadcrumb" style=${{paddingTop:0}}><li><a href="#home">Registry</a></li><li aria-current="page">Register a persona</li></ol>
     <ol className="apply-steps" aria-label="Application progress">${stepNames.map((name,index) => html`<li key=${name} className=${index+1===step ? 'current' : index+1<step ? 'complete' : ''} aria-current=${index+1===step ? 'step' : undefined}><strong>${index+1}</strong>${name}</li>`)}</ol>
-    ${step>1 && html`<button type="button" className="tlink" onClick=${back} style=${{marginBottom:'16px'}}>Back</button>`}
+    ${reviewDraft ? html`<button type="button" className="tlink" onClick=${cancelEdit} style=${{marginBottom:'16px'}}>Cancel changes</button>` : step>1 && html`<button type="button" className="tlink" onClick=${back} style=${{marginBottom:'16px'}}>Back</button>`}
     <h1 className="fh1" id="h1" tabIndex="-1">${titles[step-1]}</h1>
-    <p className="apply-intro">${stepHelp[step-1]}</p>
-    ${err && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#f-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById(k==='evidence' ? 'f-ev-0' : 'f-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
+    <p className="apply-intro">${reviewDraft ? 'Update this section, then save your changes to return to the review.' : stepHelp[step-1]}</p>
+    ${err && Object.keys(err).length>0 && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#f-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById(k==='evidence' ? 'f-ev-0' : 'f-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
     ${step<4 && html`<form className="form apply-form" onSubmit=${next} noValidate>
       ${step===1 && html`${Text('name','Persona’s public name','As it appears on the persona’s channels','text',{autoComplete:'off',maxLength:120})}
         ${Text('handle','Main channel handle','The account with the largest audience','text',{autoComplete:'off',spellCheck:false,maxLength:81})}
@@ -2027,7 +2428,7 @@ function Apply({toast}){
           ${fe('evidence') && html`<span className="emsg" id="e-evidence"><span className="sr">Error: </span>${err.evidence}</span>`}
           <div className="opts">${EVIDENCE.map(([k,l],n) => html`<label key=${k} className="opt"><input type="checkbox" id=${'f-ev-'+n} checked=${d.evidence.includes(k)} onChange=${() => toggleEv(k)} /><span>${l}</span></label>`)}</div>
         </fieldset>`}
-      <div className="rowbtns apply-actions"><button type="submit" className="btn">Continue</button><span className="saved">Draft saved in this browser until you submit or clear it.</span><button type="button" className="tlink" onClick=${clearDraft}>Clear draft</button></div>
+      <div className="rowbtns apply-actions"><button type="submit" className="btn">${reviewDraft ? 'Save changes and return to review' : 'Continue'}</button><span className="saved" role="status">${draftStatus==='saved'?'Draft saved in this browser until you submit or clear it.':draftStatus==='unavailable'?'Draft could not be saved. Keep this page open or copy your answers.':'Saving draft…'}</span><button type="button" className="tlink" onClick=${clearDraft}>Clear draft</button></div>
     </form>`}
     ${step===4 && html`<div>
       ${[
@@ -2035,7 +2436,7 @@ function Apply({toast}){
         ['Rights holder', [['Rights holder',(d.holderType==='company' ? 'Company: ' : 'Person: ') + d.holder,2],['Email',d.email,2]]],
         ['Evidence', [['Available materials',d.evidence.map(k => EVIDENCE.find(e => e[0]===k)[1]).join('; '),3]]]
       ].map(([group,rows]) => html`<section className="apply-review-group" key=${group}><h2>${group}</h2><dl className="review">
-        ${rows.map(([label,value,section]) => html`<div key=${label}><dt>${label}</dt><dd className="rv">${value}</dd><dd className="ra"><button type="button" className="tlink" onClick=${() => { setStep(section); focusTop(); }}>Change<span className="sr"> ${label.toLowerCase()}</span></button></dd></div>`)}
+        ${rows.map(([label,value,section]) => html`<div key=${label}><dt>${label}</dt><dd className="rv">${value}</dd><dd className="ra"><button type="button" className="tlink" onClick=${() => edit(section)}>Change<span className="sr"> ${label.toLowerCase()}</span></button></dd></div>`)}
       </dl></section>`)}
       <div className="apply-declaration"><h2 className="h2" style=${{fontSize:'24px'}}>Declaration</h2>
       <p style=${{marginTop:'10px',maxWidth:'60ch'}}>By submitting, you confirm you hold the rights to this persona and that the information is correct to the best of your knowledge.</p>
@@ -2047,23 +2448,54 @@ function Apply({toast}){
 }
 
 /* ---------- report ---------- */
+const REPORT_DRAFT_TTL=24*60*60*1000;
+const reportDraftKey=personaId=>'spr-report-draft:'+(personaId||'general');
+const emptyReport=person=>({who:person?person.name+' ('+person.id+')':'',what:'',details:'',email:''});
+function restoreReportDraft(value,now=Date.now()){
+  if(!value||value.version!==1||!Number.isFinite(value.savedAt)||value.savedAt>now+60000||now-value.savedAt>=REPORT_DRAFT_TTL)return null;
+  const data=value.data;
+  if(!data||typeof data!=='object'||Array.isArray(data))return null;
+  for(const [key,max] of [['who',160],['details',4000],['email',254]])if(typeof data[key]!=='string'||data[key].length>max)return null;
+  if(!['','copy','ads','undisclosed','other'].includes(data.what))return null;
+  return {savedAt:value.savedAt,data:{who:data.who,what:data.what,details:data.details,email:data.email}};
+}
+function readReportDraft(storage,key,now=Date.now()){
+  const raw=storage.getItem(key);if(!raw)return null;
+  let value;try{value=JSON.parse(raw);}catch{storage.removeItem(key);return null;}
+  const draft=restoreReportDraft(value,now);
+  if(!draft)storage.removeItem(key);
+  return draft;
+}
+function saveReportDraft(storage,key,data,now=Date.now()){
+  const draft=restoreReportDraft({version:1,savedAt:now,data},now);
+  if(!draft)throw new Error('Invalid report draft');
+  storage.setItem(key,JSON.stringify({version:1,...draft}));
+}
 function Report({prefill, toast}){
-  const [d,setD] = useState({who: prefill ? prefill.name + ' (' + prefill.id + ')' : '', what:'', details:'', email:''});
+  const key=reportDraftKey(prefill?.id),empty=emptyReport(prefill);
+  const [initial]=useState(()=>{try{const draft=readReportDraft(sessionStorage,key);return {data:draft?.data||empty,status:draft?'restored':'idle'};}catch{return {data:empty,status:'unavailable'};}});
+  const [d,setD] = useState(initial.data),[draftStatus,setDraftStatus]=useState(initial.status),[clearPending,setClearPending]=useState(false);
+  const [otherDrafts]=useState(()=>{if(prefill)return [];try{return PEOPLE.map(person=>{const draft=readReportDraft(sessionStorage,reportDraftKey(person.id));return draft?{id:person.id,label:draft.data.who||person.name}:null;}).filter(Boolean);}catch{return [];}});
   const [err,setErr] = useState(null); const [ref,setRef] = useState(null); const [accessToken,setAccessToken] = useState(''); const [demo,setDemo] = useState(false); const [pending,setPending] = useState(false); const [serverError,setServerError] = useState(''); const sum = useRef(null);
-  const set = k => e => setD(s => ({...s, [k]: e.target.value}));
-  const submit = async e => { e.preventDefault(); if(pending) return; const er = {};
-    if(!d.who.trim() || d.who.trim().length>160) er.who = 'Enter the persona’s name, handle or passport number (up to 160 characters)';
-    if(!d.what) er.what = 'Select what the problem is';
-    if(d.details.trim().length < 20 || d.details.trim().length > 4000) er.details = 'Describe what you saw in 20 to 4000 characters';
-    if(d.email.trim() && !validEmail(d.email)) er.email = 'Enter an email address in the correct format, or leave it empty';
+  const hasInput=Object.keys(empty).some(field=>d[field]!==empty[field]);
+  const set = field => e => {
+    const next={...d,[field]:e.target.value};setD(next);setClearPending(false);
+    setErr(current=>current===null ? null : validateReport(next));
+    // Save in the input event so an immediate reload cannot outrun a debounce.
+    try{saveReportDraft(sessionStorage,key,next);setDraftStatus('saved');}catch{setDraftStatus('unavailable');}
+  };
+  const clearDraft=()=>{try{sessionStorage.removeItem(key);setD(empty);setErr(null);setServerError('');setClearPending(false);setDraftStatus('cleared');requestAnimationFrame(()=>document.getElementById('r-who')?.focus());}catch{setDraftStatus('clear-error');}};
+  const draftMessages={idle:'Drafts save automatically in this tab.',restored:'Draft restored in this tab.',saved:'Draft saved in this tab.',cleared:'Draft cleared.',unavailable:'Draft could not be saved. Keep this page open or copy your text.','clear-error':'The saved draft could not be cleared. Your text is still here.'};
+  const submit = async e => { e.preventDefault(); if(pending) return; const er=validateReport(d);
     if(Object.keys(er).length){ setErr(er); setTimeout(() => sum.current && sum.current.focus(), 0); return; }
     setErr(null); setPending(true); setServerError('');
-    try { const result = await submitToRegistry('/api/v1/reports', d); setRef(result.id); setAccessToken(result.accessToken || ''); setDemo(!!result.demo); setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0); }
+    try { const result = await submitToRegistry('/api/v1/reports', d); setRef(result.id); setAccessToken(result.accessToken || ''); setDemo(!!result.demo);if(!result.demo){try{sessionStorage.removeItem(key);setDraftStatus('cleared');}catch{setDraftStatus('clear-error');}}setTimeout(() => { const h = document.getElementById('h1'); h && h.focus(); window.scrollTo({top:0}); }, 0); }
     catch(e){ setServerError(e.message || 'The report could not be saved. Please try again.'); }
     finally { setPending(false); } };
   const fe = k => err && err[k];
    if(ref) return html`<div className="wrap formwrap"><div className="done"><h1 id="h1" tabIndex="-1">${demo ? 'Report preview' : 'Report received'}</h1><p style=${{marginTop:'10px'}}>${demo ? 'Demo reference' : 'Your reference'}</p><span className="ref">${ref}</span></div>
      <p style=${{marginTop:'28px'}}>${demo ? 'This standalone preview did not save or send your report.' : 'Your report was stored. A reviewer must inspect it; a public notice does not change automatically.'}</p>
+     ${draftStatus==='clear-error'&&html`<p role="status">Your report was stored, but the saved draft could not be cleared in this tab.</p>`}
      ${accessToken && html`<div className="private-note"><b>Keep your private case link.</b><p>It lets anyone holding it view the status and upload evidence. It is shown only here and is not emailed.</p></div>
        <div className="rowbtns" style=${{marginTop:'20px'}}><a className="btn" href=${'#case/'+ref+'/'+accessToken}>View case and upload evidence</a><button type="button" className="btn line" onClick=${() => copy(location.href.split('#')[0] + '#case/' + ref + '/' + accessToken, 'Private case link', toast)}>Copy private link</button></div>`}
     <div className="rowbtns" style=${{marginTop:'24px'}}><a className="btn line" href="#notices">Back to notices</a></div></div>`;
@@ -2071,13 +2503,21 @@ function Report({prefill, toast}){
     <ol className="crumbs" aria-label="Breadcrumb" style=${{paddingTop:0,marginBottom:'24px'}}><li><a href="#home">Registry</a></li><li aria-current="page">Report a persona</li></ol>
     <h1 className="fh1" id="h1" tabIndex="-1">Report a persona</h1>
     <p className="sub">Use this form for registered and unregistered personas. You do not need an account.</p>
-    ${err && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#r-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById('r-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
+    ${prefill&&html`<a className="tlink" href=${'#'+prefill.id}>Back to ${prefill.name}'s profile</a>`}
+    <aside className="report-draft" aria-label="Report draft">
+      <p className="draft-state" role="status" data-error=${draftStatus==='unavailable'||draftStatus==='clear-error'}>${draftMessages[draftStatus]}</p>
+      <p>Reload restores saved text in this tab for up to 24 hours after your last edit. It is not sent until you submit.</p>
+      ${!clearPending&&(hasInput||draftStatus==='saved'||draftStatus==='restored')&&html`<button type="button" className="tlink" onClick=${()=>{setClearPending(true);requestAnimationFrame(()=>document.getElementById('keep-report-draft')?.focus());}}>Clear draft</button>`}
+      ${clearPending&&html`<div className="report-draft-actions" role="group" aria-label="Clear saved report draft"><p>Clear the saved text for this report?</p><button type="button" className="btn line" onClick=${clearDraft}>Clear saved text</button><button type="button" className="tlink" id="keep-report-draft" onClick=${()=>{setClearPending(false);requestAnimationFrame(()=>document.getElementById('r-who')?.focus());}}>Keep editing</button></div>`}
+      ${otherDrafts.length>0&&html`<div><b>Other drafts in this tab</b><ul className="report-drafts">${otherDrafts.map(draft=>html`<li key=${draft.id}><a href=${'#report/'+draft.id}>Resume report: ${draft.label}</a></li>`)}</ul></div>`}
+    </aside>
+    ${err && Object.keys(err).length>0 && html`<div className="esum" role="alert" tabIndex="-1" ref=${sum}><h2>There is a problem</h2><ul>${Object.entries(err).map(([k,m]) => html`<li key=${k}><a href=${'#r-'+k} onClick=${e => { e.preventDefault(); const el = document.getElementById('r-'+k); el && el.focus(); }}>${m}</a></li>`)}</ul></div>`}
     <form className="form" onSubmit=${submit} noValidate>
       <div className=${'fg' + (fe('who') ? ' err' : '')}><label htmlFor="r-who">Which persona?</label><span className="hint" id="r-h-who">Name, handle or passport number</span>
         ${fe('who') && html`<span className="emsg" id="r-e-who">${err.who}</span>`}<input id="r-who" className=${'in' + (fe('who') ? ' err' : '')} value=${d.who} onChange=${set('who')} autoComplete="off" maxLength="160" aria-invalid=${fe('who') ? 'true' : undefined} aria-describedby=${fe('who') ? 'r-h-who r-e-who' : 'r-h-who'} /></div>
       <fieldset className=${'fg' + (fe('what') ? ' err' : '')} aria-describedby=${fe('what') ? 'r-e-what' : undefined}><legend>What is the problem?</legend>${fe('what') && html`<span className="emsg" id="r-e-what">${err.what}</span>`}
         <div className="opts">${[['copy','It copies or looks like a real person'],['ads','It posts ads without saying they are ads'],['undisclosed','It does not say it is an AI'],['other','Something else']].map(([v,l],n) => html`<label key=${v} className="opt"><input type="radio" id=${n===0 ? 'r-what' : undefined} name="what" value=${v} checked=${d.what===v} onChange=${set('what')} /><span>${l}</span></label>`)}</div></fieldset>
-      <div className=${'fg' + (fe('details') ? ' err' : '')}><label htmlFor="r-details">What did you see?</label><span className="hint" id="r-h-details">Include links to posts if you have them</span>
+      <div className=${'fg' + (fe('details') ? ' err' : '')}><label htmlFor="r-details">What did you see?</label><span className="hint" id="r-h-details">Use 20 to 4000 characters. Include links to posts if you have them.</span>
         ${fe('details') && html`<span className="emsg" id="r-e-details">${err.details}</span>`}<textarea id="r-details" className=${'in' + (fe('details') ? ' err' : '')} value=${d.details} onChange=${set('details')} maxLength="4000" aria-invalid=${fe('details') ? 'true' : undefined} aria-describedby=${fe('details') ? 'r-h-details r-e-details' : 'r-h-details'}></textarea></div>
       <div className=${'fg' + (fe('email') ? ' err' : '')}><label htmlFor="r-email">Email address (optional)</label><span className="hint" id="r-h-email">Contact address for future follow-up. This prototype does not send email.</span>
         ${fe('email') && html`<span className="emsg" id="r-e-email">${err.email}</span>`}<input id="r-email" type="email" className=${'in' + (fe('email') ? ' err' : '')} value=${d.email} onChange=${set('email')} autoComplete="email" maxLength="254" aria-invalid=${fe('email') ? 'true' : undefined} aria-describedby=${fe('email') ? 'r-h-email r-e-email' : 'r-h-email'} /></div>
@@ -2103,6 +2543,10 @@ const CASE_STATUS_TEXT = {
   resolved:'The report was closed after review. A public demo notice does not change automatically.',
   dismissed:'The report was closed after review. Read the case history for the reviewer’s message.'
 };
+function latestReviewerMessage(events,status){
+  const latest=events.filter(item => item.actor==='reviewer' && item.action==='status_changed' && item.status===status).reduce((current,item) => !current || Date.parse(item.at)>=Date.parse(current.at) ? item : current, null);
+  return latest && typeof latest.note==='string' && latest.note.trim() ? latest : null;
+}
 function caseEventTitle(item,kind){
   if(item.action==='submitted') return kind==='application' ? 'Application submitted' : 'Report submitted';
   if(item.action==='evidence_uploaded') return 'Evidence uploaded';
@@ -2116,27 +2560,80 @@ async function privateJson(path, token, options={}){
   if(!response.ok) throw new Error(data.error || 'The request failed. Please try again.');
   return data;
 }
+const CASE_ID_FORMAT = /^(SPR|RPT)-\d{4}-[A-F0-9]{12}$/;
+const CASE_TOKEN_FORMAT = /^[A-Za-z0-9_-]{43}$/;
+function parsePrivateCaseLink(value, currentUrl){
+  const text=value.trim();
+  if(!text) return {error:'Paste the private link shown after you submitted your application or report.'};
+  const malformed={error:'Paste the complete private link, including the case number and access token after #case/.'};
+  if(!/^(https?:\/\/|#case\/)/i.test(text) || /\s/.test(text)) return malformed;
+  try {
+    const base=new URL(currentUrl), link=new URL(text, base);
+    if(link.origin!==base.origin || link.pathname!==base.pathname || link.username || link.password) return {error:'Use a private link from this registry. A link from another site or address cannot open here.'};
+    const parts=decodeURIComponent(link.hash.slice(1)).split('/');
+    const id=(parts[1] || '').toUpperCase(), token=parts[2] || '';
+    if(parts.length!==3 || parts[0]!=='case' || !CASE_ID_FORMAT.test(id) || !CASE_TOKEN_FORMAT.test(token)) return malformed;
+    return {id,token};
+  } catch { return malformed; }
+}
 function CaseAccess(){
-  const [id,setId] = useState(''); const [token,setToken] = useState(''); const [error,setError] = useState('');
-  const submit = event => { event.preventDefault(); const code=id.trim().toUpperCase(), secret=token.trim();
-    if(!/^(SPR|RPT)-\d{4}-[A-F0-9]{12}$/.test(code) || !/^[A-Za-z0-9_-]{43}$/.test(secret)){ setError('Enter the case number and the private access token from your case link.'); return; }
-    setError(''); navigate('case/'+code+'/'+secret);
+  const [link,setLink] = useState(''); const [showLink,setShowLink] = useState(false); const [linkError,setLinkError] = useState('');
+  const [id,setId] = useState(''); const [token,setToken] = useState(''); const [errors,setErrors] = useState({});
+  const focusField = field => requestAnimationFrame(() => document.getElementById(field)?.focus());
+  const openLink = event => { event.preventDefault(); const result=parsePrivateCaseLink(link, location.href);
+    if(result.error){ setLinkError(result.error); focusField('case-link'); return; }
+    setLinkError(''); navigate('case/'+result.id+'/'+result.token);
+  };
+  const submit = event => { event.preventDefault(); const code=id.trim().toUpperCase(), secret=token.trim(), nextErrors={};
+    if(!CASE_ID_FORMAT.test(code)) nextErrors.id='Enter a case number such as SPR-2026-0123456789AB or RPT-2026-0123456789AB.';
+    if(!CASE_TOKEN_FORMAT.test(secret)) nextErrors.token='Enter the complete 43-character access token: the last part of your private link.';
+    setErrors(nextErrors);
+    if(Object.keys(nextErrors).length){ focusField(nextErrors.id ? 'case-id' : 'case-token'); return; }
+    navigate('case/'+code+'/'+secret);
   };
   return html`<div className="wrap formwrap">
     <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#home">Registry</a></li><li aria-current="page">Case status</li></ol>
     <h1 className="fh1" id="h1" tabIndex="-1">Check a case</h1>
-    <p className="sub">Your private link contains both a case number and an access token. Open that link directly, or enter both parts here.</p>
-    <form className="form" onSubmit=${submit}>
-      <div className="fg"><label htmlFor="case-id">Case number</label><input className="in mono" id="case-id" value=${id} onChange=${e => setId(e.target.value)} autoComplete="off" required /></div>
-      <div className="fg"><label htmlFor="case-token">Private access token</label><input className="in mono" id="case-token" type="password" value=${token} onChange=${e => setToken(e.target.value)} autoComplete="off" required /></div>
-      ${error && html`<p role="alert">${error}</p>`}
+    <p className="sub">Paste the private link you saved after submitting an application or report.</p>
+    <form className="form" onSubmit=${openLink} noValidate>
+      <div className=${'fg'+(linkError ? ' err' : '')}><label htmlFor="case-link">Private case link</label>
+        <span className="hint" id="case-link-hint">Use the whole link. It contains both your case number and access token.</span>
+        ${linkError && html`<span className="emsg" id="case-link-error">${linkError}</span>`}
+        <input className=${'in mono'+(linkError ? ' err' : '')} id="case-link" type=${showLink ? 'text' : 'password'} inputMode="url" value=${link} onChange=${e => setLink(e.target.value)} autoComplete="off" autoCapitalize="none" spellCheck=${false} required aria-invalid=${linkError ? 'true' : undefined} aria-describedby=${'case-link-hint'+(linkError ? ' case-link-error' : '')} />
+        <button type="button" className="tlink case-secret-toggle" aria-controls="case-link" onClick=${() => setShowLink(value => !value)}>${showLink ? 'Hide link' : 'Show link'}</button>
+      </div>
       <div><button className="btn" type="submit">Open case</button></div>
     </form>
+    <p className="private-note">Anyone with this link can view your case and upload evidence. Keep it private.</p>
+    <details className="case-access-details"><summary>Enter case number and token separately</summary>
+      <form className="form" onSubmit=${submit} noValidate>
+        <div className=${'fg'+(errors.id ? ' err' : '')}><label htmlFor="case-id">Case number</label><span className="hint" id="case-id-hint">Starts with SPR for an application or RPT for a report.</span>
+          ${errors.id && html`<span className="emsg" id="case-id-error">${errors.id}</span>`}
+          <input className=${'in mono'+(errors.id ? ' err' : '')} id="case-id" value=${id} onChange=${e => setId(e.target.value)} autoComplete="off" autoCapitalize="characters" spellCheck=${false} required aria-invalid=${errors.id ? 'true' : undefined} aria-describedby=${'case-id-hint'+(errors.id ? ' case-id-error' : '')} />
+        </div>
+        <div className=${'fg'+(errors.token ? ' err' : '')}><label htmlFor="case-token">Private access token</label><span className="hint" id="case-token-hint">The 43 characters after the last slash in your private link.</span>
+          ${errors.token && html`<span className="emsg" id="case-token-error">${errors.token}</span>`}
+          <input className=${'in mono'+(errors.token ? ' err' : '')} id="case-token" type="password" value=${token} onChange=${e => setToken(e.target.value)} autoComplete="off" spellCheck=${false} required aria-invalid=${errors.token ? 'true' : undefined} aria-describedby=${'case-token-hint'+(errors.token ? ' case-token-error' : '')} />
+        </div>
+        <div><button className="btn" type="submit">Open case with number and token</button></div>
+      </form>
+    </details>
+    <details className="case-access-details"><summary>Lost your private link?</summary>
+      <p>The link is shown on the confirmation screen after submission. Look for a copy you saved or the case page in your browser history. This prototype does not email the link.</p>
+      <p>If you no longer have the link or its access token, this prototype cannot restore access. A case number or email address alone is not enough.</p>
+    </details>
   </div>`;
+}
+async function submitCaseEvidence(caseId,accessToken,kind,file,sourceStatement,onStored,refresh){
+  const response=await fetch('/api/v1/cases/'+caseId+'/evidence', {method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':file.type,'X-Evidence-Kind':kind,'X-File-Name':encodeURIComponent(file.name),'X-Evidence-Source':encodeURIComponent(sourceStatement.trim())},body:file});
+  const result=await response.json().catch(() => ({}));
+  if(!response.ok)throw new Error(result.error || 'The file could not be uploaded.');
+  onStored();
+  try{await refresh();return true;}catch{return false;}
 }
 function CasePage({caseId, accessToken, toast}){
   const [data,setData] = useState(null); const [error,setError] = useState(''); const [busy,setBusy] = useState(false);
-  const [kind,setKind] = useState('images'); const [file,setFile] = useState(null); const [sourceStatement,setSourceStatement] = useState(''); const [message,setMessage] = useState('');
+  const [kind,setKind] = useState('images'); const [file,setFile] = useState(null); const [sourceStatement,setSourceStatement] = useState(''); const [message,setMessage] = useState(''); const [refreshNeeded,setRefreshNeeded]=useState(false);
   const fileInput = useRef(null);
   const load = async signal => {
     const result = await privateJson('/api/v1/cases/'+caseId, accessToken, {signal});
@@ -2146,20 +2643,21 @@ function CasePage({caseId, accessToken, toast}){
     load(controller.signal).catch(e => { if(e.name!=='AbortError') setError(e.message); });
     return () => controller.abort();
   }, [caseId,accessToken]);
-  const upload = async event => { event.preventDefault(); if(busy) return;
+  const upload = async event => { event.preventDefault(); if(busy||refreshNeeded) return;
     if(!file){ setMessage('Choose a file before uploading.'); return; }
     if(sourceStatement.trim().length<10 || sourceStatement.trim().length>500){ setMessage('Describe where the file came from in 10 to 500 characters.'); return; }
     if(file.size>5*1024*1024){ setMessage('The file must be 5 MiB or smaller.'); return; }
     setBusy(true); setMessage('');
     try{
-      const response=await fetch('/api/v1/cases/'+caseId+'/evidence', {method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':file.type,'X-Evidence-Kind':kind,'X-File-Name':encodeURIComponent(file.name),'X-Evidence-Source':encodeURIComponent(sourceStatement.trim())},body:file});
-      const result=await response.json().catch(() => ({}));
-      if(!response.ok) throw new Error(result.error || 'The file could not be uploaded.');
-      await load(); setFile(null); setSourceStatement(''); if(fileInput.current) fileInput.current.value=''; setMessage('Evidence uploaded. A reviewer has not examined it yet.');
+      const refreshed=await submitCaseEvidence(caseId,accessToken,kind,file,sourceStatement,()=>{setFile(null);setSourceStatement('');if(fileInput.current)fileInput.current.value='';},load);
+      setRefreshNeeded(!refreshed);
+      setMessage(refreshed?'Evidence uploaded. A reviewer has not examined it yet.':'Evidence uploaded, but the case could not refresh. Refresh the case before adding another file.');
     }catch(e){ setMessage(e.message); }
     finally{ setBusy(false); }
   };
+  const refreshCase=async()=>{if(busy)return;setBusy(true);try{await load();setRefreshNeeded(false);setMessage('Case refreshed. The uploaded evidence is shown below.');}catch{setMessage('Could not refresh the case. The file was uploaded; try refreshing again.');}finally{setBusy(false);}};
   const privateLink=location.href.split('#')[0]+'#case/'+caseId+'/'+accessToken;
+  const latestMessage=data ? latestReviewerMessage(data.events,data.status) : null;
   return html`<div className="wrap case-page">
     <ol className="crumbs" aria-label="Breadcrumb"><li><a href="#home">Registry</a></li><li aria-current="page">Case status</li></ol>
     <header className="case-heading"><h1 id="h1" tabIndex="-1">Case <span className="case-number">${caseId}</span></h1>
@@ -2171,6 +2669,7 @@ function CasePage({caseId, accessToken, toast}){
       <section className=${'case-summary status-'+data.status} aria-labelledby="case-current"><h2 id="case-current">Current status</h2>
         <p className="case-summary-status">${CASE_LABELS[data.status] || data.status}</p>
         <p className="case-summary-text">${CASE_STATUS_TEXT[data.status] || 'Read the case history for the latest update.'}</p>
+        ${latestMessage && html`<div className="case-evidence-note"><b>Reviewer message for this status</b><p>${latestMessage.note}</p><small><time dateTime=${latestMessage.at}>${CASE_DATE_TIME.format(new Date(latestMessage.at))}</time></small></div>`}
         <dl className="case-facts"><div><dt>Case type</dt><dd>${data.kind==='application'?'Application':'Report'}</dd></div>
           <div><dt>Submitted</dt><dd><time dateTime=${data.createdAt}>${CASE_DATE_TIME.format(new Date(data.createdAt))}</time></dd></div>
           <div><dt>Last updated</dt><dd><time dateTime=${data.updatedAt}>${CASE_DATE_TIME.format(new Date(data.updatedAt))}</time></dd></div></dl>
@@ -2185,15 +2684,16 @@ function CasePage({caseId, accessToken, toast}){
           ${item.reviewedAt && html`<p className="case-evidence-facts">Reviewed <time dateTime=${item.reviewedAt}>${CASE_DATE_TIME.format(new Date(item.reviewedAt))}</time></p>`}
           ${item.reviewNote && html`<p className="case-evidence-note"><b>Reviewer message</b><br />${item.reviewNote}</p>`}
         </li>`)}</ul>` : html`<p className="case-evidence-empty">${CLOSED_CASES.has(data.status) ? 'No files were uploaded for this case.' : 'No files uploaded yet. Use the form below to add the first file.'}</p>`}
-        ${!CLOSED_CASES.has(data.status) && data.evidence.length<5 && html`<div className="case-upload-head"><h3>Add evidence</h3><span>${data.evidence.length} of 5 files uploaded</span></div><form className="form case-upload" onSubmit=${upload}>
+        ${!CLOSED_CASES.has(data.status) && data.evidence.length<5 && html`${latestMessage && html`<div className="case-evidence-note"><b>Reviewer message for this status</b><p>${latestMessage.note}</p></div>`}<div className="case-upload-head"><h3>Add evidence</h3><span>${data.evidence.length} of 5 files uploaded</span></div><form className="form case-upload" onSubmit=${upload}>
           <div className="fg"><label htmlFor="evidence-kind">What does this file show?</label><select className="in" id="evidence-kind" value=${kind} onChange=${e => setKind(e.target.value)}>${Object.entries(EVIDENCE_LABELS).map(([value,label]) => html`<option value=${value} key=${value}>${label}</option>`)}</select></div>
-          <div className="fg"><label htmlFor="evidence-source">Where did this file come from?</label><span className="hint">Name the creator, issuer, original channel or model version. If unknown, say how you obtained it. This is your claim for a reviewer to assess.</span><textarea className="in" id="evidence-source" value=${sourceStatement} onChange=${e => setSourceStatement(e.target.value)} maxLength="500" required></textarea></div>
+          <div className="fg"><label htmlFor="evidence-source">Where did this file come from?</label><span className="hint" id="evidence-source-hint">Name the creator, issuer, original channel or model version. If unknown, say how you obtained it. This is your claim for a reviewer to assess.</span><textarea className="in" id="evidence-source" aria-describedby="evidence-source-hint" value=${sourceStatement} onChange=${e => setSourceStatement(e.target.value)} maxLength="500" required></textarea></div>
           <div className="fg"><label id="evidence-file-label" htmlFor="evidence-file">JPEG, PNG or PDF, up to 5 MiB</label>
             <label className="file-picker" htmlFor="evidence-file"><input id="evidence-file" ref=${fileInput} className="file-picker-input" type="file" accept=".jpg,.jpeg,.png,.pdf" aria-labelledby="evidence-file-label" aria-describedby="evidence-file-name" onChange=${e => setFile(e.target.files?.[0] || null)} />
               <span className="file-picker-button">Choose file</span><span className=${'file-picker-name' + (file ? ' selected' : '')} id="evidence-file-name" aria-live="polite">${file ? file.name : 'No file selected'}</span></label></div>
-          <div><button className="btn" type="submit" disabled=${busy}>${busy?'Uploading…':'Upload evidence'}</button></div>
+          <div><button className="btn" type="submit" disabled=${busy||refreshNeeded}>${busy&&!refreshNeeded?'Uploading…':'Upload evidence'}</button></div>
         </form>`}
         <p role="status" style=${{marginTop:'12px'}}>${message}</p>
+        ${refreshNeeded && html`<button className="btn line" type="button" disabled=${busy} onClick=${refreshCase}>${busy?'Refreshing…':'Refresh case'}</button>`}
       </section>
       <section className="case-panel" aria-labelledby="case-history"><div className="case-history-head"><h2 id="case-history">Case history</h2><span className="case-history-count">${data.events.length} ${data.events.length===1?'event':'events'}</span></div>
         <p className="sub">Submissions, file checks and decisions in the order they happened.</p>
@@ -2215,13 +2715,21 @@ const REVIEW_NEXT = {
   application:{received:['reviewing','needs_evidence','rejected'],reviewing:['needs_evidence','approved','rejected'],needs_evidence:['reviewing','rejected']},
   report:{received:['reviewing','needs_evidence','dismissed'],reviewing:['needs_evidence','resolved','dismissed'],needs_evidence:['reviewing','resolved','dismissed']}
 };
+const REVIEW_ANSWER_LABELS={name:'Persona’s public name',handle:'Main channel handle',nature:'Based on a real person',langs:'Languages',holderType:'Rights holder type',holder:'Rights holder name',email:'Email address',evidence:'Available materials',who:'Persona or account',what:'Concern',details:'Details'};
+const REVIEW_ANSWER_VALUES={nature:{synthetic:'No, fully synthetic',likeness:'Yes, with signed consent'},holderType:{person:'A person',company:'A company'},what:{copy:'It copies or looks like a real person',ads:'It posts ads without saying they are ads',undisclosed:'It does not say it is an AI',other:'Something else'}};
+function reviewAnswerValue(key,value){
+  if(Array.isArray(value)) return value.map(item => key==='evidence' ? (EVIDENCE.find(([id]) => id===item)?.[1] || item) : item).join('; ') || 'Not given';
+  return REVIEW_ANSWER_VALUES[key]?.[value] || value || 'Not given';
+}
+function reviewAnswerLabel(key){ return REVIEW_ANSWER_LABELS[key] || key.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/[_-]+/g,' ').replace(/^./,letter => letter.toUpperCase()); }
 function ReviewConsole(){
   const [draft,setDraft] = useState(''); const [token,setToken] = useState(''); const [cases,setCases] = useState([]); const [hasMore,setHasMore] = useState(false);
   const [selected,setSelected] = useState(null); const [next,setNext] = useState(''); const [note,setNote] = useState('');
+  const [decisionMessage,setDecisionMessage] = useState('');
   const [fileNotes,setFileNotes] = useState({}); const [error,setError] = useState(''); const [message,setMessage] = useState(''); const [busy,setBusy] = useState(false);
   const loadCase = async (id, secret=token) => {
     const item=await privateJson('/api/v1/review/cases/'+id,secret);
-    setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setError('');
+    setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setDecisionMessage(''); setError('');
   };
   const refreshList = async (secret=token) => { const result=await privateJson('/api/v1/review/cases',secret); setCases(result.cases); setHasMore(result.cases.length===50); };
   const signIn = async event => { event.preventDefault(); if(busy) return; setBusy(true); setError('');
@@ -2233,10 +2741,10 @@ function ReviewConsole(){
     try { const result=await privateJson('/api/v1/review/cases?offset='+cases.length,token); setCases(current => [...current,...result.cases]); setHasMore(result.cases.length===50); }
     catch(e){ setError(e.message); } finally{ setBusy(false); }
   };
-  const changeStatus = async event => { event.preventDefault(); if(!selected || busy) return; setBusy(true); setError(''); setMessage('');
+  const changeStatus = async event => { event.preventDefault(); if(!selected || busy) return; setBusy(true); setError(''); setMessage(''); setDecisionMessage('');
     try {
       const item=await privateJson('/api/v1/review/cases/'+selected.id+'/status',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:next,note})});
-      setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); await refreshList(); setMessage('Case status updated. Your message is visible to the submitter.');
+      setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setDecisionMessage('Decision saved. Current status: '+(CASE_LABELS[item.status] || item.status)+'. Your message is visible to the submitter.'); await refreshList();
     }catch(e){ setError(e.message); } finally{ setBusy(false); }
   };
   const decideFile = async (item,decision) => { const reason=(fileNotes[item.id] || '').trim();
@@ -2275,7 +2783,7 @@ function ReviewConsole(){
         <div className="review-detail">${!selected ? html`<p>Select a case to review its answers and evidence.</p>` : html`<div>
           <h2 className="h2" style=${{fontSize:'28px'}}>${selected.id}</h2>
           <p className="case-meta">${selected.kind} · ${CASE_LABELS[selected.status] || selected.status} · ${new Date(selected.createdAt).toLocaleString()}</p>
-          <section className="case-panel"><h3>Submitted answers</h3><dl className="review">${Object.entries(selected.payload).map(([key,value]) => html`<div key=${key}><dt>${key}</dt><dd>${Array.isArray(value)?value.join(', '):value}</dd></div>`)}</dl></section>
+          <section className="case-panel"><h3>Submitted answers</h3><dl className="review">${Object.entries(selected.payload).map(([key,value]) => html`<div key=${key}><dt>${reviewAnswerLabel(key)}</dt><dd>${reviewAnswerValue(key,value)}</dd></div>`)}</dl></section>
           <section className="case-panel"><h3>Evidence</h3>
             ${selected.evidence.length ? html`<ul className="case-list">${selected.evidence.map(item => html`<li key=${item.id}>
               <b>${item.fileName}</b> · ${EVIDENCE_LABELS[item.kind] || item.kind} · ${item.reviewStatus}
@@ -2289,13 +2797,14 @@ function ReviewConsole(){
                 <div className="rowbtns"><button className="btn" type="button" disabled=${busy} onClick=${() => decideFile(item,'accepted')}>Accept evidence</button><button className="btn line" type="button" disabled=${busy} onClick=${() => decideFile(item,'rejected')}>Reject evidence</button></div></div>`}
             </li>`)}</ul>` : html`<p className="sub">No evidence files uploaded. A declared evidence category is not a reviewed file.</p>`}
           </section>
-          ${choices.length>0 && html`<section className="case-panel"><h3>Change case status</h3>
-            <form className="form" onSubmit=${changeStatus}>
+          <section className="case-panel"><h3>Change case status</h3><p>Current status: <b>${CASE_LABELS[selected.status] || selected.status}</b></p>
+            ${choices.length>0 && html`<form className="form" onSubmit=${changeStatus}>
               <div className="fg"><label htmlFor="next-status">New status</label><select className="in" id="next-status" value=${next} onChange=${e => setNext(e.target.value)}>${choices.map(value => html`<option key=${value} value=${value}>${CASE_LABELS[value] || value}</option>`)}</select></div>
-              <div className="fg"><label htmlFor="review-note">Message to submitter</label><textarea className="in" id="review-note" maxLength="1000" value=${note} onChange=${e => setNote(e.target.value)}></textarea><span className="hint">Required for requests for evidence and final decisions.</span></div>
+              <div className="fg"><label htmlFor="review-note">Message to submitter</label><textarea className="in" id="review-note" aria-describedby="review-note-hint" maxLength="1000" value=${note} onChange=${e => setNote(e.target.value)}></textarea><span className="hint" id="review-note-hint">Required for requests for evidence and final decisions.</span></div>
               <div><button className="btn" type="submit" disabled=${busy}>${busy?'Saving…':'Save decision'}</button></div>
-            </form>
-          </section>`}
+            </form>`}
+            <p role="status" style=${{marginTop:'12px'}}>${decisionMessage}</p>
+          </section>
           <section className="case-panel"><h3>Activity</h3><ol className="case-list">${selected.events.map((item,index) => html`<li key=${index}><b>${item.action}</b> · ${CASE_LABELS[item.status] || item.status}<small>${new Date(item.at).toLocaleString()} · ${item.actor}</small>${item.note && html`<p>${item.note}</p>`}</li>`)}</ol></section>
         </div>`}</div>
       </div>
@@ -2305,11 +2814,15 @@ function ReviewConsole(){
 
 /* ---------- shell ---------- */
 function parse(){
+  const catalog=/^notices(?:\?(.*))?$/.exec((location.hash||'').slice(1));
+  if(catalog)return {name:'notices',...(catalog[1]?{catalogQuery:catalog[1]}:{})};
   let h;
   try { h = decodeURIComponent((location.hash || '').slice(1)); }
   catch { return {name:'home'}; }
   const caseRoute = /^case\/((?:SPR|RPT)-\d{4}-[A-F0-9]{12})\/([A-Za-z0-9_-]{43})$/.exec(h);
   if(caseRoute) return {name:'case', id:caseRoute[1], accessToken:caseRoute[2]};
+  const reportRoute=/^report\/([^/]+)$/.exec(h);
+  if(reportRoute&&byId(reportRoute[1].toUpperCase()))return {name:'report',id:reportRoute[1].toUpperCase()};
   if(h==='compare' || h==='compare?differences=1') return {name:'compare',ids:PEOPLE.slice(0,2).map(p => p.id),...(h.endsWith('?differences=1') ? {differences:true} : {})};
   const comparison = /^compare\/([^/?]+)\/([^/?]+)(\?differences=1)?$/.exec(h);
   if(comparison && byId(comparison[1]) && byId(comparison[2]) && comparison[1]!==comparison[2]) return {name:'compare',ids:comparison.slice(1,3),...(comparison[3] ? {differences:true} : {})};
@@ -2325,76 +2838,88 @@ function parse(){
 }
 function App(){
   useMeasuredHeight('.hdr','--header-height');
-  const [route,setRoute] = useState(parse); const routeRef = useRef(route); const prevRef = useRef(null); const [pal,setPal] = useState(false); const [menu,setMenu] = useState(false); const [reportFor,setReportFor] = useState(null); const [msg,toast] = useToast();
+  const menuButton=useRef(null);
+  const [route,setRoute] = useState(parse); const routeRef = useRef(route); const prevRef = useRef(null); const [pal,setPal] = useState(false); const [menu,setMenu] = useState(false); const [msg,toast] = useToast();
   const [savedRecords,setSavedRecords] = useState(() => restoreSaved(store.get(SAVED_KEY)));
   const [comparisonIds,setComparisonIds]=useState([]);
-  const [catalog,setCatalog]=useState(() => ({notice:'All',q:'',sort:'recent',view:store.get('spr-view')?.view==='list' ? 'list' : 'grid',savedOnly:false,language:'',occupation:'',proof:''}));
+  const [catalog,setCatalogState]=useState(() => ({...readCatalogQuery(route.catalogQuery),view:store.get('spr-view')?.view==='list' ? 'list' : 'grid',mobileView:store.get('spr-view-mobile')?.view==='list' ? 'list' : 'grid',filtersOpen:false}));
+  const catalogRef=useRef(catalog),handledHash=useRef(location.hash);
+  const setCatalog=(update,options)=>{
+    const current=catalogRef.current,next=typeof update==='function'?update(current):update;
+    catalogRef.current=next;setCatalogState(next);
+    if(catalogRoute(current)===catalogRoute(next))return;
+    writeCatalogHistory(next,options);handledHash.current=location.hash;
+    const nextRoute={...parse(),preserveScroll:true};routeRef.current=nextRoute;setRoute(nextRoute);
+  };
   const catalogPosition=useRef(null);
-  const routeTransition=useRef(null);
   const toggleComparison=id => setComparisonIds(current => toggleComparisonSelection(current,id));
   useEffect(() => { store.set(SAVED_KEY, savedRecords); }, [savedRecords]);
   const toggleSaved = id => setSavedRecords(current => current.includes(id) ? current.filter(saved => saved!==id) : [...current,id]);
   useEffect(() => {
-    const on = () => { const r = parse();
+    const previousRestoration=history.scrollRestoration;
+    history.scrollRestoration='manual';
+    const on = event => {
+      // A Back/Forward traversal may emit both popstate and hashchange.
+      if(event.isTrusted&&location.hash===handledHash.current)return;
+      let r = parse();
+      handledHash.current=location.hash;
       const current=routeRef.current;
+      if(event.isTrusted&&current.name==='notices'&&r.name==='notices')r.preserveScroll=true;
       if((current.name==='home' || current.name==='notices') && r.name!=='home' && r.name!=='notices'){
         const bounds=document.getElementById('notices')?.getBoundingClientRect();
         catalogPosition.current=bounds && bounds.top<innerHeight && bounds.bottom>0 ? {top:scrollY,source:current.name,record:document.activeElement?.closest('[data-catalog-record]')?.dataset.catalogRecord} : null;
       }
-      const go = () => ReactDOM.flushSync(() => setRoute(r));
-      const c = routeRef.current, sameRecord = c && ((c.name==='record' && r.name==='record') || (c.name==='compare' && r.name==='compare'));
-      if(document.startViewTransition && !REDUCED && !sameRecord) routeTransition.current=document.startViewTransition(go);
-      else { routeTransition.current=null; go(); } };
+      routeRef.current=r;
+      ReactDOM.flushSync(() => {
+        if(r.name==='notices'){const next={...catalogRef.current,...readCatalogQuery(r.catalogQuery)};catalogRef.current=next;setCatalogState(next);}
+        setRoute(r);
+      });
+    };
     window.addEventListener('hashchange', on);
-    const k = e => { const typing = /input|textarea|select/i.test((document.activeElement || {}).tagName || '');
-      if((e.key==='k' && (e.metaKey || e.ctrlKey)) || (e.key==='/' && !typing)){ e.preventDefault(); setPal(true); } };
+    window.addEventListener('popstate', on);
+    const k = e => { const typing = /input|textarea|select/i.test((document.activeElement || {}).tagName || '') || document.activeElement?.isContentEditable;
+      if(e.defaultPrevented||e.isComposing||typing)return;
+      if((e.key==='k' && (e.metaKey || e.ctrlKey)) || (e.key==='/' && !e.metaKey && !e.ctrlKey && !e.altKey)){ e.preventDefault(); setPal(true); } };
     window.addEventListener('keydown', k);
-    return () => { window.removeEventListener('hashchange', on); window.removeEventListener('keydown', k); };
+    return () => { window.removeEventListener('hashchange', on); window.removeEventListener('popstate', on);window.removeEventListener('keydown', k);history.scrollRestoration=previousRestoration; };
   }, []);
-  useEffect(() => { setMenu(false); if(route.name!=='report') setReportFor(null); }, [route.name, route.id]);
-  useEffect(() => { if(!menu) return; const k = e => { if(e.key==='Escape') setMenu(false); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [menu]);
-  useEffect(() => {
+  useEffect(() => { setMenu(false); }, [route.name, route.id]);
+  useEffect(() => { if(!menu) return; const k = e => { if(e.key==='Escape'){ setMenu(false); menuButton.current?.focus(); } }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [menu]);
+  React.useLayoutEffect(() => {
     const prev = prevRef.current; prevRef.current = route; routeRef.current = route;
     document.title = route.name==='record' ? byId(route.id).name + ' | Synthetic Persona Registry' : route.name==='compare' ? 'Compare personas | Synthetic Persona Registry' : route.name==='apply' ? 'Register a persona | Synthetic Persona Registry' : route.name==='report' ? 'Report a persona | Synthetic Persona Registry' : route.name==='notices' ? 'Notices | Synthetic Persona Registry' : route.name==='case' || route.name==='case-status' ? 'Case status | Synthetic Persona Registry' : route.name==='review' ? 'Review console | Synthetic Persona Registry' : 'Synthetic Persona Registry';
+    if(route.preserveScroll)return;
     if(prev && prev.name==='compare' && route.name==='compare') return;
     if(route.name==='record' && route.section) return;
     const position=catalogPosition.current;
     if(prev && prev.name!=='home' && prev.name!=='notices' && position && (route.name==='notices' || (route.name==='home' && position.source==='home'))){
-      let cancelled=false;
-      const restore=() => {
-        if(cancelled) return;
-        const target=(position.record && document.querySelector('[data-catalog-record="'+position.record+'"]')) || document.getElementById('n-h');
-        target?.focus({preventScroll:true});
-        window.scrollTo({top:position.top,behavior:'instant'});
-      };
-      const frame=requestAnimationFrame(restore);
-      // A view transition can finish after the browser restores its own scroll position.
-      routeTransition.current?.finished.catch(() => {}).then(restore);
-      return () => { cancelled=true; cancelAnimationFrame(frame); };
+      const target=(position.record && document.querySelector('[data-catalog-record="'+position.record+'"]')) || document.getElementById('n-h');
+      target?.focus({preventScroll:true});
+      window.scrollTo({top:position.top,behavior:'instant'});
+      return;
     }
-    if(route.name==='notices'){ const el = document.getElementById('notices'); el && el.scrollIntoView({behavior: REDUCED ? 'auto' : 'smooth'}); document.getElementById('n-h')?.focus({preventScroll:true}); return; }
-    if(prev && prev.name==='record' && route.name==='record'){ const st = document.querySelector('.rec-stage'); if(st){ const r = st.getBoundingClientRect(); if(r.top < 0 || r.top > window.innerHeight * .6) window.scrollTo({top: Math.max(0, window.scrollY + r.top - 90), behavior: REDUCED ? 'auto' : 'smooth'}); } }
-    else window.scrollTo(0, 0);
+    if(route.name==='notices'){ const el = document.getElementById('notices'); el && el.scrollIntoView({behavior:'instant'}); document.getElementById('n-h')?.focus({preventScroll:true}); return; }
+    window.scrollTo({top:0,behavior:'instant'});
     const h = document.getElementById('h1'); if(h && route.name!=='home') h.focus({preventScroll:true});
   }, [route]);
-  const onReport = p => { setReportFor(p); navigate('report'); };
+  const onReport = p => navigate('report/'+p.id);
   const view = route.name==='record' ? html`<${Record} key="rec" person=${byId(route.id)} route=${route} toast=${toast} onReport=${onReport} savedRecords=${savedRecords} toggleSaved=${toggleSaved} />`
     : route.name==='compare' ? html`<${Compare} ids=${route.ids} onlyDifferences=${route.differences===true} toast=${toast} />`
     : route.name==='apply' ? html`<${Apply} toast=${toast} />`
-    : route.name==='report' ? html`<${Report} prefill=${reportFor} toast=${toast} />`
+    : route.name==='report' ? html`<${Report} key=${route.id||'general'} prefill=${byId(route.id)} toast=${toast} />`
     : route.name==='case-status' ? html`<${CaseAccess} />`
     : route.name==='case' ? html`<${CasePage} key=${route.id} caseId=${route.id} accessToken=${route.accessToken} toast=${toast} />`
     : route.name==='review' ? html`<${ReviewConsole} />`
     : html`<${Home} savedRecords=${savedRecords} toggleSaved=${toggleSaved} comparisonIds=${comparisonIds} toggleComparison=${toggleComparison} catalog=${catalog} setCatalog=${setCatalog} />`;
   const cur = route.name==='record' || route.name==='notices' ? 'notices' : route.name;
-  return html`<div>
+  return html`<div onClick=${event=>handleRouteLink(event,catalogRoute(catalog))}>
     <a className="skip" href="#main" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined} onClick=${e => { e.preventDefault(); const m = document.getElementById('main'); m && m.focus(); }}>Skip to main content</a>
     <div className="util" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}><div className="wrap"><span><span className="u-long">Independent registry of AI personas. Not a government or police body.</span><span className="u-short">Independent registry, not a government body. Demo data.</span></span><span>Demo data</span></div></div>
     <header className="hdr" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}><div className="wrap">
       <a className="brand" href="#home" onClick=${() => {catalogPosition.current=null;}} aria-label="Synthetic Persona Registry, home"><${Emblem} size=${50} color="#fff" /><span className="wm" aria-hidden="true"><b>SPR</b><small>SYNTHETIC PERSONA REGISTRY</small></span></a>
       <div className="hbtns">
         <button type="button" className="ibtn" onClick=${() => { setMenu(false); setPal(true); }} aria-label="Search the registry"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M20 20l-4.6-4.6"></path></svg></button>
-        <button type="button" className="ibtn menu" aria-expanded=${menu ? 'true' : 'false'} aria-controls="mainnav" onClick=${() => setMenu(m => !m)}>${menu
+        <button type="button" className="ibtn menu" ref=${menuButton} aria-label=${menu ? 'Close menu' : 'Open menu'} aria-expanded=${menu ? 'true' : 'false'} aria-controls="mainnav" onClick=${() => setMenu(m => !m)}>${menu
           ? html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>`
           : html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>`}<span>Menu</span></button>
       </div>

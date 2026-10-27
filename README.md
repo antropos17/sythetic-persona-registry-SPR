@@ -86,7 +86,7 @@ curl -X POST http://127.0.0.1:4176/api/v1/reports \
 - The review console provides one environment-configured operator key and records decisions and messages. It does not provide individual staff accounts, independent audit-log anchoring, email delivery, automatic public notice updates, or a production registry. Existing cases created before private tokens were introduced remain reviewable by an operator but have no owner-access link.
 - The application uses same-origin browser requests, Host-header validation, strict server-side validation, a 16 KiB request limit, and a basic in-memory per-IP write limit. The rate limit resets on restart and is not suitable as the sole abuse control for a public launch.
 - Application email addresses, report details, and evidence files are sensitive data. Protect and back up the database when operating the service. Establish access, deletion, retention, malware scanning, and a tested backup/restore process before accepting real submissions. Serve the review console only over HTTPS outside loopback.
-- `var/`, `.env*` (except `.env.example`), SQLite databases, logs, test output, and `node_modules/` are ignored by Git. Do not put credentials or real submissions in tracked files. CI uses no repository secrets. The manual container-publish workflow uses GitHub's scoped `GITHUB_TOKEN`.
+- `var/`, `.env*` (except `.env.example`), SQLite databases, logs, test output, and `node_modules/` are ignored by Git. Do not put credentials or real submissions in tracked files. The standard CI uses no repository secrets. The optional AI reviewer sends eligible diffs to OpenAI using `OPENAI_API_KEY`; see [AI review setup and limits](docs/AI-REVIEW.md). The manual container-publish workflow uses GitHub's scoped `GITHUB_TOKEN`.
 - The eight fictional full-length images and matching face portraits were generated for this prototype. They illustrate the records and are not identity, likeness-consent, or review evidence. See `assets/full-body/README.md` and `assets/portraits/README.md`. No licence has been selected for the project's code.
 
 ## Container and CI/CD
@@ -99,6 +99,8 @@ docker run --rm -p 4176:4176 -v spr-data:/app/var spr:local
 The named volume retains SQLite data across container replacement. The image runs as an unprivileged user and includes a health check.
 
 `.github/workflows/ci.yml` runs syntax and API tests on pushes and pull requests, then builds and smoke-tests the runtime image. `.github/workflows/release.yml` is a manual workflow that repeats validation, tests the **same image** it publishes, and pushes it to GHCR under the immutable commit SHA. It does not deploy to a host; no host has been selected. Both workflows pin GitHub Actions to commit SHAs and use limited token permissions. Dependabot proposes updates to Docker and workflow dependencies.
+
+`.github/workflows/ai_review.yml` provides advisory comments on internal PRs when opened or updated. It requires the `OPENAI_API_KEY` secret and `AI_REVIEW_MODEL` variable, skips forks and Dependabot, and tolerates reviewer failures. Keep its job out of required merge checks. See [AI review setup and limits](docs/AI-REVIEW.md).
 
 ## Continuing development
 

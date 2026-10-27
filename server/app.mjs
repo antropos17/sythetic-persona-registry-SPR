@@ -259,17 +259,20 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
         const key = req.socket.remoteAddress || 'unknown';
         const now = Date.now();
         for (const [ip, value] of hits) if (now - value.start >= 3_600_000) hits.delete(ip);
-        const entry = hits.get(key) || { start: now, count: 0 };
-        if (entry.count >= 10) return json(res, 429, { error: 'Too many submissions; try again later' }, { 'Retry-After': String(Math.ceil((3_600_000 - (now - entry.start)) / 1000)) });
-        const body = await readJson(req);
-        const application = path.endsWith('/applications');
-        const errors = application ? validateApplication(body) : validateReport(body);
-        if (Object.keys(errors).length) return json(res, 422, { error: 'Validation failed', fields: errors });
-        const data = application ? normalizeApplication(body) : normalizeReport(body);
-        const result = db.create(application ? 'application' : 'report', data);
-        entry.count += 1;
-        hits.set(key, entry);
-        return json(res, 201, { ...result, message: 'Stored for review. Keep the private case link; this service does not send email.' });
+        let entry = hits.get(key);
+        if (!entry) { entry = { start: now, count: 0, pending: 0 }; hits.set(key, entry); }
+        if (entry.count + entry.pending >= 10) return json(res, 429, { error: 'Too many submissions; try again later' }, { 'Retry-After': String(entry.count >= 10 ? Math.ceil((3_600_000 - (now - entry.start)) / 1000) : 1) });
+        entry.pending += 1;
+        try {
+          const body = await readJson(req);
+          const application = path.endsWith('/applications');
+          const errors = application ? validateApplication(body) : validateReport(body);
+          if (Object.keys(errors).length) return json(res, 422, { error: 'Validation failed', fields: errors });
+          const data = application ? normalizeApplication(body) : normalizeReport(body);
+          const result = db.create(application ? 'application' : 'report', data);
+          entry.count += 1;
+          return json(res, 201, { ...result, message: 'Stored for review. Keep the private case link; this service does not send email.' });
+        } finally { entry.pending -= 1; }
       }
       if (req.method === 'GET' || req.method === 'HEAD') {
         if (path === '/' || path === '/index.html') return sitePage(req, res);
