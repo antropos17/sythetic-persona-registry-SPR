@@ -1,9 +1,9 @@
 import { REDUCED, React, html, useEffect, useRef, useState } from '../runtime.mjs';
-import { NTag, copy, useMeasuredHeight } from '../ui/common.mjs';
+import { NTag, copy } from '../ui/common.mjs';
 import { navigate } from '../domain/routing.mjs';
 import { NOTICE, nvars, recordAdvice } from '../domain/notices.mjs';
 import { socialHref } from '../domain/social.mjs';
-import { LEVELS, PEOPLE, PROOF_EXPLANATIONS } from '../domain/registry.mjs';
+import { PEOPLE, PROOF_EXPLANATIONS } from '../domain/registry.mjs';
 import { Viewer } from '../ui/passport.mjs';
 import { SocialIcon } from '../ui/channels.mjs';
 import { ClaimBasis } from '../ui/claims.mjs';
@@ -29,12 +29,10 @@ const PROFILE_TARGETS = {
 
 function alignRecordHeading(target) {
   if (!target) return;
-  const header = document.querySelector('.hdr'),
-    nav = document.querySelector('.record-nav');
+  const header = document.querySelector('.hdr');
   const offset =
     (parseFloat(header && getComputedStyle(header).top) || 0) +
     (header?.getBoundingClientRect().height || 0) +
-    (nav?.getBoundingClientRect().height || 0) +
     16;
   window.scrollTo({
     top: Math.max(0, scrollY + target.getBoundingClientRect().top - offset),
@@ -47,13 +45,11 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
   const [imageIndex, setImageIndex] = useState(null),
     [chooseComparison, setChooseComparison] = useState(false);
   const recordRoot = useRef(null);
-  useMeasuredHeight('.record-nav', '--record-nav-height');
   const [step, setStep] = useState(-1);
   const [checkError, setCheckError] = useState('');
   const timers = useRef([]),
     checkRun = useRef(0);
-  const [checking, setChecking] = useState(false),
-    [activeSection, setActiveSection] = useState(section || 'overview');
+  const [checking, setChecking] = useState(false);
   const [provenance, setProvenance] = useState(null);
   const [provenanceError, setProvenanceError] = useState('');
   useEffect(() => {
@@ -63,7 +59,6 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
     setStep(-1);
     setChecking(false);
     setCheckError('');
-    setActiveSection(section || 'overview');
     return () => {
       checkRun.current++;
       timers.current.forEach(clearTimeout);
@@ -71,7 +66,6 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
   }, [person.id]);
   React.useLayoutEffect(() => {
     if (!section) return;
-    setActiveSection(section);
     const targetId = PROFILE_TARGETS[section];
     const target = document.getElementById(targetId);
     if (section === 'overview') {
@@ -113,44 +107,6 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
     target?.focus({ preventScroll: true });
     return stopAutomatic;
   }, [person.id, route]);
-  useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const edge =
-        (document.querySelector('.record-nav')?.getBoundingClientRect().bottom || 0) + 28;
-      let current = 'overview';
-      for (const [key, id] of Object.entries(PROFILE_TARGETS)) {
-        const target = document.getElementById(id);
-        if (target && target.getBoundingClientRect().top <= edge) current = key;
-      }
-      if (scrollY + innerHeight >= document.documentElement.scrollHeight - 2) current = 'history';
-      setActiveSection(current);
-    };
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    schedule();
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
-    };
-  }, [person.id]);
-  const goSection = (event, key) => {
-    if (
-      event.button === 0 &&
-      !event.metaKey &&
-      !event.ctrlKey &&
-      !event.shiftKey &&
-      !event.altKey
-    ) {
-      event.preventDefault();
-      navigate(person.id + '/' + key);
-    }
-  };
   useEffect(() => {
     setProvenance(null);
     setProvenanceError('');
@@ -271,28 +227,25 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
             <h1 id="h1" tabindex="-1">${person.name}</h1>
             <div className="rec-notice-row">
               <${NTag} status=${person.status} />
-              <a
-                className="record-risk-link"
-                href=${'#' + person.id + '/risks'}
-                onClick=${(e) => goSection(e, 'risks')}
-                >${person.risks.length ? person.risks.length + ' unresolved issue' + (person.risks.length === 1 ? '' : 's') : 'No open risks listed'}</a
-              >
             </div>
           </div>
           <div className="rec-actions" role="group" aria-label="Record actions">
             <div className="rec-main-actions">
+              ${
+                section !== 'check' &&
+                html`<button
+                  type="button"
+                  className="btn"
+                  onClick=${run}
+                  disabled=${busy}
+                  aria-busy=${busy ? 'true' : undefined}
+                >
+                  ${busy ? 'Checking record…' : 'Check record'}
+                </button>`
+              }
               <button
                 type="button"
-                className="btn"
-                onClick=${run}
-                disabled=${busy}
-                aria-busy=${busy ? 'true' : undefined}
-              >
-                ${busy ? 'Checking record…' : 'Check record'}
-              </button>
-              <button
-                type="button"
-                className="btn line rec-save"
+                className="tlink rec-save"
                 aria-pressed=${savedRecords.includes(person.id) ? 'true' : 'false'}
                 aria-label=${(savedRecords.includes(person.id) ? 'Saved record' : 'Save record') + ' of ' + person.name + ' in this browser'}
                 onClick=${() => toggleSaved(person.id)}
@@ -301,11 +254,11 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
               </button>
               <button
                 type="button"
-                className="btn line"
+                className="tlink"
                 aria-haspopup="dialog"
                 onClick=${() => setChooseComparison(true)}
               >
-                Compare persona
+                Compare
               </button>
             </div>
             <div className="rec-utilities">
@@ -317,62 +270,32 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
                 Copy link
               </button>
               <button type="button" className="tlink" onClick=${() => onReport(person)}>
-                Report a concern
+                Report
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <nav className="record-nav" aria-label="Profile sections">
-      <div className="wrap">
-        ${[
-          ['overview', 'Overview'],
-          ['check', 'Check'],
-          ['risks', 'Risks (' + person.risks.length + ')'],
-          ['basis', 'Basis'],
-          ['images', 'Images'],
-          ['history', 'History'],
-        ].map(
-          ([key, label]) =>
-            html`<a
-              key=${key}
-              href=${'#' + person.id + '/' + key}
-              aria-current=${activeSection === key ? 'location' : undefined}
-              onClick=${(e) => goSection(e, key)}
-              >${label}</a
-            >`,
-        )}
-      </div>
-    </nav>
     <div className="wrap">
       <div className="rec-grid">
         <section className="rec-summary" aria-labelledby="rec-summary-h">
           <h2 id="rec-summary-h">Record summary</h2>
           <div className="notice-box">
             <div>
-              <b>${N.name}: ${N.meaning.toLowerCase()}</b
-              ><span>${recordAdvice(person)}</span
+              <span>${recordAdvice(person)}</span
               >${person.note && html`<p>Reason: ${person.note}.</p>`}
             </div>
           </div>
-          <dl>
-            <div>
-              <dt>Level of proof</dt>
-              <dd>
-                ${person.level}
-                <span className="proof-explanation"
-                  >(level ${LEVELS.indexOf(person.level) + 1} of ${LEVELS.length})</span
-                >
-              </dd>
-            </div>
-          </dl>
-          <p className="proof-explanation">${PROOF_EXPLANATIONS[person.level]}</p>
-          <a href=${'#' + person.id + '/basis'} onClick=${(e) => goSection(e, 'basis')}
-            >See the recorded basis</a
-          >
-          <div className="rec-summary-risks">
-            <h3>
+          <p className="proof-explanation">
+            <b>Proof level: ${person.level}.</b> ${PROOF_EXPLANATIONS[person.level]}
+          </p>
+          <div className=${person.risks.length ? 'rec-summary-risks' : ''}>
+            <h3
+              id="record-risks-h"
+              tabindex="-1"
+              className=${person.risks.length ? undefined : 'sr'}
+            >
               ${person.risks.length ? 'Open questions (' + person.risks.length + ')' : 'No open risks listed'}
             </h3>
             ${
@@ -380,21 +303,13 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
                 ? html`<ul>
                     ${person.risks.map((risk, index) => html`<li key=${index}>${risk}</li>`)}
                   </ul>`
-                : html`<p>
-                    This demo record lists no open risks. That does not establish that every risk
-                    has been resolved.
-                  </p>`
+                : null
             }
-            ${person.risks.length > 0 && html`<a href=${'#' + person.id + '/risks'} onClick=${(e) => goSection(e, 'risks')}>Go to open risks</a>`}
           </div>
-          <p className="rec-summary-limit">
-            Demo record. This page does not independently verify identity, consent or usage rights.
-          </p>
         </section>
         <div className="rec-stage"><${Viewer} person=${person} /></div>
         <div className="rec-info">
-          <section className="rec-about" aria-labelledby="rec-about-title">
-            <h2 id="rec-about-title">About ${person.name}</h2>
+          <section className="rec-about" aria-label=${'About ' + person.name}>
             <p>${person.description}</p>
           </section>
           <section className="rec-social" aria-labelledby="rec-social-title">
@@ -414,7 +329,7 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
               })}
             </ul>
             <p className="rec-social-note">
-              ${hasProfileLink ? 'External profiles are listed for reference. A link alone does not prove account ownership.' : 'These demo handles have no public profile links. They do not prove account ownership.'}
+              ${hasProfileLink ? 'Links do not establish account ownership.' : 'Handles do not establish account ownership.'}
             </p>
           </section>
           <dl className="dl" style=${{ marginTop: '24px' }}>
@@ -459,67 +374,37 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
           </dl>
         </div>
       </div>
-      <section className="record-section" aria-labelledby="record-check-h">
-        <h2 className="h2" id="record-check-h" tabindex="-1">Record check</h2>
-        <p className="sub" style=${{ marginBottom: '18px' }}>
-          This demo lookup shows the stored record, notice and risks. It does not verify a
-          cryptographic signature or run a new face comparison.
-        </p>
-        ${checkError && html`<p role="alert" className="risk">${checkError}</p>`}
-        ${
-          step >= 0 &&
-          html`<ul className="checks" aria-live="polite">
-            ${checks.map(
-              (c, k) =>
-                html`<li key=${k} className=${step > k ? 'done ' + c.t : step === k ? 'run' : ''}>
-                  <span className="mk" aria-hidden="true"
-                    >${step > k ? (c.t === 'ok' ? '✓' : '!') : ''}</span
-                  ><span>${c.l}</span
-                  ><span className="d">${step > k ? c.d : step === k ? 'Checking' : ''}</span>
-                </li>`,
-            )}
-          </ul>`
-        }
-        ${done && html`<p className="verdict" role="status">${verdict}</p>`}
-        <button
-          type="button"
-          className="btn"
-          onClick=${run}
-          disabled=${busy}
-          aria-busy=${busy ? 'true' : undefined}
-        >
-          ${busy ? 'Checking record…' : done ? 'Check again' : 'Run record check'}
-        </button>
-      </section>
-      <section className="record-section" aria-labelledby="record-risks-h">
-        <h2 className="h2" id="record-risks-h" tabindex="-1">
-          Open risks (${person.risks.length})
-        </h2>
-        ${
-          person.risks.length
-            ? html`<div>
-                ${person.risks.map(
-                  (risk, index) =>
-                    html`<div key=${index} className="risk">
-                      <span className="ex" aria-hidden="true">!</span>
-                      <p><span className="sr">Risk: </span>${risk}</p>
-                    </div>`,
-                )}
-              </div>`
-            : html`<p className="sub">
-                There are no open risks on this demo record. This does not establish that every risk
-                has been resolved.
-              </p>`
-        }
-      </section>
+      ${
+        (section === 'check' || step >= 0 || checking || checkError) &&
+        html`<section className="record-section" aria-labelledby="record-check-h">
+          <h2 className="h2" id="record-check-h" tabindex="-1">Record check</h2>
+          <p className="sub">
+            The demo lookup does not verify a signature or perform a new face comparison.
+          </p>
+          ${section === 'check' && html`<button type="button" className="btn record-check-action" onClick=${run} disabled=${busy} aria-busy=${busy ? 'true' : undefined}>${busy ? 'Checking record…' : 'Check record'}</button>`}
+          ${checkError && html`<p role="alert" className="risk">${checkError}</p>`}
+          ${
+            step >= 0 &&
+            html`<ul className="checks" aria-live="polite">
+              ${checks.map(
+                (c, k) =>
+                  html`<li key=${k} className=${step > k ? 'done ' + c.t : step === k ? 'run' : ''}>
+                    <span className="mk" aria-hidden="true"
+                      >${step > k ? (c.t === 'ok' ? '✓' : '!') : ''}</span
+                    ><span>${c.l}</span
+                    ><span className="d">${step > k ? c.d : step === k ? 'Checking' : ''}</span>
+                  </li>`,
+              )}
+            </ul>`
+          }
+          ${done && html`<p className="verdict" role="status">${verdict}</p>`}
+        </section>`
+      }
       <${ClaimBasis} person=${person} />
       <section className="rec-images" aria-labelledby="rec-images-h">
         <div>
           <h2 className="h2" id="rec-images-h" tabindex="-1">Persona images</h2>
-          <p className="sub">
-            The face portrait used in the catalog and this full-length studio image illustrate a
-            fictional persona. They do not establish identity or represent a new face check.
-          </p>
+          <p className="sub">Fictional illustrations; they do not establish identity.</p>
           <div className="rec-image-key">
             <button
               type="button"
@@ -562,10 +447,10 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
         </figure>
       </section>
       <section className="prov" aria-labelledby="prov-h">
-        <h2 id="prov-h">Image provenance and integrity</h2>
+        <h2 id="prov-h">Image integrity</h2>
         <p className="sub">
-          The project declares both images AI-generated. This section compares the server's image
-          files with hashes recorded in this repository.
+          AI-generated demo images. Matching hashes show file consistency, not identity, consent or
+          origin.
         </p>
         <div>
           <div
@@ -576,15 +461,6 @@ function Record({ person, route, toast, onReport, savedRecords, toggleSaved }) {
               >${provenance ? provenance.assets.filter((asset) => asset.integrity === 'matches_manifest').length + ' of ' + provenance.assets.length + ' image files match repository hashes' : provenanceError || (location.protocol === 'file:' ? 'Open the local server to check media hashes.' : 'Checking the media hashes…')}</strong
             ><span>File integrity check only</span>
           </div>
-          <aside className="prov-limits">
-            <h3>What this check does not prove</h3>
-            <div>
-              <p>
-                Matching hashes show file consistency. They do not establish the creator, model
-                lineage, consent, or a person’s identity.
-              </p>
-            </div>
-          </aside>
           <details className="technical-details" key=${person.id}>
             <summary>Technical details</summary>
             ${!provenance && html`<p className="sub">${provenanceError || 'Technical results will appear when the check finishes.'}</p>`}

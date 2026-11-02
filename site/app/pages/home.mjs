@@ -1,145 +1,19 @@
-import { REDUCED, html, useEffect, useMemo, useRef, useState } from '../runtime.mjs';
+import { html, useEffect, useMemo, useRef, useState } from '../runtime.mjs';
 import { normalizeSearch, searchPeople } from '../domain/search.mjs';
 import { LEVELS, PEOPLE, byId } from '../domain/registry.mjs';
 import { navigate } from '../domain/routing.mjs';
-import { NOTICE, ORDER, nvars, recordAdvice } from '../domain/notices.mjs';
-import { Globe, NTag } from '../ui/common.mjs';
+import { NOTICE, ORDER, nvars } from '../domain/notices.mjs';
+import { NTag } from '../ui/common.mjs';
 import { NameSuggestions } from '../ui/dialogs.mjs';
-import { Viewer } from '../ui/passport.mjs';
 import { store } from '../domain/storage.mjs';
 import { withoutCatalogFilters } from '../domain/catalog.mjs';
-import { CardChannel } from '../ui/channels.mjs';
 import { CompareChoice } from './compare.mjs';
 
 function Hero() {
-  const [q, setQ] = useState('');
-  const [tried, setTried] = useState(false);
-  const result = searchPeople(q),
-    res = result.matches;
-  const top = res.length === 1 ? res[0] : null;
-  const featured = PEOPLE[0];
-  const submit = (e) => {
-    e.preventDefault();
-    if (top) navigate(top.id);
-    else if (res.length > 1) {
-      const heading = document.getElementById('vresults-label');
-      heading?.focus({ preventScroll: true });
-      heading?.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
-    } else {
-      setTried(true);
-      document.getElementById('vq')?.focus();
-    }
-  };
-  return html`<section className="hero" aria-labelledby="h1">
+  return html`<section className="home-intro" aria-labelledby="h1">
     <div className="wrap">
-      <div>
-        <h1 id="h1" tabindex="-1">Check an AI persona before you work with it.</h1>
-        <p className="lede">
-          Explore fictional personas, listed rights holders and sample notices. This demo does not
-          verify identity or evidence.
-        </p>
-        <a className="hero-browse" href="#notices">Browse all personas</a>
-        <form className="verify" role="search" onSubmit=${submit}>
-          <label htmlFor="vq">Passport number, handle or name</label>
-          <div className="row">
-            <input
-              id="vq"
-              type="text"
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="PP-AZ-0001"
-              value=${q}
-              onChange=${(e) => {
-                setQ(e.target.value);
-                setTried(false);
-              }}
-              aria-invalid=${tried ? 'true' : undefined}
-              aria-describedby="vres"
-            />
-            <button className="btn" type="submit">
-              ${res.length > 1 ? 'Show matches' : 'Check'}
-            </button>
-          </div>
-          <div className="try">
-            <span>Try</span>${['PP-AZ-0001', '@leyla.kaya', 'Elin Berg'].map(
-              (t) =>
-                html`<button
-                  key=${t}
-                  type="button"
-                  onClick=${() => {
-                    setQ(t);
-                    setTried(false);
-                  }}
-                >
-                  ${t}
-                </button>`,
-            )}
-          </div>
-          <div id="vres" aria-live="polite">
-            ${
-              tried &&
-              !q.trim() &&
-              html`<div className="vres" style=${{ '--nc': 'var(--focus)' }}>
-                <div className="t"><b>Enter a passport number, handle or name.</b></div>
-              </div>`
-            }
-            ${
-              res.length > 1 &&
-              html`<p className="lookup-heading" id="vresults-label" tabindex="-1">
-                  ${res.length} personas match<span>Choose a persona to open its record.</span>
-                </p>
-                <ul className="lookup-results" aria-labelledby="vresults-label">
-                  ${res.map(
-                    (p) =>
-                      html`<li key=${p.id}>
-                        <a
-                          className="lookup-result"
-                          href=${'#' + p.id}
-                          style=${nvars(p.status)}
-                          aria-label=${'Open record for ' + p.name + ', ' + p.id}
-                          ><img src=${p.src} alt="" /><span className="lookup-identity"
-                            ><b>${p.name}</b><span className="mono">${p.id}</span
-                            ><${NTag} status=${p.status} /></span
-                        ></a>
-                      </li>`,
-                  )}
-                </ul>`
-            }
-            ${
-              q.trim() &&
-              res.length <= 1 &&
-              (top
-                ? html`<div className="vres" style=${{ '--nc': NOTICE[top.status].nc }}>
-                    <img src=${top.src} alt="" />
-                    <div className="t">
-                      <b>${top.name}</b
-                      ><span>${NOTICE[top.status].name}. ${recordAdvice(top)}</span>
-                    </div>
-                    <a className="btn light" href=${'#' + top.id}>Open record</a>
-                  </div>`
-                : html`<div className="vres" style=${{ '--nc': '#fff' }}>
-                    <div className="t">
-                      <b>No exact match</b
-                      ><span
-                        >No demo record matches “${q.trim()}”. Check the spelling or the
-                        number.</span
-                      >
-                    </div>
-                  </div>`)
-            }
-            <${NameSuggestions} people=${result.suggestions} />
-          </div>
-        </form>
-      </div>
-      <div className="stage">
-        <p className="passport-demo-note">
-          Sample passport · Endorsements are fictional and do not verify evidence.
-        </p>
-        <${Globe} /><${Viewer}
-          person=${featured}
-          label=${'Sample passport ' + featured.id + ' of ' + featured.name + '. Arrow keys turn it.'}
-        />
-      </div>
+      <h1 id="h1" tabindex="-1">Find an AI persona</h1>
+      <p>These fictional demo records do not verify identity or evidence.</p>
     </div>
   </section>`;
 }
@@ -160,14 +34,12 @@ function Notices({
   useEffect(() => {
     const media = matchMedia('(max-width:640px)');
     const update = () => {
-      if (media.matches && !filtersOpen && refineRef.current?.contains(document.activeElement))
-        refineRef.current.querySelector('summary')?.focus({ preventScroll: true });
       setCompact(media.matches);
     };
     media.addEventListener('change', update);
     update();
     return () => media.removeEventListener('change', update);
-  }, [filtersOpen]);
+  }, []);
   const field = (key) => (value) =>
     setCatalog(
       (current) => ({
@@ -300,24 +172,21 @@ function Notices({
   };
   return html`<section id="notices" className="sec" aria-labelledby="n-h">
     <div className="wrap">
-      <div className="sec-h">
-        <div>
-          <h2 className="h2" id="n-h" tabindex="-1">Notices</h2>
-          <p className="sub">Browse demo personas. Filter by notice, name or handle.</p>
+      <h2 className="sr" id="n-h" tabindex="-1">Demo records</h2>
+      <div className="catalog-search-row">
+        <div className="catalog-search">
+          <label className="sr" htmlFor="nq">Find a persona</label
+          ><input
+            id="nq"
+            className="field-in"
+            type="search"
+            maxlength="200"
+            placeholder="Name, handle, passport or rights holder"
+            value=${q}
+            onChange=${(e) => setQ(e.target.value)}
+          />
         </div>
-        <a className="btn line" href="#compare">Compare personas</a>
-      </div>
-      <div className="catalog-search">
-        <label htmlFor="nq">Find a persona</label
-        ><input
-          id="nq"
-          className="field-in"
-          type="search"
-          maxlength="200"
-          placeholder="Name, handle, passport or rights holder"
-          value=${q}
-          onChange=${(e) => setQ(e.target.value)}
-        />
+        <a className="catalog-compare-link" href="#compare">Compare personas</a>
       </div>
       <div className="key" role="group" aria-label="Filter by notice">
         ${ORDER.map(
@@ -328,15 +197,11 @@ function Notices({
               type="button"
               style=${nvars(s)}
               aria-pressed=${notice === s ? 'true' : 'false'}
+              aria-label=${NOTICE[s].name + ': ' + NOTICE[s].meaning + ' (' + (counts[s] || 0) + ')'}
               onClick=${() => setNotice((n) => (n === s ? 'All' : s))}
             >
               <span className="nm"
-                ><span>${NOTICE[s].name}</span><span className="ct">${counts[s] || 0}</span></span
-              >
-              <span className="ad"
-                >${NOTICE[s].meaning}<span className="notice-advice"
-                  >. ${NOTICE[s].advice}</span
-                ></span
+                ><span>${NOTICE[s].meaning}</span><span className="ct">${counts[s] || 0}</span></span
               >
             </button>`,
         )}
@@ -344,10 +209,9 @@ function Notices({
       <details
         className="catalog-refine"
         ref=${refineRef}
-        open=${!compact || filtersOpen}
+        open=${filtersOpen}
         onToggle=${(e) => {
-          if (compact && e.currentTarget.open !== filtersOpen)
-            field('filtersOpen')(e.currentTarget.open);
+          if (e.currentTarget.open !== filtersOpen) field('filtersOpen')(e.currentTarget.open);
         }}
       >
         <summary id="catalog-refine-toggle">
@@ -521,9 +385,6 @@ function Notices({
                   </div>
                   <span className="no">${p.id}</span>
                   <span className="meta">${p.role}, ${p.lang}</span>
-                  <span className="meta">Held by ${p.holder}</span>
-                  <p className="card-summary">${p.description}</p>
-                  <${CardChannel} person=${p} />
                   <div className="card-actions">
                     <button
                       type="button"
@@ -651,78 +512,13 @@ function Home({ savedRecords, toggleSaved, comparisonIds, toggleComparison, cata
       catalog=${catalog}
       setCatalog=${setCatalog}
     />
-    <section className="sec" style=${{ background: 'var(--mist)' }} aria-labelledby="s-h">
+    <section className="home-actions" aria-label="Registry services">
       <div className="wrap">
-        <div className="sec-h">
-          <div>
-            <h2 className="h2" id="s-h">From a record to a private case</h2>
-            <p className="sub">
-              Explore a fictional record, then see how an application or report can be reviewed.
-            </p>
-          </div>
-        </div>
-        <div className="process-layout">
-          <ol className="steps">
-            <li>
-              <h3>Inspect a record</h3>
-              <p>Explore a demo persona, its notice, claims and listed risks.</p>
-            </li>
-            <li>
-              <h3>Submit a private case</h3>
-              <p>
-                Send an application or report and keep the case number and access key to return to
-                it.
-              </p>
-            </li>
-            <li>
-              <h3>Review evidence</h3>
-              <p>
-                A configured reviewer can inspect the case, request or review evidence and record
-                their assessment.
-              </p>
-            </li>
-            <li>
-              <h3>Record a decision</h3>
-              <p>
-                A reviewer records an outcome on the case. It does not issue a passport or change a
-                public demo notice.
-              </p>
-            </li>
-          </ol>
-          <picture className="process-scene"
-            ><source media="(max-width: 760px)" srcset="../assets/demo/process-compact.png" />
-            <img
-              src="../assets/demo/process-desktop.png"
-              width="800"
-              height="600"
-              alt="Illustration of a private case showing evidence received, an assessment and a recorded decision."
-          /></picture>
-        </div>
-      </div>
-    </section>
-    <section className="sec" aria-labelledby="sv-h">
-      <div className="wrap">
-        <h2 className="h2 sr" id="sv-h">Services</h2>
-        <div className="svc">
-          <div className="a">
-            <h3>Register a persona</h3>
-            <p>
-              Apply for a passport for a persona you own. You answer four short sections and get a
-              case number straight away.
-            </p>
-            <span className="time">Takes about 5 minutes</span
-            ><a className="btn light" href="#apply">Start an application</a>
-          </div>
-          <div className="b">
-            <h3>Report a persona</h3>
-            <p>
-              Seen an AI persona copying a real person, or posting ads without saying so? Save a
-              report for review.
-            </p>
-            <span className="time">Takes about 2 minutes</span
-            ><a className="btn line" href="#report">Report a persona</a>
-          </div>
-        </div>
+        <p>
+          <a href="#apply">Register a persona</a> <span aria-hidden="true">·</span>
+          <a href="#report">Report a persona</a>
+        </p>
+        <p>A case decision does not issue a passport or change a public demo notice.</p>
       </div>
     </section>
   </div>`;
