@@ -1,20 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {runInNewContext} from 'node:vm';
-
-const page=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
+import {readCatalogQuery,catalogRoute,withoutCatalogFilters,writeCatalogHistory} from '../site/app/domain/catalog.mjs';
+import {parse} from '../site/app/domain/routing.mjs';
 const PEOPLE=JSON.parse(readFileSync(new URL('../data/personas.json',import.meta.url),'utf8')).personas;
-const ORDER=['Valid','Under review','Suspended','Revoked'];
-const source=page.slice(page.indexOf('function readCatalogQuery('),page.indexOf('function Notices('));
-const parseSource=page.match(/function parse\(\)\{[\s\S]*?\n\}/)[0];
 function catalogApi(){
   const location={hash:'#notices'},entries=['#notices'];
-  const history={
-    pushState(_state,_title,hash){entries.push(hash);location.hash=hash;},
-    replaceState(_state,_title,hash){entries[entries.length-1]=hash;location.hash=hash;}
-  };
-  return {...runInNewContext(source+'\n'+parseSource+'\n({readCatalogQuery,catalogRoute,withoutCatalogFilters,writeCatalogHistory,parse})',{PEOPLE,ORDER,URLSearchParams,location,history,byId:id=>PEOPLE.find(p=>p.id===id)}),location,entries};
+  const history={pushState(_state,_title,hash){entries.push(hash);location.hash=hash;},replaceState(_state,_title,hash){entries[entries.length-1]=hash;location.hash=hash;}};
+  globalThis.location=location;globalThis.history=history;
+  return {readCatalogQuery,catalogRoute,withoutCatalogFilters,writeCatalogHistory,parse,location,entries};
 }
 const plain=value=>JSON.parse(JSON.stringify(value));
 

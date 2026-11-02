@@ -1,0 +1,523 @@
+/* hero */
+.hero {
+  background: var(--navy);
+  color: #fff;
+  overflow: hidden;
+}
+.hero .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  gap: 32px 48px;
+  align-items: center;
+  padding-block: 56px 64px;
+}
+@media (max-width: 980px) {
+  .hero .wrap {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.hero h1 {
+  font-stretch: 118%;
+  font-weight: 800;
+  font-size: clamp(36px, 4.6vw, 60px);
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  max-width: 14ch;
+}
+.hero .lede {
+  color: var(--on-navy-2);
+  font-size: 19px;
+  max-width: 42ch;
+  margin-top: 18px;
+}
+.verify {
+  margin-top: 30px;
+  max-width: 540px;
+  position: relative;
+}
+.hero-browse {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 12px;
+  color: #fff;
+  font-weight: 700;
+  text-underline-offset: 0.2em;
+}
+.passport-demo-note {
+  margin: 4px 0;
+  color: var(--on-navy-2);
+  font-size: 14px;
+}
+.verify label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.verify .row {
+  display: flex;
+  gap: 0;
+}
+.verify input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 56px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 2px 0 0 2px;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 17px;
+}
+.verify input:focus {
+  outline: 3px solid var(--focus);
+  outline-offset: 0;
+}
+.verify .btn {
+  min-height: 56px;
+  border-radius: 0 2px 2px 0;
+  background: var(--focus);
+  color: var(--ink);
+}
+.verify .btn:hover {
+  background: #ffc93d;
+}
+.try {
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--on-navy-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+}
+.try button {
+  all: unset;
+  cursor: pointer;
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  font-family: var(--mono);
+  font-size: 14.5px;
+}
+.try button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.vres {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--navy-deep);
+  border-left: 5px solid var(--nc, #fff);
+}
+.vres img {
+  width: 46px;
+  height: 56px;
+  object-fit: cover;
+  object-position: 50% 30%;
+  background: var(--mist);
+}
+.vres .t {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.vres b {
+  display: block;
+}
+.vres span {
+  color: var(--on-navy-2);
+  font-size: 14.5px;
+}
+.stage {
+  position: relative;
+  max-width: 100%;
+}
+.stage .viewer {
+  aspect-ratio: 1.25;
+}
+.stage .globe {
+  position: absolute;
+  inset: -6% -14% -6% -6%;
+  opacity: 0.16;
+  pointer-events: none;
+}
+.vbox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.viewer {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+.viewer:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+.viewer canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.viewer canvas:active {
+  cursor: grabbing;
+}
+.vmsg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--on-navy-2);
+  font-size: 15px;
+  padding: 16px;
+  text-align: center;
+}
+.vmsg img {
+  max-height: 100%;
+  width: auto;
+}
+.vctl {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 0 0;
+}
+.vbtns {
+  display: flex;
+  gap: 8px;
+}
+.vctl .hint {
+  font-size: 13.5px;
+  color: var(--on-navy-2);
+}
+.vbtn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(7, 26, 58, 0.72);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14.5px;
+  cursor: pointer;
+}
+.vbtn:hover {
+  border-color: #fff;
+}
+.passport-widget {
+  min-width: 0;
+  width: 100%;
+}
+.vtools {
+  color: #fff;
+  border: 0;
+  margin: 0;
+  padding: 12px 0 0;
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+.vtools:disabled {
+  opacity: 0.55;
+}
+.vtools .vbtn {
+  padding: 8px 12px;
+  line-height: 1.25;
+}
+.vbtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.vbtn[aria-pressed='true'] {
+  background: #fff;
+  color: var(--navy-deep);
+  border-color: #fff;
+}
+.vpages {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.vpage-status {
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.35;
+  min-width: 0;
+  min-height: calc(2.7em + 20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.vpage-status small {
+  display: block;
+  color: var(--on-navy-2);
+  font-size: 12.5px;
+  margin-top: 3px;
+}
+.voptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: end;
+}
+.vframe {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  flex: 1 1 190px;
+}
+.vframe select {
+  font: inherit;
+  font-size: 14px;
+  min-height: 44px;
+  min-width: 0;
+  width: 100%;
+  border: 1px solid var(--navy-line);
+  background: var(--navy-deep);
+  color: #fff;
+  padding: 8px;
+}
+.vzoom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 230px;
+  min-width: 0;
+}
+.vzoom label {
+  flex: 1;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+.vzoom input {
+  width: 100%;
+  min-width: 0;
+  accent-color: #fff;
+}
+.vzoom output {
+  font-family: var(--mono);
+  font-size: 12px;
+  min-width: 4ch;
+  text-align: right;
+}
+.vzoom .vbtn {
+  min-width: 44px;
+  font-size: 21px;
+}
+.vactions,
+.vmodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.vhint {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--on-navy-2);
+  padding-top: 12px;
+  max-width: 76ch;
+}
+.viewer.pan-mode canvas {
+  cursor: move;
+}
+.vbox.is-expanded {
+  position: fixed;
+  inset: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  z-index: 120;
+  background: var(--navy-deep);
+  padding: 16px;
+  box-shadow: 0 0 0 100vmax rgba(3, 10, 25, 0.8);
+  isolation: isolate;
+  overscroll-behavior: contain;
+  overflow: auto;
+}
+.vbox.is-expanded .viewer {
+  flex: 1 1 auto;
+  min-height: 180px;
+  aspect-ratio: auto !important;
+  background: var(--navy);
+}
+.vbox.is-expanded canvas {
+  touch-action: none;
+}
+.vtitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  color: #fff;
+}
+.vtitle b {
+  display: block;
+  font-size: 20px;
+}
+.vtitle .mono {
+  font-size: 12px;
+  color: var(--on-navy-2);
+}
+.vbox.is-expanded .voptions {
+  flex: 1 1 440px;
+}
+.vbox.is-expanded .vtools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+.vbox.is-expanded .vpages {
+  flex: 1 1 440px;
+}
+.vbox.is-expanded .vactions {
+  flex: 1 1 440px;
+}
+@media (max-width: 480px) {
+  .vtools .vbtn {
+    font-size: 13px;
+    padding: 8px;
+  }
+  .vpages {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+  .vpage-status {
+    font-size: 12.5px;
+  }
+  .vbox.is-expanded {
+    inset: 0;
+    padding: 10px;
+  }
+  .vtitle {
+    gap: 8px;
+  }
+  .vtitle b {
+    font-size: 17px;
+  }
+  .vtitle .vbtn {
+    max-width: 140px;
+    font-size: 13px;
+  }
+  .vbox.is-expanded .viewer {
+    min-height: 150px;
+  }
+  .vbox.is-expanded .vtools {
+    gap: 8px;
+  }
+  .vbox.is-expanded .vhint {
+    padding-top: 6px;
+    font-size: 11.5px;
+  }
+}
+/* Keep the passport and dismissal visible while its controls scroll. */
+@media (max-height: 500px) {
+  .vbox.is-expanded {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(190px, 34vw, 280px);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 8px 12px;
+    padding: 10px;
+    overflow: hidden;
+  }
+  .vbox.is-expanded .vtitle {
+    grid-column: 1/-1;
+    padding: 0;
+    min-width: 0;
+  }
+  .vbox.is-expanded .vtitle b {
+    font-size: 17px;
+  }
+  .vbox.is-expanded .vtitle .vbtn {
+    flex-shrink: 0;
+    max-width: 140px;
+    font-size: 13px;
+  }
+  .vbox.is-expanded .viewer {
+    min-height: 0;
+    height: 100%;
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .vbox.is-expanded .vpanel {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    padding: 2px 5px 8px 2px;
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .vbox.is-expanded .vtools {
+    display: grid;
+    gap: 10px;
+    padding: 0;
+  }
+  .vbox.is-expanded .vpages {
+    grid-template-columns: 1fr 1fr;
+  }
+  .vbox.is-expanded .vpage-status {
+    grid-column: 1/-1;
+    grid-row: 1;
+    min-height: 0;
+  }
+  .vbox.is-expanded .voptions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .vbox.is-expanded .vframe {
+    display: block;
+  }
+  .vbox.is-expanded .vframe select {
+    margin-top: 4px;
+  }
+  .vbox.is-expanded .vzoom {
+    gap: 4px;
+    flex-basis: 0;
+  }
+  .vbox.is-expanded .vzoom label {
+    min-width: 20px;
+  }
+  .vbox.is-expanded .vtools .vbtn {
+    font-size: 13px;
+    padding: 8px;
+  }
+  .vbox.is-expanded .vhint {
+    font-size: 11.5px;
+    margin: 0;
+    padding-top: 10px;
+  }
+}
+@media (max-height: 500px) and (max-width: 420px) {
+  .vbox.is-expanded {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(90px, 1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .vbox.is-expanded .vpanel {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .vbox.is-expanded .vpages {
+    grid-template-columns: 1fr 1.2fr 1fr;
+  }
+  .vbox.is-expanded .vpage-status {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

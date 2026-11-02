@@ -1,16 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { runInNewContext } from 'node:vm';
-
-const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-const source = page.match(/const CASE_ID_FORMAT =[\s\S]*?\n}\nfunction CaseAccess/);
-assert.ok(source, 'Private link parser is present in the standalone interface');
-const parseLink = runInNewContext(source[0].replace(/\nfunction CaseAccess$/, '') + '\nparsePrivateCaseLink', { URL });
-const base = 'http://127.0.0.1:4178/';
-const id = 'SPR-2026-0123456789AB';
-const token = 'aB9_-'.repeat(8) + 'XyZ';
-const hash = `#case/${id}/${token}`;
+import { parsePrivateCaseLink as parseLink } from '../site/app/domain/cases.mjs';
+const base='http://127.0.0.1:4178/';
+const id='SPR-2026-0123456789AB';
+const token='aB9_-'.repeat(8)+'XyZ';
+const hash=`#case/${id}/${token}`;
 
 test('private links preserve the token and support complete, fragment and encoded links', () => {
   for (const input of [base + hash, hash, `  ${base + hash}\n`, base + '#case/' + id.toLowerCase() + '/' + token, base + '#' + encodeURIComponent(hash.slice(1))]) {

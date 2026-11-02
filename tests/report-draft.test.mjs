@@ -1,14 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { runInNewContext } from 'node:vm';
-
-const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-const source = page.match(/const REPORT_DRAFT_TTL=[\s\S]*?\nfunction Report\(/);
-assert.ok(source);
-const { restoreReportDraft, readReportDraft, saveReportDraft, reportDraftKey, REPORT_DRAFT_TTL } = runInNewContext(
-  source[0].replace(/\nfunction Report\($/, '') + '\n({restoreReportDraft,readReportDraft,saveReportDraft,reportDraftKey,REPORT_DRAFT_TTL})'
-);
+import {restoreReportDraft,readReportDraft,saveReportDraft,reportDraftKey,REPORT_DRAFT_TTL} from '../site/app/domain/forms.mjs';
+import {parse as parseRoute} from '../site/app/domain/routing.mjs';
 const now = Date.UTC(2026, 9, 22, 10);
 const data = { who: 'Leyla Kaya (PP-TR-0004)', what: 'other', details: '  Draft with a link: https://example.com/demo\nSecond line.  ', email: 'draft@example.com' };
 const packet = { version: 1, savedAt: now, data };
@@ -65,8 +59,7 @@ test('storage failures remain observable so the interface cannot claim a success
 
 test('report routes retain only a known persona context after reload', () => {
   const people = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
-  const parseSource = page.match(/function parse\(\)\{[\s\S]*?\n\}/)[0];
-  const parse = hash => plain(runInNewContext(parseSource + '\nparse()', { location: { hash }, PEOPLE: people, byId: id => people.find(person => person.id === id) }));
+  const parse = hash => { globalThis.location={hash}; return plain(parseRoute()); };
   assert.deepEqual(parse('#report'), { name: 'report' });
   assert.deepEqual(parse('#report/PP-TR-0004'), { name: 'report', id: 'PP-TR-0004' });
   assert.deepEqual(parse('#report/pp-tr-0027'), { name: 'report', id: 'PP-TR-0027' });

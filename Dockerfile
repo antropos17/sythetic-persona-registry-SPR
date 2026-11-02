@@ -1,3 +1,13 @@
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS client-build
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY scripts/build-client.mjs ./scripts/
+COPY site/app ./site/app
+COPY site/styles ./site/styles
+COPY data/personas.json data/runtime-assets.json ./data/
+RUN npm run build
+
 FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20
 
 ENV NODE_ENV=production \
@@ -7,7 +17,8 @@ ENV NODE_ENV=production \
 WORKDIR /app
 COPY --chown=node:node package.json ./
 COPY --chown=node:node server ./server
-COPY --chown=node:node site ./site
+COPY --chown=node:node site/index.html ./site/index.html
+COPY --from=client-build --chown=node:node /build/site/dist ./site/dist
 COPY --chown=node:node data/personas.json data/media-provenance.json data/runtime-assets.json ./data/
 COPY --chown=node:node assets ./assets
 RUN mkdir -p /app/var && chown node:node /app/var
