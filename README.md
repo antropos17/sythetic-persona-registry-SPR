@@ -4,7 +4,7 @@ SPR is a demonstration registry for synthetic personas. It presents eight exampl
 
 ## Run locally
 
-Requires Node.js 24.11 or later in the 24.x line. No npm dependencies or build step are required. The checked-in scripts and fonts are self-hosted and verified by `npm run check`; page startup does not depend on a CDN.
+Requires Node.js 24.11 or later in the 24.x line. The server runs with the checked-in client build and has no runtime npm dependencies. Install development dependencies with `npm ci` to rebuild or run the complete checks. Scripts and fonts are self-hosted; page startup does not depend on a CDN.
 
 ```bash
 npm start
@@ -12,7 +12,7 @@ npm start
 
 Open `http://127.0.0.1:4176/`. The server creates `var/spr.sqlite` on first start. Set `HOST`, `PORT`, `SPR_DB_PATH`, and, for a public reverse-proxy deployment, `PUBLIC_ORIGIN` through the process environment. The proxy must forward the public `Host` header. Literal IP addresses and `localhost` remain available for local access and health checks; other domain hosts are rejected unless they match `PUBLIC_ORIGIN`. `.env.example` is a reference; the application does not load `.env` files automatically.
 
-For a standalone visual preview, open `site/index.html` directly. In that mode submissions receive a clearly labelled demo number and are not saved.
+The client is also designed for a standalone preview from `site/index.html`. In that mode submissions receive a clearly labelled demo number and are not saved. Direct-file behavior has not been qualified across browsers.
 
 ```bash
 npm run check
@@ -23,7 +23,8 @@ npm test
 
 | Path | Purpose |
 | --- | --- |
-| `site/index.html` | Existing React, htm, and three.js interface. No bundler. |
+| `site/index.html`, `site/app/`, `site/styles/` | Client entry page, modular interface source, and styles. |
+| `site/dist/` | Checked-in esbuild client output and compressed variants. |
 | `assets/` | Registry emblem, fictional full-length studio images, and matching face portraits. |
 | `data/personas.json` | Canonical source for the eight public demo records. |
 | `data/persona-passport.v0.1.json` | Example evidence and model bill of materials, not a validation schema. |
@@ -33,6 +34,8 @@ npm test
 | `tests/` | API, security boundary, and persistence tests. |
 
 The frontend fetches public records from the API when the server is available. Its embedded records remain a fallback for the standalone preview. Images are loaded from `assets/`: catalog cards and table rows lead with headshots, while each record shows its full-length image below the passport and details. The images are illustrations, not identity or review evidence.
+
+See [client architecture](docs/CLIENT-ARCHITECTURE.md) for build commands and loading behavior.
 
 Each demo record has a short description. Catalog cards show a compact description and channel handle, including on narrow screens; the record page shows the full description and a platform icon where the platform is known. A `socials` entry may include a full profile `url`; it stays `null` until an exact address is supplied. The interface links only to HTTPS URLs on the named platform whose path matches the declared handle (YouTube channel paths are allowed). It does not construct live profile addresses from fictional handles. A profile link by itself is not evidence of ownership.
 

@@ -1,11 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { runInNewContext } from 'node:vm';
-const page=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-const latest=page.match(/function latestReviewerMessage\(events,status\)\{[\s\S]*?\n\}/)[0];
-const answer=page.match(/const REVIEW_ANSWER_LABELS=[\s\S]*?(?=function ReviewConsole\()/)[0];
-const helpers=runInNewContext(`${latest}\n${answer}\n({latestReviewerMessage,reviewAnswerLabel,reviewAnswerValue})`,{EVIDENCE:[['images','Reference images of the persona'],['consent','Signed consent from a real person, if the persona is based on one']]});
+import * as helpers from '../site/app/domain/cases.mjs';
 test('current status message survives a later evidence decision',()=>{
   const items=[
     {actor:'reviewer',action:'status_changed',status:'needs_evidence',note:'Please upload the licence',at:'2026-10-27T12:00:00Z'},

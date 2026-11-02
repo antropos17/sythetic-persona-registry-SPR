@@ -8,9 +8,19 @@
   },
   "scripts": {
     "start": "node server/index.mjs",
-    "check": "node --check server/index.mjs && node --check server/app.mjs && node --check server/db.mjs && node --check server/validation.mjs && node --check scripts/media-manifest.mjs && node scripts/media-manifest.mjs && node --check scripts/backup.mjs && node scripts/check-runtime.mjs",
+    "check": "npm run check:client && node --check server/index.mjs && node --check server/app.mjs && node --check server/db.mjs && node --check server/validation.mjs && node --check scripts/media-manifest.mjs && node scripts/media-manifest.mjs && node --check scripts/backup.mjs && node scripts/check-runtime.mjs",
     "media:update": "node scripts/media-manifest.mjs --write",
     "test": "node --test tests/*.test.mjs",
-    "backup": "node scripts/backup.mjs"
+    "backup": "node scripts/backup.mjs",
+    "build": "node scripts/build-client.mjs",
+    "check:client": "node scripts/check-client.mjs && node scripts/build-client.mjs --check",
+    "format": "prettier --write site/app site/styles scripts/build-client.mjs scripts/check-client.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "eslint-scope": "9.1.2",
+    "espree": "11.2.0",
+    "globals": "16.5.0",
+    "prettier": "3.9.10"
   }
 }

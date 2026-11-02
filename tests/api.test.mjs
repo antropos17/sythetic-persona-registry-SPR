@@ -3,7 +3,13 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, readFileSync, realpathSync, lstatSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname, basename } from 'node:path';
-import { Script, runInNewContext } from 'node:vm';
+import {parse} from '../site/app/domain/routing.mjs';
+import {PEOPLE} from '../site/app/domain/registry.mjs';
+import {passportCurve} from '../site/app/passport/geometry.mjs';
+import {TEX} from '../site/app/passport/pages.mjs';
+import {comparisonValue,toggleComparisonSelection} from '../site/app/domain/comparison.mjs';
+import {socialHref} from '../site/app/domain/social.mjs';
+import {restoreApplication} from '../site/app/domain/forms.mjs';
 import { request } from 'node:http';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
@@ -33,34 +39,23 @@ async function rawRequest(url, { method = 'GET', headers = {}, body = '' } = {})
   });
 }
 
-test('the standalone interface script parses and keeps the demo disclosures', () => {
+test('the bundled interface retains its entry point and demo disclosures', () => {
   const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const inline = page.match(/<script>\s*([\s\S]*?)\s*<\/script>/);
-  assert.ok(inline);
-  assert.doesNotThrow(() => new Script(inline[1]));
-  assert.match(page, /Independent registry of AI personas/);
-  assert.match(page, /Demo data/);
-  const route = page.match(/function parse\(\)\{[\s\S]*?\n\}/);
-  assert.ok(route);
-  assert.deepEqual(JSON.parse(JSON.stringify(runInNewContext(route[0] + '\nparse()', {
-    location: { hash: '#%E0%A4%A' }, byId: () => null
-  }))), { name: 'home' });
+  assert.match(page, /src="\.\/dist\/app\.js"/);
+  const shell = readFileSync(new URL('../site/app/shell.mjs', import.meta.url), 'utf8');
+  assert.match(shell, /Independent registry of AI personas/);
+  assert.match(shell, /Demo data/);
+  globalThis.location={hash:'#%E0%A4%A'};
+  assert.deepEqual(parse(), {name:'home'});
 });
 
-test('standalone fallback records match the API source', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const match = page.match(/const G=.*?;\s*const PEOPLE = \[[\s\S]*?\n\];/);
-  assert.ok(match);
-  const fallback = runInNewContext(match[0] + '\nPEOPLE');
+test('frontend registry records match the API source', () => {
   const source = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
-  assert.deepEqual(JSON.parse(JSON.stringify(fallback)), source.map(({ portrait, ...record }) => record));
+  assert.deepEqual(PEOPLE.map(({src,bodySrc,...record})=>record), source.map(({portrait,...record})=>record));
 });
 
 test('passport page bending preserves sheet length, binding and flat endpoints', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const source = page.match(/function passportCurve\(progress,segments=64\)\{[\s\S]*?\n\}/);
-  assert.ok(source);
-  const curve = runInNewContext(source[0] + '\npassportCurve');
+  const curve = passportCurve;
   for (const progress of [0, .1, .25, .5, .75, .9, 1]) {
     const points = curve(progress);
     assert.equal(points.length, 65);
@@ -81,17 +76,14 @@ test('passport page bending preserves sheet length, binding and flat endpoints',
 });
 
 test('printed passport spreads retain the supplied claims, history and risks at double resolution', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const source = page.match(/const PW=900, PH=1280;[\s\S]*?\n\}\)\(\);/);
-  const random = page.match(/function hashStr\(s\).*\nfunction rng\(seed\).*\n/);
-  assert.ok(source && random);
   let drawn = [];
   const document = { createElement() {
     const ctx = { scale() {}, fillRect() {}, save() {}, restore() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {}, strokeRect() {},
       measureText(text) { return { width: String(text).length * 13 }; }, fillText(text) { drawn.push(String(text)); } };
     return { getContext() { return ctx; } };
   } };
-  const tex = runInNewContext(random[0] + '\n' + source[0] + '\nTEX', { document, NOTICE: new Proxy({}, { get: (_, status) => ({ name: status, meaning: 'Demo status' }) }) });
+  globalThis.document = document;
+  const tex = TEX;
   const records = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
   for (const person of records) {
     const texts = {};
@@ -114,12 +106,7 @@ test('printed passport spreads retain the supplied claims, history and risks at 
 });
 
 test('comparison and profile section routes retain valid targets and reject invalid ones', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const route = page.match(/function parse\(\)\{[\s\S]*?\n\}/);
-  const people = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
-  const parseHash = hash => JSON.parse(JSON.stringify(runInNewContext(route[0] + '\nparse()', {
-    location: { hash }, PEOPLE: people, byId: id => people.find(person => person.id === id),
-  })));
+  const parseHash = hash => { globalThis.location={hash}; return parse(); };
   assert.deepEqual(parseHash('#compare'), { name: 'compare', ids: ['PP-AZ-0001', 'PP-TR-0004'] });
   assert.deepEqual(parseHash('#compare/PP-SE-0023/PP-AZ-0001'), { name: 'compare', ids: ['PP-SE-0023', 'PP-AZ-0001'] });
   assert.deepEqual(parseHash('#compare?differences=1'), { name: 'compare', ids: ['PP-AZ-0001', 'PP-TR-0004'], differences: true });
@@ -135,10 +122,7 @@ test('comparison and profile section routes retain valid targets and reject inva
 });
 
 test('comparison differences reflect visible values and ignore ordering of risks', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const source = page.match(/function comparisonValue\(person,key\)\{[\s\S]*?\n\}/);
-  const social = page.match(/function socialHref\(channel\)\{[\s\S]*?\n\}/);
-  const value = runInNewContext(social[0] + '\n' + source[0] + '\ncomparisonValue', { URL, decodeURIComponent });
+  const value = comparisonValue;
   const [first, second] = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
   assert.equal(value(first, 'nature'), value(second, 'nature'));
   assert.notEqual(value(first, 'occupation'), value(second, 'occupation'));
@@ -149,10 +133,8 @@ test('comparison differences reflect visible values and ignore ordering of risks
 });
 
 test('catalog comparison selection retains at most two distinct known records', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const source = page.match(/function toggleComparisonSelection\(current,id\)\{[\s\S]*?\n\}/);
   const people = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
-  const toggle = runInNewContext(source[0] + '\ntoggleComparisonSelection', { byId: id => people.find(person => person.id === id) });
+  const toggle = toggleComparisonSelection;
   let pair = toggle([], people[0].id);
   pair = toggle(pair, people[1].id);
   assert.deepEqual(Array.from(toggle(pair, people[2].id)), [people[0].id, people[1].id]);
@@ -175,10 +157,6 @@ test('public claim context stays tied to existing demo endorsements and dated ev
 });
 
 test('social profile links require the matching HTTPS platform and handle', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const source = page.match(/function socialHref\(channel\)\{[\s\S]*?\n\}/);
-  assert.ok(source);
-  const socialHref = runInNewContext(source[0] + '\nsocialHref', { URL, decodeURIComponent });
   const channel = { platform: 'TikTok', handle: '@fidan.sings', url: 'https://www.tiktok.com/@fidan.sings' };
   assert.equal(socialHref(channel), channel.url);
   for (const url of ['http://www.tiktok.com/@fidan.sings', 'https://tiktok.com.evil.test/@fidan.sings',
@@ -188,10 +166,7 @@ test('social profile links require the matching HTTPS platform and handle', () =
 });
 
 test('a malformed saved application cannot break the registration form', () => {
-  const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-  const source = page.match(/const APPLY0 = [\s\S]*?function Apply\(/);
-  assert.ok(source);
-  const draft = runInNewContext(source[0].slice(0, -'function Apply('.length) + '\nrestoreApplication({ name: 42, holder: "Company", evidence: {} })');
+  const draft = restoreApplication({ name: 42, holder: 'Company', evidence: {} });
   assert.equal(draft.name, '');
   assert.equal(draft.holder, 'Company');
   assert.deepEqual(JSON.parse(JSON.stringify(draft.evidence)), []);
@@ -201,7 +176,8 @@ test('serves the site and registry, while private files stay inaccessible', asyn
   const { base } = await fixture(t);
   const page = await fetch(base);
   assert.equal(page.status, 200);
-  assert.match(page.headers.get('content-security-policy'), /script-src[^;]*'sha256-/);
+  assert.match(page.headers.get('content-security-policy'), /script-src[^;]*'self'/);
+  assert.doesNotMatch(page.headers.get('content-security-policy'), /script-src[^;]*'unsafe-inline'/);
   assert.match(page.headers.get('content-security-policy'), /object-src 'none'/);
   assert.equal((await fetch(base, { headers: { 'If-None-Match': page.headers.get('etag') } })).status, 304);
   assert.match(await page.text(), /Synthetic Persona Registry/);

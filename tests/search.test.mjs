@@ -1,13 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { runInNewContext } from 'node:vm';
-
-const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
-const source = page.match(/const normalizeSearch =[\s\S]*?\nconst navigate =/);
-assert.ok(source, 'Shared search helpers are present');
-const PEOPLE = JSON.parse(readFileSync(new URL('../data/personas.json', import.meta.url), 'utf8')).personas;
-const search = runInNewContext(source[0].replace(/\nconst navigate =$/, '') + '\nsearchPeople', { PEOPLE });
+import { PEOPLE } from '../site/app/domain/registry.mjs';
+import { searchPeople as search } from '../site/app/domain/search.mjs';
 const names = rows => Array.from(rows, person => person.name);
 
 test('search normalizes whitespace and case and prioritizes exact identifiers', () => {

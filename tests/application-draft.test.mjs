@@ -1,17 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import {runInNewContext} from 'node:vm';
-
-const page=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-const storeSource=page.slice(page.indexOf('const store ='),page.indexOf('const SAVED_KEY ='));
-const source=page.slice(page.indexOf('function persistApplicationDraft('),page.indexOf('function Apply('));
+import {persistApplicationDraft,finishApplicationDraft} from '../site/app/domain/forms.mjs';
+import {store} from '../site/app/domain/storage.mjs';
 const draft={name:'Fictional example',handle:'@example',evidence:['images']};
 function makeStorage(){
   const data=new Map();
   return {getItem:key=>data.get(key)??null,setItem:(key,value)=>data.set(key,value),removeItem:key=>data.delete(key)};
 }
-function client(storage){return runInNewContext(storeSource+source+'\n({persistApplicationDraft,finishApplicationDraft,store})',{localStorage:storage});}
+function client(storage){globalThis.localStorage=storage;return {persistApplicationDraft,finishApplicationDraft,store};}
 
 test('an application draft remains recoverable after a standalone demo submission',()=>{
   const storage=makeStorage(),ui=client(storage);

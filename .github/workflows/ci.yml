@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '24.21.0'
+      - run: npm ci
       - run: npm run check
       - run: npm test
       - name: Build and smoke-test the runtime image
@@ -31,6 +32,8 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:4176/api/v1/health
           curl --fail --silent http://127.0.0.1:4176/ > /dev/null
+          curl --fail --silent http://127.0.0.1:4176/dist/app.js > /dev/null
+          curl --fail --silent http://127.0.0.1:4176/dist/app.css > /dev/null
           curl --fail --silent http://127.0.0.1:4176/assets/vendor/react.production.min.js > /dev/null
           curl --fail --silent http://127.0.0.1:4176/assets/vendor/fonts.css > /dev/null
           curl --fail --silent http://127.0.0.1:4176/assets/demo/process-compact.png > /dev/null

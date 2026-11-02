@@ -1,13 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {runInNewContext} from 'node:vm';
-
-const page=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-const validation=page.slice(page.indexOf('const HANDLE_FORMAT ='),page.indexOf('function restoreApplication('));
-const {validateReport,validateApplication}=runInNewContext(validation+'\n({validateReport,validateApplication})');
-const adviceSource=page.slice(page.indexOf('const NOTICE ='),page.indexOf('function socialHref('));
-const {recordAdvice,NOTICE}=runInNewContext(adviceSource+'\n({recordAdvice,NOTICE})');
+import {validateReport,validateApplication} from '../site/app/domain/forms.mjs';
+import {recordAdvice,NOTICE} from '../site/app/domain/notices.mjs';
+import {comparisonValue} from '../site/app/domain/comparison.mjs';
 const people=JSON.parse(readFileSync(new URL('../data/personas.json',import.meta.url),'utf8')).personas;
 const plain=value=>JSON.parse(JSON.stringify(value));
 
@@ -54,7 +50,5 @@ test('record advice reflects each risk count and preserves restrictive notice gu
   }
   const fidan=people.find(p=>p.id==='PP-AZ-0001'),leyla=people.find(p=>p.id==='PP-TR-0004');
   assert.notEqual(recordAdvice(fidan),recordAdvice(leyla));
-  const comparisonSource=page.match(/function comparisonValue\(person,key\)\{[\s\S]*?\n\}/)[0];
-  const comparisonValue=runInNewContext(comparisonSource+'\ncomparisonValue',{recordAdvice,socialHref:()=>null});
   assert.notEqual(comparisonValue(fidan,'notice'),comparisonValue({...fidan,risks:[]},'notice'),'Differences-only comparison must retain changed risk advice');
 });

@@ -1,19 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import {runInNewContext} from 'node:vm';
-
-const page=readFileSync(new URL('../site/index.html',import.meta.url),'utf8');
-const source=page.slice(page.indexOf('const navigate ='),page.indexOf('const store ='));
+import {navigate,handleRouteLink} from '../site/app/domain/routing.mjs';
 function router(){
   let hash='#home';const pushes=[],events=[];
-  const api=runInNewContext(source+'\n({navigate,handleRouteLink})',{
-    location:{get hash(){return hash;},set hash(value){throw new Error('Native hash scrolling must not run');}},
-    history:{pushState(_state,_title,value){pushes.push(value);hash=value;}},
-    window:{dispatchEvent(event){events.push(event.type);}},
-    HashChangeEvent:class{constructor(type){this.type=type;}}
-  });
-  return {...api,pushes,events};
+  globalThis.location={get hash(){return hash;},set hash(value){throw new Error('Native hash scrolling must not run');}};
+  globalThis.history={pushState(_state,_title,value){pushes.push(value);hash=value;}};
+  globalThis.window={dispatchEvent(event){events.push(event.type);}};
+  globalThis.HashChangeEvent=class{constructor(type){this.type=type;}};
+  return {navigate,handleRouteLink,pushes,events};
 }
 function click(href,changes={}){
   const link={target:'',hasAttribute:()=>false,getAttribute:()=>href};

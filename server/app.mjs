@@ -10,6 +10,7 @@ import { validateApplication, validateReport, normalizeApplication, normalizeRep
 const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const assetRoot = resolve(projectRoot, 'assets');
 const siteFile = join(projectRoot, 'site/index.html');
+const distRoot = resolve(projectRoot, 'site/dist');
 const registry = JSON.parse(readFileSync(join(projectRoot, 'data/personas.json'), 'utf8'));
 const byId = new Map(registry.personas.map(person => [person.id, person]));
 const mediaManifest = JSON.parse(readFileSync(join(projectRoot, 'data/media-provenance.json'), 'utf8'));
@@ -52,6 +53,75 @@ function staticFile(req, res, file, cache = 'no-cache') {
   createReadStream(file).pipe(res);
 }
 
+function encodingPreferences(header) {
+  const qualities = new Map();
+  for (const item of (header || '').split(',')) {
+    const [name, ...params] = item.trim().toLowerCase().split(';');
+    if (!name) continue;
+    const quality =
+      params.length === 0
+        ? 1
+        : params.length === 1 && /^\s*q=(?:0(?:\.\d{0,3})?|1(?:\.0{0,3})?)\s*$/.test(params[0])
+          ? Number(params[0].trim().slice(2))
+          : 0;
+    qualities.set(name, quality);
+  }
+  return qualities;
+}
+
+function distFile(req, res, file) {
+  let original;
+  try {
+    original = statSync(file);
+  } catch {
+    return json(res, 404, { error: 'Not found' });
+  }
+  if (!original.isFile()) return json(res, 404, { error: 'Not found' });
+  const preferences = encodingPreferences(req.headers['accept-encoding']);
+  const quality = (name) =>
+    preferences.has(name) ? preferences.get(name) : (preferences.get('*') ?? 0);
+  const variants = [
+    ['br', '.br'],
+    ['gzip', '.gz'],
+  ]
+    .map(([encoding, suffix]) => ({ encoding, suffix, q: quality(encoding) }))
+    .filter((v) => v.q > 0)
+    .sort((a, b) => b.q - a.q);
+  const identityQuality = preferences.get('identity') ?? (preferences.get('*') === 0 ? 0 : 1);
+  let selected = { file, stat: original, encoding: null };
+  for (const variant of variants) {
+    if (variant.q < identityQuality) break;
+    try {
+      const stat = statSync(file + variant.suffix);
+      if (stat.isFile()) {
+        selected = { file: file + variant.suffix, stat, encoding: variant.encoding };
+        break;
+      }
+    } catch {
+      /* Fall back to another available representation. */
+    }
+  }
+  if (!selected.encoding && identityQuality === 0)
+    return json(res, 406, { error: 'No acceptable representation' }, { Vary: 'Accept-Encoding' });
+  const type = mime[file.slice(file.lastIndexOf('.'))];
+  const etag = `W/"${selected.stat.size.toString(16)}-${Math.trunc(selected.stat.mtimeMs).toString(16)}-${selected.encoding || 'identity'}"`;
+  const headers = {
+    ...securityHeaders,
+    'Content-Type': type,
+    'Cache-Control': 'no-cache',
+    Vary: 'Accept-Encoding',
+    ETag: etag,
+    ...(selected.encoding ? { 'Content-Encoding': selected.encoding } : {}),
+  };
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304, headers);
+    return res.end();
+  }
+  res.writeHead(200, { ...headers, 'Content-Length': selected.stat.size });
+  if (req.method === 'HEAD') return res.end();
+  createReadStream(selected.file).pipe(res);
+}
+
 function sitePage(req, res) {
   // Apply SRI to HTTP responses. Plain local file previews keep ordinary script
   // tags because file origins cannot complete anonymous CORS/SRI requests.
@@ -61,11 +131,9 @@ function sitePage(req, res) {
     if(!asset?.sha384) throw new Error('Missing runtime script integrity');
     return `<script src="../${path}" integrity="sha384-${asset.sha384}" crossorigin="anonymous"></script>`;
   }));
-  const inline = /<script>([\s\S]*?)<\/script>/.exec(body.toString('utf8'));
-  const inlineHash = inline ? ` 'sha256-${createHash('sha256').update(inline[1]).digest('base64')}'` : '';
   const policy = [
     "default-src 'self'",
-    `script-src 'self'${inlineHash}`,
+    "script-src 'self'",
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self'",
     "img-src 'self' data: blob:",
@@ -284,6 +352,7 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
       }
       if (req.method === 'GET' || req.method === 'HEAD') {
         if (path === '/' || path === '/index.html') return sitePage(req, res);
+        if (path === '/dist/app.js' || path === '/dist/app.css') return distFile(req, res, join(distRoot, path.slice('/dist/'.length)));
         if (path === '/favicon.ico') return staticFile(req, res, join(assetRoot, 'emblem.png'), 'public, no-cache');
         if (path.startsWith('/assets/')) {
           let decoded;
