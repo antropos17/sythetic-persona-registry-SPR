@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "path": "assets/vendor/react.production.min.js",
+      "source": "https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js",
+      "sha256": "d949f1c3687aedadcedac85261865f29b17cd273997e7f6b2bfc53b2f9d4c4dd",
+      "sha384": "DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z"
+    },
+    {
+      "path": "assets/vendor/react-dom.production.min.js",
+      "source": "https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js",
+      "sha256": "35f4f974f4b2bcd44da73963347f8952e341f83909e4498227d4e26b98f66f0d",
+      "sha384": "gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1"
+    },
+    {
+      "path": "assets/vendor/htm.umd.js",
+      "source": "https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js",
+      "sha256": "7a31776e04bd4afde0d4308177d26f377716fcf7e4bd70be590746d6aa594f08",
+      "sha384": "toVdrLSMaw7Y55MowcKqkmFL/Ek6Sky62NOk0b5sDDZBu2wcoPyyQUt9unDVjXhL"
+    },
+    {
+      "path": "assets/vendor/three.min.js",
+      "source": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js",
+      "sha256": "3b3a1c97de3ce65ec5b28c28d9f2805a738e9651622691ba771aa95c79d41d51",
+      "sha384": "5UGTcMIxVUKFeJH0zOS3lqMAZNBG+fCXJbi3UglUq6ABO4MQJu6rxNa+MPP+qtwq"
+    },
+    {
+      "path": "assets/vendor/react-LICENSE.txt",
+      "source": "https://cdn.jsdelivr.net/npm/react@18.3.1/LICENSE",
+      "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    {
+      "path": "assets/vendor/react-dom-LICENSE.txt",
+      "source": "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/LICENSE",
+      "sha256": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85"
+    },
+    {
+      "path": "assets/vendor/htm-LICENSE.txt",
+      "source": "https://cdn.jsdelivr.net/npm/htm@3.1.1/LICENSE",
+      "sha256": "740725f7252e750af735d0028cc534970772f513331e9f68150fede8fb3ce00f"
+    },
+    {
+      "path": "assets/vendor/three-LICENSE.txt",
+      "source": "https://cdn.jsdelivr.net/npm/three@0.158.0/LICENSE",
+      "sha256": "852e0e8699169bf9f6fdc6bda3e682d078dcbc738b5d33e74df594721bff271d"
+    },
+    {
+      "path": "assets/vendor/Archivo-OFL.txt",
+      "source": "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/archivo/OFL.txt",
+      "sha256": "108b4e57c9c796d3d38d0428ca7ee39de47ad93187302718d9b2d8864b9b716b"
+    },
+    {
+      "path": "assets/vendor/IBMPlexMono-OFL.txt",
+      "source": "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/ibmplexmono/OFL.txt",
+      "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da"
+    },
+    {
+      "path": "assets/vendor/MrsSaintDelafield-OFL.txt",
+      "source": "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/mrssaintdelafield/OFL.txt",
+      "sha256": "f354ef1e7256644b320c5e1d9a07a819c2e2b930166003c96680894f9fba81be"
+    },
+    {
+      "path": "assets/vendor/font-0.woff2",
+      "source": "https://fonts.gstatic.com/s/archivo/v25/k3kSo8UDI-1M0wlSfdzYI2HEEaM.woff2",
+      "sha256": "9da6e98c1a09ed5dc72cfd6055b828d7ab57ed0b495fde06a936811dedd5fdc2"
+    },
+    {
+      "path": "assets/vendor/font-1.woff2",
+      "source": "https://fonts.gstatic.com/s/archivo/v25/k3kSo8UDI-1M0wlSfdzYImHEEaM.woff2",
+      "sha256": "745260b77ac6f20bea3b92bbba59c3ac7e71324387cfbde076f8901e56b8fd9e"
+    },
+    {
+      "path": "assets/vendor/font-2.woff2",
+      "source": "https://fonts.gstatic.com/s/archivo/v25/k3kSo8UDI-1M0wlSfdzYLGHE.woff2",
+      "sha256": "d63de74ee5ad92cd506c8dd0f795e84bd084aea8eef90173b5d2464096c5fa4a"
+    },
+    {
+      "path": "assets/vendor/font-3.woff2",
+      "source": "https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdboLnnA.woff2",
+      "sha256": "332e6f66de84927cdffc60894e4e186ced783f5cb4b3e88200f45b7c1d306810"
+    },
+    {
+      "path": "assets/vendor/font-4.woff2",
+      "source": "https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdfoLnnA.woff2",
+      "sha256": "5717f37059660ca5c899bad6c48ee22c3ac55cb3c484055241689d0f905a1a86"
+    },
+    {
+      "path": "assets/vendor/font-5.woff2",
+      "source": "https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdnoLg.woff2",
+      "sha256": "e3a28eade21a900c7155a247757f4b2834c07bb7ef07ad7efa55cebaac1e8f5e"
+    },
+    {
+      "path": "assets/vendor/font-6.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iIq129k.woff2",
+      "sha256": "f8c22ec1804bd6966b70f43ac7c327025645b4c09597117fca2a5a6c750106fe"
+    },
+    {
+      "path": "assets/vendor/font-7.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1isq129k.woff2",
+      "sha256": "7635422bd10ddbbcb0e0caa1154b928298f5c8319b8c00b30978d4395f4783ce"
+    },
+    {
+      "path": "assets/vendor/font-8.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iAq129k.woff2",
+      "sha256": "62632b6375305e70ddcafdd895218e6ae41a184fcd280a69c739460604ca00a9"
+    },
+    {
+      "path": "assets/vendor/font-9.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iEq129k.woff2",
+      "sha256": "6bc0f226a5b7884a8170e3f62c63d7675609d4631bdc5931b5cdab81821f00eb"
+    },
+    {
+      "path": "assets/vendor/font-10.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1i8q1w.woff2",
+      "sha256": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7"
+    },
+    {
+      "path": "assets/vendor/font-11.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl1FgtIU.woff2",
+      "sha256": "3febe5c7f22e4b07b4552738673c3dbe8bced2dc5f48b866edf7ccd9552d109a"
+    },
+    {
+      "path": "assets/vendor/font-12.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlRFgtIU.woff2",
+      "sha256": "1d89462e86cb8e87e7e9d6f6635605bd7c3081baca6caaecee84916bf7b60edc"
+    },
+    {
+      "path": "assets/vendor/font-13.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl9FgtIU.woff2",
+      "sha256": "781633d95de88040fb77141d1e65d928c87c0144691fbc74da5a64d137a7e910"
+    },
+    {
+      "path": "assets/vendor/font-14.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl5FgtIU.woff2",
+      "sha256": "6bb06407c97584b0867a959e05e8874693bfeb8c317de190811c51598f2d99ea"
+    },
+    {
+      "path": "assets/vendor/font-15.woff2",
+      "source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlBFgg.woff2",
+      "sha256": "01d285447409c8a588692162439a038b8cbd7871309ee20267b0d2d91c6e8e22"
+    },
+    {
+      "path": "assets/vendor/font-16.woff2",
+      "source": "https://fonts.gstatic.com/s/mrssaintdelafield/v14/v6-IGZDIOVXH9xtmTZfRagunqBw5WC62QKcnL_ub.woff2",
+      "sha256": "098de9c0623fc3dd466a0ab96136dc6a2235a11b378c0e00d1dad3a3fc825136"
+    },
+    {
+      "path": "assets/vendor/font-17.woff2",
+      "source": "https://fonts.gstatic.com/s/mrssaintdelafield/v14/v6-IGZDIOVXH9xtmTZfRagunqBw5WC62QKknLw.woff2",
+      "sha256": "0672851f27cedde6c894e109ddce4d329a2d28f605d54e7208b5c84d836512da"
+    },
+    {
+      "path": "assets/vendor/fonts.css",
+      "source": "https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap",
+      "sha256": "b18f1206bf8059c33c8651faa574294142997c023eb1928ce9f0b428916ca660"
+    }
+  ]
+}

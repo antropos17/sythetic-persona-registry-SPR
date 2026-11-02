@@ -8,8 +8,9 @@
   },
   "scripts": {
     "start": "node server/index.mjs",
-    "check": "node --check server/index.mjs && node --check server/app.mjs && node --check server/db.mjs && node --check server/validation.mjs && node --check scripts/media-manifest.mjs && node scripts/media-manifest.mjs",
+    "check": "node --check server/index.mjs && node --check server/app.mjs && node --check server/db.mjs && node --check server/validation.mjs && node --check scripts/media-manifest.mjs && node scripts/media-manifest.mjs && node --check scripts/backup.mjs && node scripts/check-runtime.mjs",
     "media:update": "node scripts/media-manifest.mjs --write",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "backup": "node scripts/backup.mjs"
   }
 }

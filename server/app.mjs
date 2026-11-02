@@ -13,8 +13,9 @@ const siteFile = join(projectRoot, 'site/index.html');
 const registry = JSON.parse(readFileSync(join(projectRoot, 'data/personas.json'), 'utf8'));
 const byId = new Map(registry.personas.map(person => [person.id, person]));
 const mediaManifest = JSON.parse(readFileSync(join(projectRoot, 'data/media-provenance.json'), 'utf8'));
+const runtimeManifest = JSON.parse(readFileSync(join(projectRoot, 'data/runtime-assets.json'), 'utf8'));
 const mediaById = new Map(registry.personas.map(person => [person.id, mediaManifest.assets.filter(asset => asset.personaId === person.id)]));
-const mime = { '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
+const mime = { '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.woff2': 'font/woff2' };
 const caseIdPattern = '(?:SPR|RPT)-\\d{4}-[A-F0-9]{12}';
 const tokenPattern = /^[A-Za-z0-9_-]{43}$/;
 const evidenceKinds = new Set(['images', 'models', 'licences', 'channels', 'consent', 'other']);
@@ -52,14 +53,21 @@ function staticFile(req, res, file, cache = 'no-cache') {
 }
 
 function sitePage(req, res) {
-  const body = readFileSync(siteFile);
+  // Apply SRI to HTTP responses. Plain local file previews keep ordinary script
+  // tags because file origins cannot complete anonymous CORS/SRI requests.
+  const source = readFileSync(siteFile, 'utf8');
+  const body = Buffer.from(source.replace(/<script src="\.\.\/(assets\/vendor\/[^"/]+\.js)"><\/script>/g, (tag,path) => {
+    const asset=runtimeManifest.assets.find(item => item.path===path);
+    if(!asset?.sha384) throw new Error('Missing runtime script integrity');
+    return `<script src="../${path}" integrity="sha384-${asset.sha384}" crossorigin="anonymous"></script>`;
+  }));
   const inline = /<script>([\s\S]*?)<\/script>/.exec(body.toString('utf8'));
   const inlineHash = inline ? ` 'sha256-${createHash('sha256').update(inline[1]).digest('base64')}'` : '';
   const policy = [
     "default-src 'self'",
-    `script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net${inlineHash}`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    `script-src 'self'${inlineHash}`,
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self'",
     "img-src 'self' data: blob:",
     "connect-src 'self'",
     "object-src 'none'",
@@ -120,7 +128,7 @@ async function readEvidence(req) {
   let sourceStatement;
   try { sourceStatement = decodeURIComponent(req.headers['x-evidence-source'] || '').trim(); }
   catch { throw { status: 422, error: 'Invalid source statement' }; }
-  if (sourceStatement.length < 10 || sourceStatement.length > 500 || /[\x00-\x1f]/.test(sourceStatement)) throw { status: 422, error: 'Describe the file source in 10 to 500 characters' };
+  if (sourceStatement.length < 10 || sourceStatement.length > 500 || /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(sourceStatement)) throw { status: 422, error: 'Describe the file source in 10 to 500 characters' };
   const validExtension = contentType === 'image/jpeg' ? /\.(jpg|jpeg)$/i.test(fileName) : fileName.toLowerCase().endsWith(extension);
   if (!fileName || fileName.length > 120 || fileName.includes('/') || fileName.includes('\\') || fileName.includes(':') || /[\x00-\x1f]/.test(fileName) || !validExtension) {
     throw { status: 422, error: 'Invalid file name or extension' };
@@ -154,7 +162,7 @@ function trustedHost(req, publicHost) {
 }
 
 export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlite', publicOrigin = process.env.PUBLIC_ORIGIN || '', reviewerToken = process.env.SPR_REVIEWER_TOKEN || '' } = {}) {
-  if (reviewerToken && reviewerToken.length < 32) throw new Error('SPR_REVIEWER_TOKEN must have at least 32 characters');
+  if (reviewerToken && (reviewerToken.length < 32 || !/^[A-Za-z0-9_-]+$/.test(reviewerToken))) throw new Error('SPR_REVIEWER_TOKEN must contain at least 32 URL-safe characters (letters, digits, _ or -)');
   const allowedOrigin = publicOrigin ? new URL(publicOrigin).origin : '';
   const publicHost = allowedOrigin ? new URL(allowedOrigin).host : '';
   const db = openDatabase(dbPath);

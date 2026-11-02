@@ -1,0 +1,29 @@
+{
+  "status": "inconclusive",
+  "exitCode": 2,
+  "scopes": [
+    {
+      "selector": ".process-layout",
+      "findings": [],
+      "checked": {
+        "controls": 0,
+        "paddedContainers": 0,
+        "compositionCrops": 0
+      },
+      "deferred": [],
+      "manual": [
+        "This snapshot checks box fit and authored insets; inspect optical centering, shape contours, interaction states and motion visually."
+      ]
+    }
+  ],
+  "errors": [
+    "resource: 404 http://127.0.0.1:49271/api/v1/personas",
+    "no supported visible controls or padded containers were checked"
+  ],
+  "manualReviewRequired": true,
+  "viewport": {
+    "width": 390,
+    "height": 1000
+  },
+  "url": "http://127.0.0.1:49271/site/index.html"
+}

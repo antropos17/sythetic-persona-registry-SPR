@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Synthetic Persona Registry</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap">
+<link rel="stylesheet" href="../assets/vendor/fonts.css">
 <style>
 /* Layout: an international registry. Navy bands carry the agency (header, hero with the 3D passport, footer); white pages carry the work (notices grid, records, forms). Colour-coded notices are the system's language; the passport is the one rich object. */
 :root{
@@ -288,6 +287,14 @@ td a{font-weight:700;color:var(--ink)}
 .steps li:last-child::after{display:none}
 .steps h3{font-stretch:112%;font-size:18px;font-weight:800;margin-bottom:4px}
 .steps p{color:var(--muted);font-size:15.5px}
+.process-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px, .9fr);gap:40px;align-items:start}
+.process-layout .steps{grid-template-columns:minmax(0,1fr);gap:4px}
+.process-layout .steps li{padding:0 0 20px 58px}
+.process-layout .steps li::before{position:absolute;left:0;top:0;margin:0}
+.process-layout .steps li::after{top:42px;left:19px;width:2px;height:auto;bottom:0;right:auto}
+.process-scene{display:block;max-width:400px;width:100%;justify-self:end}
+.process-scene img{display:block;width:100%;height:auto}
+@media (max-width:760px){.process-layout{grid-template-columns:minmax(0,1fr);gap:12px}.process-scene{justify-self:start}}
 @media (max-width:900px){.steps{grid-template-columns:minmax(0,1fr);gap:4px}.steps li{padding:0 0 22px 58px}.steps li::before{position:absolute;left:0;top:0;margin:0}.steps li::after{top:42px;left:19px;width:2px;height:auto;bottom:0;right:auto}}
 
 /* services */
@@ -911,10 +918,10 @@ h1,.esum,.fg,.in,.verdict{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 
 <div id="app"></div>
 <noscript><p style="padding:24px">The registry needs JavaScript to show notices and passports.</p></noscript>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" integrity="sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" integrity="sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js" integrity="sha384-toVdrLSMaw7Y55MowcKqkmFL/Ek6Sky62NOk0b5sDDZBu2wcoPyyQUt9unDVjXhL" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js" integrity="sha384-5UGTcMIxVUKFeJH0zOS3lqMAZNBG+fCXJbi3UglUq6ABO4MQJu6rxNa+MPP+qtwq" crossorigin="anonymous"></script>
+<script src="../assets/vendor/react.production.min.js"></script>
+<script src="../assets/vendor/react-dom.production.min.js"></script>
+<script src="../assets/vendor/htm.umd.js"></script>
+<script src="../assets/vendor/three.min.js"></script>
 <script>
 (function(){
 'use strict';
@@ -2097,15 +2104,14 @@ function Home({savedRecords, toggleSaved,comparisonIds,toggleComparison,catalog,
     <${Hero} />
     <${Notices} savedRecords=${savedRecords} toggleSaved=${toggleSaved} comparisonIds=${comparisonIds} toggleComparison=${toggleComparison} catalog=${catalog} setCatalog=${setCatalog} />
     <section className="sec" style=${{background:'var(--mist)'}} aria-labelledby="s-h"><div className="wrap">
-      <div className="sec-h"><div><h2 className="h2" id="s-h">How a persona would get a passport</h2>
-        <p className="sub">The proposed five-stage process. Evidence review, signatures and renewals are not active in this demo.</p></div></div>
-      <ol className="steps">
-        <li><h3>Application</h3><p>The rights holder registers the persona with reference images and says how it was made.</p></li>
-        <li><h3>Evidence</h3><p>Model files are hashed, licences and service terms are saved, channels are linked.</p></li>
-        <li><h3>Examination</h3><p>An examiner checks the evidence and compares the face with known real people.</p></li>
-        <li><h3>Passport issued</h3><p>The registrar signs the passport and a green notice appears in the register.</p></li>
-        <li><h3>Yearly renewal</h3><p>The holder confirms ownership and reports any change to the persona.</p></li>
-      </ol>
+      <div className="sec-h"><div><h2 className="h2" id="s-h">From a record to a private case</h2>
+        <p className="sub">Explore a fictional record, then see how an application or report can be reviewed.</p></div></div>
+      <div className="process-layout"><ol className="steps">
+        <li><h3>Inspect a record</h3><p>Explore a demo persona, its notice, claims and listed risks.</p></li>
+        <li><h3>Submit a private case</h3><p>Send an application or report and keep the case number and access key to return to it.</p></li>
+        <li><h3>Review evidence</h3><p>A configured reviewer can inspect the case, request or review evidence and record their assessment.</p></li>
+        <li><h3>Record a decision</h3><p>A reviewer records an outcome on the case. It does not issue a passport or change a public demo notice.</p></li>
+      </ol><picture className="process-scene"><source media="(max-width: 760px)" srcSet="../assets/demo/process-compact.png" /><img src="../assets/demo/process-desktop.png" width="800" height="600" alt="Illustration of a private case showing evidence received, an assessment and a recorded decision." /></picture></div>
     </div></section>
     <section className="sec" aria-labelledby="sv-h"><div className="wrap">
       <h2 className="h2 sr" id="sv-h">Services</h2>
@@ -2726,12 +2732,13 @@ function ReviewConsole(){
   const [draft,setDraft] = useState(''); const [token,setToken] = useState(''); const [cases,setCases] = useState([]); const [hasMore,setHasMore] = useState(false);
   const [selected,setSelected] = useState(null); const [next,setNext] = useState(''); const [note,setNote] = useState('');
   const [decisionMessage,setDecisionMessage] = useState('');
-  const [fileNotes,setFileNotes] = useState({}); const [error,setError] = useState(''); const [message,setMessage] = useState(''); const [busy,setBusy] = useState(false);
+  const [fileNotes,setFileNotes] = useState({}); const [fileMessages,setFileMessages] = useState({}); const [error,setError] = useState(''); const [message,setMessage] = useState(''); const [busy,setBusy] = useState(false);
   const loadCase = async (id, secret=token) => {
     const item=await privateJson('/api/v1/review/cases/'+id,secret);
-    setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setDecisionMessage(''); setError('');
+    setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setDecisionMessage(''); setFileMessages({}); setError('');
   };
   const refreshList = async (secret=token) => { const result=await privateJson('/api/v1/review/cases',secret); setCases(result.cases); setHasMore(result.cases.length===50); };
+  const selectCase = async id => { if(busy) return; setBusy(true); setError(''); try { await loadCase(id); } catch(e) { setError(e.message); } finally { setBusy(false); } };
   const signIn = async event => { event.preventDefault(); if(busy) return; setBusy(true); setError('');
     try { const secret=draft.trim(); await refreshList(secret); setToken(secret); setDraft(''); setMessage('Reviewer access open for this tab.'); }
     catch(e){ setError(e.message); }
@@ -2744,16 +2751,18 @@ function ReviewConsole(){
   const changeStatus = async event => { event.preventDefault(); if(!selected || busy) return; setBusy(true); setError(''); setMessage(''); setDecisionMessage('');
     try {
       const item=await privateJson('/api/v1/review/cases/'+selected.id+'/status',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:next,note})});
-      setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setDecisionMessage('Decision saved. Current status: '+(CASE_LABELS[item.status] || item.status)+'. Your message is visible to the submitter.'); await refreshList();
+      setSelected(item); setNext(REVIEW_NEXT[item.kind]?.[item.status]?.[0] || ''); setNote(''); setDecisionMessage('Decision saved. Current status: '+(CASE_LABELS[item.status] || item.status)+'.'+(note.trim() ? ' Your message is visible to the submitter.' : ''));
+      try { await refreshList(); } catch { setMessage('Decision saved, but the queue could not refresh. Refresh the queue to see its latest status.'); }
     }catch(e){ setError(e.message); } finally{ setBusy(false); }
   };
   const decideFile = async (item,decision) => { const reason=(fileNotes[item.id] || '').trim();
-    if(!reason){ setError('Write a reason for the evidence decision. The submitter will see it.'); return; }
-    setBusy(true); setError(''); setMessage('');
+    if(!reason){ setFileMessages(current => ({...current,[item.id]:'Write a reason for the evidence decision. The submitter will see it.'})); return; }
+    setBusy(true); setError(''); setMessage(''); setFileMessages(current => ({...current,[item.id]:''}));
     try {
       const updated=await privateJson('/api/v1/review/evidence/'+item.id+'/decision',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision,note:reason})});
-      setSelected(updated); setFileNotes(current => ({...current,[item.id]:''})); await refreshList(); setMessage('Evidence decision recorded.');
-    }catch(e){ setError(e.message); } finally{ setBusy(false); }
+      setSelected(updated); setFileNotes(current => ({...current,[item.id]:''})); setFileMessages(current => ({...current,[item.id]:'Evidence decision recorded.'}));
+      try { await refreshList(); } catch { setFileMessages(current => ({...current,[item.id]:'Evidence decision recorded, but the queue could not refresh. Refresh the queue to see its latest status.'})); }
+    }catch(e){ setFileMessages(current => ({...current,[item.id]:e.message})); } finally{ setBusy(false); }
   };
   const download = async item => { setError('');
     try {
@@ -2774,10 +2783,10 @@ function ReviewConsole(){
       <div className="fg"><label htmlFor="review-token">Operator access token</label><input id="review-token" className="in" type="password" value=${draft} onChange=${e => setDraft(e.target.value)} autoComplete="off" required /></div>
       <div><button className="btn" type="submit" disabled=${busy}>${busy?'Checking…':'Open review queue'}</button></div>
     </form>` : html`<div>
-      <div className="rowbtns" style=${{marginTop:'18px'}}><button className="btn line" type="button" onClick=${() => {setToken('');setSelected(null);setCases([]);setMessage('');}}>Close reviewer access</button><button className="tlink" type="button" onClick=${() => refreshList().catch(e => setError(e.message))}>Refresh queue</button></div>
+      <div className="rowbtns" style=${{marginTop:'18px'}}><button className="btn line" type="button" disabled=${busy} onClick=${() => {setToken('');setSelected(null);setCases([]);setMessage('');setError('');}}>Close reviewer access</button><button className="tlink" type="button" disabled=${busy} onClick=${() => refreshList().catch(e => setError(e.message))}>Refresh queue</button></div>
       <div className="review-grid">
         <aside aria-label="Case queue"><h2 className="h2" style=${{fontSize:'25px',marginBottom:'12px'}}>Cases</h2>
-          ${cases.length ? html`<ul className="review-queue">${cases.map(item => html`<li key=${item.id}><button type="button" aria-current=${selected?.id===item.id?'true':undefined} onClick=${() => loadCase(item.id).catch(e => setError(e.message))}><b className="mono">${item.id}</b><span>${item.kind} · ${CASE_LABELS[item.status] || item.status}</span></button></li>`)}</ul>` : html`<p>No cases yet.</p>`}
+          ${cases.length ? html`<ul className="review-queue">${cases.map(item => html`<li key=${item.id}><button type="button" disabled=${busy} aria-current=${selected?.id===item.id?'true':undefined} onClick=${() => selectCase(item.id)}><b className="mono">${item.id}</b><span>${item.kind} · ${CASE_LABELS[item.status] || item.status}</span></button></li>`)}</ul>` : html`<p>No cases yet.</p>`}
           ${hasMore && html`<button className="btn line" type="button" onClick=${loadMore} disabled=${busy} style=${{marginTop:'14px'}}>Load more</button>`}
         </aside>
         <div className="review-detail">${!selected ? html`<p>Select a case to review its answers and evidence.</p>` : html`<div>
@@ -2795,6 +2804,7 @@ function ReviewConsole(){
               <div className="rowbtns" style=${{marginTop:'12px'}}><button type="button" className="btn line" onClick=${() => download(item)}>Download privately</button></div>
               ${choices.length>0 && html`<div className="fg"><label htmlFor=${'file-note-'+item.id}>Reason for reviewing ${item.fileName}</label><textarea className="in" id=${'file-note-'+item.id} maxLength="1000" value=${fileNotes[item.id] || ''} onChange=${e => setFileNotes(current => ({...current,[item.id]:e.target.value}))}></textarea>
                 <div className="rowbtns"><button className="btn" type="button" disabled=${busy} onClick=${() => decideFile(item,'accepted')}>Accept evidence</button><button className="btn line" type="button" disabled=${busy} onClick=${() => decideFile(item,'rejected')}>Reject evidence</button></div></div>`}
+              <p role="status" aria-live="polite">${fileMessages[item.id] || ''}</p>
             </li>`)}</ul>` : html`<p className="sub">No evidence files uploaded. A declared evidence category is not a reviewed file.</p>`}
           </section>
           <section className="case-panel"><h3>Change case status</h3><p>Current status: <b>${CASE_LABELS[selected.status] || selected.status}</b></p>
