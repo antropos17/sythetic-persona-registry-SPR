@@ -1,4 +1,4 @@
-/* Layout: an international registry. Navy bands carry the agency (header, hero with the 3D passport, footer); white pages carry the work (notices grid, records, forms). Colour-coded notices are the system's language; the passport is the one rich object. */
+/* Navy frames the registry; white pages carry search, records and forms. Notice colours convey status. The profile passport is the one visually rich object. */
 :root {
   --navy: #0b2550;
   --navy-deep: #071a3a;

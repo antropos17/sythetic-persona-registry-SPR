@@ -371,27 +371,13 @@ function App() {
         <div className="fbrand">
           <${Emblem} size=${56} color="#B9C6DC" />
           <p style=${{ maxWidth: '52ch' }}>
-            The Synthetic Persona Registry is an independent register of AI personas. It is not part
-            of, or endorsed by, any government, police or intergovernmental body. Every entry on
-            this site is demonstration data. Portraits are AI-generated fictional illustrations, not
-            identity or review evidence.
+            Independent registry, not affiliated with government or police. All records and
+            AI-generated portraits are fictional demo data, not identity or rights evidence.
           </p>
         </div>
         <ul>
-          <li><a href="#notices">Notices</a></li>
-          <li><a href="#compare">Compare personas</a></li>
-          <li><a href="#apply">Register a persona</a></li>
           <li><a href="#report">Report a persona</a></li>
           <li><a href="#case-status">Case status</a></li>
-          <li>
-            <a
-              href="#home"
-              onClick=${() => {
-                catalogPosition.current = null;
-              }}
-              >Registry home</a
-            >
-          </li>
         </ul>
       </div>
     </footer>

@@ -156,7 +156,7 @@ function Viewer({ person, label }) {
     } else if (e.key === 'Tab') {
       const items = [
         ...widget.current.querySelectorAll(
-          'button:not(:disabled),select:not(:disabled),input:not(:disabled),[tabindex="0"]',
+          'button:not(:disabled),select:not(:disabled),input:not(:disabled),summary,[tabindex="0"]',
         ),
       ].filter((node) => node.getClientRects().length);
       const first = items[0],
@@ -214,10 +214,11 @@ function Viewer({ person, label }) {
             <button
               className="vbtn"
               type="button"
+              aria-label="Previous pages"
               disabled=${controls.busy || controls.spread === 0}
               onClick=${() => api.current.setSpread(controls.spread - 1)}
             >
-              Previous pages</button
+              Previous</button
             ><span className="vpage-status" role="status"
               >${controls.busy ? 'Turning pages…' : PASSPORT_SPREADS[controls.spread]}<small
                 >Spread ${controls.spread + 1} of ${PASSPORT_SPREADS.length}</small
@@ -225,94 +226,108 @@ function Viewer({ person, label }) {
             ><button
               className="vbtn"
               type="button"
+              aria-label="Next pages"
               disabled=${controls.busy || controls.spread === PASSPORT_SPREADS.length - 1}
               onClick=${() => api.current.setSpread(controls.spread + 1)}
             >
-              Next pages
+              Next
             </button>
           </div>
-          <div className="voptions">
-            <label className="vframe"
-              >View<select
-                value=${controls.framing}
-                onChange=${(e) => api.current.setFraming(e.target.value)}
-              >
-                <option value="spread">Whole passport</option>
-                <option value="left">Left page</option>
-                <option value="right">Right page</option>
-              </select></label
-            >
-            <div className="vzoom">
-              <button
-                className="vbtn"
-                type="button"
-                aria-label="Zoom out"
-                disabled=${controls.zoom <= 100}
-                onClick=${() => api.current.setZoom(controls.zoom - 10)}
-              >
-                −</button
-              ><label
-                ><span className="sr">Passport zoom</span
-                ><input
-                  type="range"
-                  min="100"
-                  max="250"
-                  step="1"
-                  value=${controls.zoom}
-                  aria-valuetext=${controls.zoom + ' percent'}
-                  onChange=${(e) => api.current.setZoom(Number(e.target.value))} /></label
-              ><output>${controls.zoom}%</output
-              ><button
-                className="vbtn"
-                type="button"
-                aria-label="Zoom in"
-                disabled=${controls.zoom >= 250}
-                onClick=${() => api.current.setZoom(controls.zoom + 10)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div className="vactions">
-            <div className="vmodes" role="group" aria-label="Drag action">
-              <button
-                className="vbtn"
-                type="button"
-                aria-pressed=${controls.mode === 'rotate'}
-                onClick=${() => api.current.setMode('rotate')}
-              >
-                Rotate</button
-              ><button
-                className="vbtn"
-                type="button"
-                aria-pressed=${controls.mode === 'pan'}
-                onClick=${() => api.current.setMode('pan')}
-              >
-                Move
-              </button>
-            </div>
-            <button className="vbtn" type="button" onClick=${toggle}>
-              ${controls.open ? 'Close passport' : 'Open passport'}</button
-            ><button className="vbtn" type="button" onClick=${() => api.current.reset()}>
-              Straighten</button
-            >${
+          <div className="vtoolbar">
+            ${
               !expanded &&
               html`<button
                 className="vbtn"
                 type="button"
                 ref=${expandButton}
+                aria-label="Enlarge passport"
                 onClick=${() => {
                   slotHeight.current = widget.current.getBoundingClientRect().height;
                   setExpanded(true);
                 }}
               >
-                Enlarge passport
+                Enlarge
               </button>`
             }
+            <details className="vsettings">
+              <summary>Adjust view</summary>
+              <div className="vsettings-body">
+                <div className="voptions">
+                  <label className="vframe"
+                    >View<select
+                      value=${controls.framing}
+                      onChange=${(e) => api.current.setFraming(e.target.value)}
+                    >
+                      <option value="spread">Whole passport</option>
+                      <option value="left">Left page</option>
+                      <option value="right">Right page</option>
+                    </select></label
+                  >
+                  <div className="vzoom">
+                    <button
+                      className="vbtn"
+                      type="button"
+                      aria-label="Zoom out"
+                      disabled=${controls.zoom <= 100}
+                      onClick=${() => api.current.setZoom(controls.zoom - 10)}
+                    >
+                      −</button
+                    ><label
+                      ><span className="sr">Passport zoom</span
+                      ><input
+                        type="range"
+                        min="100"
+                        max="250"
+                        step="1"
+                        value=${controls.zoom}
+                        aria-valuetext=${controls.zoom + ' percent'}
+                        onChange=${(e) => api.current.setZoom(Number(e.target.value))} /></label
+                    ><output>${controls.zoom}%</output
+                    ><button
+                      className="vbtn"
+                      type="button"
+                      aria-label="Zoom in"
+                      disabled=${controls.zoom >= 250}
+                      onClick=${() => api.current.setZoom(controls.zoom + 10)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="vactions">
+                  <div className="vmodes" role="group" aria-label="Drag action">
+                    <button
+                      className="vbtn"
+                      type="button"
+                      aria-pressed=${controls.mode === 'rotate'}
+                      onClick=${() => api.current.setMode('rotate')}
+                    >
+                      Rotate</button
+                    ><button
+                      className="vbtn"
+                      type="button"
+                      aria-pressed=${controls.mode === 'pan'}
+                      onClick=${() => api.current.setMode('pan')}
+                    >
+                      Move
+                    </button>
+                  </div>
+                  <button className="vbtn" type="button" onClick=${toggle}>
+                    ${controls.open ? 'Close passport' : 'Open passport'}</button
+                  ><button className="vbtn" type="button" onClick=${() => api.current.reset()}>
+                    Straighten
+                  </button>
+                </div>
+              </div>
+            </details>
           </div>
         </fieldset>
         <p className="vhint" id=${uid + '-help'}>
-          ${state === 'fallback' ? '3D is not available in this browser. The data page is shown above.' : expanded ? 'Drag to rotate; use Move to reposition. Pinch with two fingers to zoom. Arrow keys turn, +/− zoom, Page Up/Down turn pages. Escape closes this view.' : 'Drag sideways to rotate. Use View for a readable page. Arrow keys turn, +/− zoom, Page Up/Down turn pages.'}
+          ${state === 'fallback' ? '3D is unavailable. Showing the data page.' : expanded ? 'Drag to rotate. Escape closes this view.' : 'Drag to rotate. Use the arrows to turn pages.'}
+          <span className="sr"
+            >Arrow keys rotate, +/− zoom, Page Up/Down turn pages. Adjust view contains zoom,
+            framing and movement controls.</span
+          >
         </p>
       </div>
     </div>

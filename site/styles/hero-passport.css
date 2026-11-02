@@ -273,6 +273,34 @@
   gap: 10px 16px;
   align-items: end;
 }
+.vtoolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 16px;
+}
+.vsettings {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+.vsettings > summary {
+  min-height: 44px;
+  padding: 10px 0;
+  cursor: pointer;
+  color: var(--on-navy-2);
+  font-size: 14px;
+}
+.vsettings[open] > summary {
+  color: #fff;
+}
+.vsettings-body {
+  display: grid;
+  gap: 12px;
+  padding-top: 8px;
+}
+.vbox.is-expanded .vtoolbar {
+  flex: 1 1 320px;
+}
 .vframe {
   display: flex;
   align-items: center;

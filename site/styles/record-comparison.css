@@ -33,7 +33,7 @@
   }
 }
 .rec-photo {
-  width: 132px;
+  width: 104px;
   aspect-ratio: 4/5;
   object-fit: cover;
   object-position: 50% 32%;
@@ -49,7 +49,7 @@
 .rec-head h1 {
   font-stretch: 122%;
   font-weight: 850;
-  font-size: clamp(34px, 5vw, 64px);
+  font-size: clamp(32px, 5vw, 48px);
   line-height: 1.08;
   letter-spacing: -0.015em;
   overflow-wrap: break-word;
@@ -121,8 +121,7 @@
 .rec-summary-risks li + li {
   margin-top: 6px;
 }
-.rec-summary-risks p,
-.rec-summary-limit {
+.rec-summary-risks p {
   font-size: 14px;
   color: var(--muted);
   margin-top: 8px;
@@ -133,10 +132,6 @@
   min-height: 44px;
   font-size: 14px;
   font-weight: 700;
-}
-.rec-summary-limit {
-  padding-top: 14px;
-  border-top: 1px solid var(--rule);
 }
 .rec-info {
   grid-area: info;
@@ -823,11 +818,6 @@
 .claim-item {
   border-bottom: 1px solid var(--rule);
 }
-.claim-item summary {
-  cursor: pointer;
-  padding: 18px 6px;
-  min-height: 56px;
-}
 .claim-summary {
   display: inline-flex;
   align-items: baseline;
@@ -1122,12 +1112,6 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
-  .record-nav .wrap {
-    gap: 0 18px;
-  }
-  .record-nav a {
-    font-size: 14px;
-  }
   .record-risk-link {
     margin-left: 0;
     display: flex;
@@ -1335,4 +1319,64 @@
 .pager .nx {
   text-align: right;
   margin-left: auto;
+}
+/* Compact continuous profile; comparison styles remain unchanged. */
+.rec-top {
+  padding-bottom: 0;
+}
+.rec-head {
+  gap: 12px 20px;
+  padding-block: 16px 20px;
+}
+.rec-actions {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
+.record-check-action {
+  margin-top: 16px;
+}
+.rec-main-actions {
+  align-items: center;
+}
+.rec-main-actions .tlink {
+  min-height: 44px;
+}
+.rec-summary .notice-box {
+  margin-top: 10px;
+}
+.rec-summary-risks {
+  margin-top: 14px;
+  padding-top: 12px;
+}
+.rec-about {
+  margin-top: 12px;
+  padding: 12px 0;
+}
+.rec-social {
+  margin-top: 14px;
+}
+.record-section {
+  margin-top: clamp(28px, 4vw, 44px);
+}
+.claim-list {
+  margin-top: 14px;
+}
+.claim-item {
+  padding: 13px 0;
+}
+.claim-summary {
+  width: 100%;
+}
+.claim-body {
+  padding: 5px 0 0;
+}
+.claim-date {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 5px;
+}
+.claim-issue {
+  margin-top: 7px;
 }
