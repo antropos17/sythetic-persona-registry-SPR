@@ -1,3 +1,4 @@
+import { PublicationPanel } from './publication.mjs';
 import { html, useState } from '../runtime.mjs';
 import { privateJson } from '../domain/api.mjs';
 import { createReviewActions } from '../domain/review-actions.mjs';
@@ -230,6 +231,7 @@ function ReviewConsole() {
                             )}
                           </dl>
                         </section>
+                        ${selected.kind === 'application' && selected.status === 'approved' && html`<${PublicationPanel} key=${selected.id} caseId=${selected.id} token=${token} reviewer=${true} payload=${selected.payload} />`}
                         <section className="case-panel">
                           <h3>Evidence</h3>
                           ${

@@ -1,6 +1,6 @@
 # Synthetic Persona Registry
 
-SPR is a demonstration registry for synthetic personas. It presents eight example records, colour-coded notices, and a 3D passport. It is an independent prototype, not a government or police service. Every listed persona and notice is demonstration data.
+SPR is an independent preview service for synthetic-persona records, not a government or police service. It includes eight fictional examples and a versioned publication workflow for owner-consented, operator-reviewed submissions. The examples and their 3D passports remain demonstration data; published submissions do not independently establish identity, ownership or legal rights.
 
 ## Run locally
 
@@ -26,7 +26,7 @@ npm test
 | `site/index.html`, `site/app/`, `site/styles/` | Client entry page, modular interface source, and styles. |
 | `site/dist/` | Checked-in esbuild client output and compressed variants. |
 | `assets/` | Registry emblem, fictional full-length studio images, and matching face portraits. |
-| `data/personas.json` | Canonical source for the eight public demo records. |
+| `data/personas.json` | Canonical source for the eight fictional examples. Published submissions live in SQLite. |
 | `data/persona-passport.v0.1.json` | Example evidence and model bill of materials, not a validation schema. |
 | `data/media-provenance.json` | Pinned SHA-256 digests and explicit origin claims for the 16 demo images. |
 | `scripts/media-manifest.mjs` | Rebuild or check the image digest manifest. |
@@ -53,7 +53,9 @@ An unfinished application is saved in that browser's local storage so it can be 
 
 After submission, the visitor receives a case number and a private link. The link contains a 256-bit random access token in the URL fragment; only its SHA-256 hash is stored in SQLite. A case number alone cannot read the case. The private page shows status, reviewer messages, evidence metadata, and a timeline. The visitor can attach up to five JPEG, PNG, or PDF files, each at most 5 MiB, with a source or issuer statement. Files are stored as private SQLite blobs and are never served through the public static-file route. A reviewer can download them only through an authenticated endpoint. Keep the private link secure: it grants case access, and the service does not send it by email.
 
-Set a `SPR_REVIEWER_TOKEN` of at least 32 random characters in the process environment to enable the local review console at `/#review`. The key is held only in the browser tab's memory. The reviewer can inspect submissions, mark evidence accepted or rejected with a reason, request more evidence, and close a case with a message visible to the submitter. An application cannot be approved without accepted uploaded evidence; a licensed likeness also requires accepted consent evidence. Approval is a case decision, not public registration or passport issuance. See [review and provenance operations](docs/REVIEW-AND-PROVENANCE.md).
+Set a `SPR_REVIEWER_TOKEN` of at least 32 random characters in the process environment to enable the local review console at `/#review`. The key is held only in the browser tab's memory. The reviewer can inspect submissions, mark evidence accepted or rejected with a reason, request more evidence, and close a case with a message visible to the submitter. An application cannot be approved without accepted uploaded evidence; a licensed likeness also requires accepted consent evidence. Approval alone does not publish anything. See [review and provenance operations](docs/REVIEW-AND-PROVENANCE.md).
+
+For an approved application, the reviewer prepares an explicit public draft. The private case shows its exact fields and version; publication requires the case-link holder's unchecked-by-default consent to that version and SHA-256 digest. Proposed updates stay private until another review and fresh consent. Revocation is terminal for that passport ID, removes its former content from public responses and the catalog, and retains a minimal revoked-status page at the same URL. Email, case IDs, evidence metadata/files and private review messages are never copied into public records. Holder and persona type remain fixed; ownership transfer or new evidence collection requires a separate application. See [the publication contract](docs/PUBLICATION-CONTRACT.md).
 
 ## API
 

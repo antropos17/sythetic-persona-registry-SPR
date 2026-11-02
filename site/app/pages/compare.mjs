@@ -54,7 +54,9 @@ function Compare({ ids, onlyDifferences = false, toast }) {
       'Recorded proof level',
       (p) =>
         html`<p>${p.level}</p>
-          <p className="compare-muted">Demo label. No new evidence check.</p>`,
+          <p className="compare-muted">
+            ${p.recordType === 'published' ? 'Operator review does not verify identity or rights.' : 'Demo label. No new evidence check.'}
+          </p>`,
     ],
     [
       'dates',
@@ -92,7 +94,7 @@ function Compare({ ids, onlyDifferences = false, toast }) {
           ? html`<ul>
               ${p.risks.map((risk, index) => html`<li key=${index}>${risk}</li>`)}
             </ul>`
-          : html`<p>No open risks listed in this demo record.</p>
+          : html`<p>No open risks listed in this record.</p>
               <p className="compare-muted">
                 This does not guarantee that every risk is resolved.
               </p>`,
@@ -107,7 +109,7 @@ function Compare({ ids, onlyDifferences = false, toast }) {
     ],
     [
       'latest',
-      'Latest demo event',
+      'Latest recorded event',
       (p) =>
         html`<p>${p.history[0]?.e || 'No event supplied'}</p>
           <p className="compare-muted">${p.history[0]?.d || 'Date not supplied'}</p>`,
@@ -122,7 +124,8 @@ function Compare({ ids, onlyDifferences = false, toast }) {
     </ol>
     <h1 id="h1" tabindex="-1">Compare personas</h1>
     <p className="sub">
-      Compare two fictional registry records, including their notices, rights claims and open risks.
+      Compare fictional samples and operator-reviewed service previews. Neither verifies identity or
+      rights.
     </p>
     <button
       className="compare-jump"
@@ -175,7 +178,9 @@ function Compare({ ids, onlyDifferences = false, toast }) {
       >
     </div>
     <p className="compare-announcement" role="status">
-      Comparing ${first.name} and ${second.name}. Showing ${visibleRows.length} of ${rows.length} fields${onlyDifferences ? ' with different values' : ''}. All entries are demonstration data.
+      Comparing ${first.name} and ${second.name}. Showing ${visibleRows.length} of ${rows.length}
+      fields${onlyDifferences ? ' with different values' : ''}. Sample records are fictional;
+      published submissions are service previews.
     </p>
     <div
       className="compare-head-grid"

@@ -11,11 +11,23 @@ The console uses a single shared operator key. It has no account recovery, staff
 1. A visitor submits an application or report. The response contains a random case ID and an independent 256-bit access token. SQLite stores the token's SHA-256 hash; the browser displays a private URL fragment containing the token. The link is shown once in the confirmation screen and is not emailed or stored in local storage.
 2. A holder of that link can read status, evidence metadata, and public reviewer messages, and can upload up to five evidence files while the case remains open. The case endpoint never returns the original application or report payload.
 3. A reviewer opens the private queue, reads the submission, downloads evidence, and records a reason when accepting or rejecting each file. Reviewer messages and decisions appear in the case history. The UI labels these messages as visible to the submitter.
-4. The reviewer changes the case status through the allowed transitions. Closing or requesting evidence requires a message. An application approval requires at least one accepted uploaded file; a likeness application requires an accepted consent file. Approval does not publish a record or alter a demonstration notice.
+4. The reviewer changes the case status through the allowed transitions. Closing or requesting evidence requires a message. An application approval requires at least one accepted uploaded file; a likeness application requires an accepted consent file. Approval alone does not publish a record or alter a demonstration notice.
 
 Allowed application flow: `received → reviewing / needs_evidence / rejected`; `reviewing → needs_evidence / approved / rejected`; `needs_evidence → reviewing / rejected`. Allowed report flow: `received → reviewing / needs_evidence / dismissed`; `reviewing → needs_evidence / resolved / dismissed`; `needs_evidence → reviewing / resolved / dismissed`. Final decisions are closed in this version.
 
 Old submissions migrate in place. Since the previous API never issued owner tokens, their public case page remains inaccessible. They are visible to a configured reviewer. Do not infer ownership from a case number alone.
+
+## Publication operations
+
+For an approved application, prepare a public draft from the eight whitelisted fields in [the publication contract](PUBLICATION-CONTRACT.md). The case-link holder must preview and explicitly consent to the exact version and digest. Approval alone is insufficient. Possession of the private link identifies a capability holder, not an independently verified legal owner.
+
+Owner text updates require another review and fresh consent. The current version remains public meanwhile. Holder and nature are fixed; ownership transfer or new evidence collection requires a separate application. There is a persistent burst limit of 30 new revisions per rolling hour. It does not block publication or revocation.
+
+Revocation is terminal for the passport ID and remains available during a pending update. The reason is explicitly public. The public URL retains only a minimal status tombstone, with no former content. Private versions and audit history remain in the private database and snapshots; revocation is not an erasure of private records.
+
+Backups include publication versions, consent events and revocation state. Restoring an older snapshot also restores its older publication state: keep the newer database and audit history, and reconcile subsequent withdrawals before enabling public traffic. Do not expose a pre-revocation snapshot as current state. The automated restoration test covers a snapshot containing a revoked passport; external cross-backup revocation reconciliation is an operator responsibility.
+
+The CI and container-publication workflows run a synthetic application/evidence/review/consent/update/revoke cycle against the disposable runtime container. Its synthetic operator key is a test configuration only and is not baked into the published image.
 
 ## Evidence handling
 

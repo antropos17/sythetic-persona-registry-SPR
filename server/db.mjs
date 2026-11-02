@@ -2,6 +2,7 @@ import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
+import { publicationStore } from './publication.mjs';
 
 const transitions = {
   application: {
@@ -99,7 +100,10 @@ export function openDatabase(path = './var/spr.sqlite') {
     return value;
   }
 
+  const publication = publicationStore(db, transaction, rowById, rowByAccess, tokenHash, event);
+
   return {
+    publication,
     create(kind, payload) {
       const prefix = kind === 'application' ? 'SPR' : 'RPT';
       const createdAt = new Date().toISOString();
