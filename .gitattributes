@@ -6,3 +6,5 @@
 *.html text eol=lf
 Dockerfile text eol=lf
 *.png binary
+# Preserve verified upstream bytes, including licence formatting, on all hosts.
+assets/vendor/** -text whitespace=-blank-at-eol

@@ -4,7 +4,7 @@ SPR is a demonstration registry for synthetic personas. It presents eight exampl
 
 ## Run locally
 
-Requires Node.js 24.11 or later in the 24.x line. No npm dependencies or build step are required.
+Requires Node.js 24.11 or later in the 24.x line. No npm dependencies or build step are required. The checked-in scripts and fonts are self-hosted and verified by `npm run check`; page startup does not depend on a CDN.
 
 ```bash
 npm start
@@ -101,6 +101,10 @@ The named volume retains SQLite data across container replacement. The image run
 `.github/workflows/ci.yml` runs syntax and API tests on pushes and pull requests, then builds and smoke-tests the runtime image. `.github/workflows/release.yml` is a manual workflow that repeats validation, tests the **same image** it publishes, and pushes it to GHCR under the immutable commit SHA. It does not deploy to a host; no host has been selected. Both workflows pin GitHub Actions to commit SHAs and use limited token permissions. Dependabot proposes updates to Docker and workflow dependencies.
 
 `.github/workflows/ai_review.yml` provides advisory comments on internal PRs when opened or updated. It requires the `OPENAI_API_KEY` secret and `AI_REVIEW_MODEL` variable, skips forks and Dependabot, and tolerates reviewer failures. Keep its job out of required merge checks. See [AI review setup and limits](docs/AI-REVIEW.md).
+
+## Release preparation
+
+See [release readiness](docs/RELEASE-READINESS.md) for the verified demonstration scope, remaining public-service requirements, release procedure and rollback. Use `npm run backup -- <existing-source.sqlite> <new-backup.sqlite>` for a verified SQLite snapshot; protect snapshots as private case data and restore into a fresh path. See [operations](docs/REVIEW-AND-PROVENANCE.md).
 
 ## Continuing development
 
