@@ -218,6 +218,10 @@ function sameOrigin(req, publicOrigin) {
   } catch { return false; }
 }
 
+function sameOriginPublication(req, publicOrigin) {
+  return req.headers['sec-fetch-site'] !== 'cross-site' && sameOrigin(req, publicOrigin);
+}
+
 function trustedHost(req, publicHost) {
   const raw = req.headers.host;
   if (typeof raw !== 'string') return false;
@@ -241,19 +245,24 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
       const path = url.pathname;
       if (!trustedHost(req, publicHost)) return json(res, 421, { error: 'Host is not allowed' });
       if (req.method === 'GET' && path === '/api/v1/health') return json(res, 200, { status: 'ok' });
-      if (req.method === 'GET' && path === '/api/v1/personas') return json(res, 200, registry, { 'Cache-Control': 'public, max-age=60' });
-      const record = /^\/api\/v1\/personas\/(PP-[A-Z]{2}-\d{4})$/.exec(path);
-      if (req.method === 'GET' && record) {
-        const person = byId.get(record[1]);
-        return person ? json(res, 200, person, { 'Cache-Control': 'public, max-age=60' }) : json(res, 404, { error: 'Record not found' });
+      if (req.method === 'GET' && path === '/api/v1/personas') return json(res, 200, { ...registry, personas: [...registry.personas, ...db.publication.listPublic()] });
+      const passport = /^\/api\/v1\/passports\/(PP-SPR-[A-F0-9]{12})$/.exec(path);
+      if (req.method === 'GET' && passport) {
+        const result = db.publication.getPublic(passport[1]);
+        return result ? json(res, 200, result) : json(res, 404, { error: 'Record not found' });
       }
-      const check = /^\/api\/v1\/passports\/(PP-[A-Z]{2}-\d{4})\/check$/.exec(path);
+      const record = /^\/api\/v1\/personas\/(PP-(?:[A-Z]{2}-\d{4}|SPR-[A-F0-9]{12}))$/.exec(path);
+      if (req.method === 'GET' && record) {
+        const person = byId.get(record[1]) || db.publication.getPublic(record[1]);
+        return person && person.status !== 'revoked' ? json(res, 200, person) : json(res, 404, { error: 'Record not found' });
+      }
+      const check = /^\/api\/v1\/passports\/(PP-(?:[A-Z]{2}-\d{4}|SPR-[A-F0-9]{12}))\/check$/.exec(path);
       if (req.method === 'GET' && check) {
-        const person = byId.get(check[1]);
+        const person = byId.get(check[1]) || db.publication.getPublic(check[1]);
         if (!person) return json(res, 404, { error: 'Record not found' });
         return json(res, 200, {
           passportId: person.id, registryRecordFound: true, notice: person.status,
-          evidenceLevel: person.level, openRiskCount: person.risks.length,
+          ...(person.recordType === 'published' ? {} : { evidenceLevel: person.level, openRiskCount: person.risks.length }),
           registryMode: 'demonstration', cryptographicSignatureVerified: false,
           faceComparisonPerformed: false, checkedAt: new Date().toISOString()
         });
@@ -273,6 +282,19 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
               integrity: actualSha256 === null ? 'missing' : actualSha256 === asset.sha256 ? 'matches_manifest' : 'mismatch', checkedAt };
           })
         });
+      }
+      const ownerPublication = new RegExp(`^/api/v1/cases/(${caseIdPattern})/publication(?:/(updates|publish|revoke))?$`).exec(path);
+      if (ownerPublication && (req.method === 'GET' || req.method === 'POST')) {
+        const token = bearer(req);
+        if (!tokenPattern.test(token) || !db.getCase(ownerPublication[1], token)) return json(res, 404, { error: 'Case not found' });
+        if (req.method === 'GET' && !ownerPublication[2]) return json(res, 200, db.publication.getOwner(ownerPublication[1], token));
+        if (req.method === 'POST' && ownerPublication[2]) {
+          if (!sameOriginPublication(req, allowedOrigin)) return json(res, 403, { error: 'Origin is not allowed' });
+          const body = await readJson(req);
+          if (ownerPublication[2] === 'updates') return json(res, 201, db.publication.createOwner(ownerPublication[1], token, body));
+          if (ownerPublication[2] === 'publish') return json(res, 200, db.publication.publish(ownerPublication[1], token, body));
+          return json(res, 200, db.publication.revoke(ownerPublication[1], token, body));
+        }
       }
       const caseMatch = new RegExp(`^/api/v1/cases/(${caseIdPattern})$`).exec(path);
       if (req.method === 'GET' && caseMatch) {
@@ -296,6 +318,15 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
           const offset = Number(url.searchParams.get('offset') || '0');
           if (!Number.isSafeInteger(offset) || offset < 0 || offset > 1_000_000) return json(res, 400, { error: 'Invalid offset' });
           return json(res, 200, { cases: db.listReview(offset), offset });
+        }
+        const reviewPublication = new RegExp(`^/api/v1/review/cases/(${caseIdPattern})/publication(?:/(drafts|review))?$`).exec(path);
+        if (reviewPublication) {
+          if (req.method === 'GET' && !reviewPublication[2]) return json(res, 200, db.publication.getReviewer(reviewPublication[1]));
+          if (req.method === 'POST' && reviewPublication[2]) {
+            if (!sameOriginPublication(req, allowedOrigin)) return json(res, 403, { error: 'Origin is not allowed' });
+            const body = await readJson(req);
+            return reviewPublication[2] === 'drafts' ? json(res, 201, db.publication.createReviewer(reviewPublication[1], body)) : json(res, 200, db.publication.review(reviewPublication[1], body));
+          }
         }
         const reviewCase = new RegExp(`^/api/v1/review/cases/(${caseIdPattern})$`).exec(path);
         if (req.method === 'GET' && reviewCase) {

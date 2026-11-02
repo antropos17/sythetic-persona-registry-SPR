@@ -945,3 +945,50 @@ textarea.in {
     padding: 12px 14px;
   }
 }
+.publication-preview {
+  margin: 16px 0;
+  display: grid;
+  gap: 10px;
+}
+.publication-preview div {
+  min-width: 0;
+}
+.publication-preview dt {
+  font-weight: 700;
+}
+.publication-preview dd {
+  margin: 3px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.publication-edit {
+  margin-top: 20px;
+}
+.publication-edit summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.publication-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0;
+}
+.publication-check input {
+  flex: none;
+  margin-top: 4px;
+}
+.publication-panel,
+.public-passport {
+  overflow-wrap: anywhere;
+}
+.public-passport-refresh {
+  min-height: 44px;
+  margin-block: 8px;
+}
+.public-passport-limits {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 20px;
+  max-width: 65ch;
+}

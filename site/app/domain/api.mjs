@@ -20,7 +20,11 @@ async function privateJson(path, token, options = {}) {
     headers: { ...options.headers, Authorization: 'Bearer ' + token },
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || 'The request failed. Please try again.');
+  if (!response.ok) {
+    const error = new Error(data.error || 'The request failed. Please try again.');
+    error.status = response.status;
+    throw error;
+  }
   return data;
 }
 

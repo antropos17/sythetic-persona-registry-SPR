@@ -39,12 +39,13 @@ async function rawRequest(url, { method = 'GET', headers = {}, body = '' } = {})
   });
 }
 
-test('the bundled interface retains its entry point and demo disclosures', () => {
+test('the bundled interface retains its entry point and service-preview disclosures', () => {
   const page = readFileSync(new URL('../site/index.html', import.meta.url), 'utf8');
   assert.match(page, /src="\.\/dist\/app\.js"/);
   const shell = readFileSync(new URL('../site/app/shell.mjs', import.meta.url), 'utf8');
   assert.match(shell, /Independent registry of AI personas/);
-  assert.match(shell, /Demo data/);
+  assert.match(shell, /Service preview/);
+  assert.match(shell, /Neither verifies identity or rights/);
   globalThis.location={hash:'#%E0%A4%A'};
   assert.deepEqual(parse(), {name:'home'});
 });

@@ -13,12 +13,15 @@ function Hero() {
   return html`<section className="home-intro" aria-labelledby="h1">
     <div className="wrap">
       <h1 id="h1" tabindex="-1">Find an AI persona</h1>
-      <p>These fictional demo records do not verify identity or evidence.</p>
+      <p>
+        Fictional samples and operator-reviewed service previews do not verify identity or rights.
+      </p>
     </div>
   </section>`;
 }
 
 function Notices({
+  registryRevision,
   savedRecords,
   toggleSaved,
   comparisonIds,
@@ -68,7 +71,7 @@ function Notices({
   });
   const search = useMemo(
     () => (normalizeSearch(q) ? searchPeople(q) : { matches: PEOPLE, suggestions: [] }),
-    [q],
+    [q, registryRevision],
   );
   const matches = search.matches;
   const rows = useMemo(() => {
@@ -172,7 +175,7 @@ function Notices({
   };
   return html`<section id="notices" className="sec" aria-labelledby="n-h">
     <div className="wrap">
-      <h2 className="sr" id="n-h" tabindex="-1">Demo records</h2>
+      <h2 className="sr" id="n-h" tabindex="-1">Registry records</h2>
       <div className="catalog-search-row">
         <div className="catalog-search">
           <label className="sr" htmlFor="nq">Find a persona</label
@@ -201,7 +204,8 @@ function Notices({
               onClick=${() => setNotice((n) => (n === s ? 'All' : s))}
             >
               <span className="nm"
-                ><span>${NOTICE[s].meaning}</span><span className="ct">${counts[s] || 0}</span></span
+                ><span>${NOTICE[s].meaning}</span
+                ><span className="ct">${counts[s] || 0}</span></span
               >
             </button>`,
         )}
@@ -373,7 +377,7 @@ function Notices({
                 <div className="ph">
                   <img
                     src=${p.src}
-                    alt=${'Portrait of ' + p.name}
+                    alt=${p.recordType === 'published' ? '' : 'Portrait of ' + p.name}
                     loading="lazy"
                     decoding="async"
                   />
@@ -412,7 +416,7 @@ function Notices({
         html`<div className="tbl-box">
           <table>
             <caption className="sr">
-              Notices. Demonstration entries.
+              Registry entries, including fictional samples and service previews.
             </caption>
             <thead>
               <tr>
@@ -433,7 +437,7 @@ function Notices({
                     <td>
                       <img
                         className="thumb"
-                        src=${'../assets/portrait-thumbs/' + p.id + '.jpg'}
+                        src=${p.recordType === 'published' ? p.src : '../assets/portrait-thumbs/' + p.id + '.jpg'}
                         alt=""
                         loading="lazy"
                         decoding="async"
@@ -501,10 +505,19 @@ function Notices({
   </section>`;
 }
 
-function Home({ savedRecords, toggleSaved, comparisonIds, toggleComparison, catalog, setCatalog }) {
+function Home({
+  registryRevision,
+  savedRecords,
+  toggleSaved,
+  comparisonIds,
+  toggleComparison,
+  catalog,
+  setCatalog,
+}) {
   return html`<div>
     <${Hero} />
     <${Notices}
+      registryRevision=${registryRevision}
       savedRecords=${savedRecords}
       toggleSaved=${toggleSaved}
       comparisonIds=${comparisonIds}
@@ -518,7 +531,10 @@ function Home({ savedRecords, toggleSaved, comparisonIds, toggleComparison, cata
           <a href="#apply">Register a persona</a> <span aria-hidden="true">·</span>
           <a href="#report">Report a persona</a>
         </p>
-        <p>A case decision does not issue a passport or change a public demo notice.</p>
+        <p>
+          Approval alone does not publish a passport. The case-link holder must review and consent
+          to the exact public version.
+        </p>
       </div>
     </section>
   </div>`;

@@ -43,7 +43,7 @@ const CASE_STATUS_TEXT = {
   needs_evidence:
     'A reviewer requested more evidence. Add a file below and include where it came from.',
   approved:
-    'The application was approved after review. This decision does not create a public passport or change a demo record.',
+    'The application is approved. A reviewer can prepare a public draft; only your explicit consent publishes it.',
   rejected:
     'The application was closed after review. Read the case history for the reviewer’s message.',
   resolved:
@@ -69,6 +69,15 @@ function latestReviewerMessage(events, status) {
 function caseEventTitle(item, kind) {
   if (item.action === 'submitted')
     return kind === 'application' ? 'Application submitted' : 'Report submitted';
+  const publicationTitles = {
+    publication_revision_created: 'Publication revision prepared',
+    publication_approved: 'Publication update approved',
+    publication_rejected: 'Publication update rejected',
+    publication_consented: 'Publication consent recorded',
+    publication_published: 'Passport published',
+    publication_revoked: 'Passport revoked',
+  };
+  if (publicationTitles[item.action]) return publicationTitles[item.action];
   if (item.action === 'evidence_uploaded') return 'Evidence uploaded';
   if (item.action === 'evidence_accepted') return 'Evidence accepted';
   if (item.action === 'evidence_rejected') return 'Evidence rejected';

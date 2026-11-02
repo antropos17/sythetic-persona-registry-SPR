@@ -1,4 +1,13 @@
 const NOTICE = {
+  Published: {
+    name: 'Service preview',
+    key: 'published',
+    nc: 'var(--muted)',
+    nt: 'var(--g-tint)',
+    ni: 'var(--g-ink)',
+    meaning: 'Operator reviewed',
+    advice: 'Review does not verify identity or rights.',
+  },
   Valid: {
     name: 'Green notice',
     key: 'green',
@@ -42,6 +51,8 @@ const ORDER = ['Valid', 'Under review', 'Suspended', 'Revoked'];
 const nvars = (s) => ({ '--nc': NOTICE[s].nc, '--nt': NOTICE[s].nt, '--ni': NOTICE[s].ni });
 
 function recordAdvice(person) {
+  if (person.recordType === 'published')
+    return 'Operator review does not verify identity or rights.';
   const count = person.risks.length;
   const risks = count
     ? count + ' open risk' + (count === 1 ? '' : 's')

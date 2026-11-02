@@ -21,7 +21,7 @@ function handleRouteLink(event, noticesRoute = 'notices') {
   if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
   const hash = link.getAttribute('href');
   if (
-    !/^#(?:home|notices|apply|report|review|case-status|case|compare|PP-[A-Z]{2}-\d{4})(?:$|[/?])/i.test(
+    !/^#(?:home|notices|apply|report|review|case-status|case|compare|PP-(?:[A-Z]{2}-\d{4}|SPR-[A-F0-9]{12}))(?:$|[/?])/i.test(
       hash,
     )
   )
@@ -57,6 +57,9 @@ function parse() {
       ids: comparison.slice(1, 3),
       ...(comparison[3] ? { differences: true } : {}),
     };
+  const publicSection =
+    /^(PP-SPR-[A-F0-9]{12})\/(overview|check|risks|basis|examples|images|history)$/i.exec(h);
+  if (publicSection) return { name: 'passport', id: publicSection[1].toUpperCase() };
   const recordSection = /^([^/]+)\/(overview|check|risks|basis|examples|images|history)$/.exec(h);
   if (recordSection && byId(recordSection[1].toUpperCase())) {
     const id = recordSection[1].toUpperCase();
@@ -65,6 +68,7 @@ function parse() {
       : { name: 'record', id, section: recordSection[2] };
   }
   const id = h.toUpperCase();
+  if (/^PP-SPR-[A-F0-9]{12}$/.test(id)) return { name: 'passport', id };
   if (byId(id)) return { name: 'record', id };
   if (h === 'apply' || h === 'report' || h === 'notices' || h === 'case-status' || h === 'review')
     return { name: h };

@@ -1,10 +1,11 @@
+import { PublicPassport } from './pages/public-passport.mjs';
 import { Emblem, useMeasuredHeight, useToast } from './ui/common.mjs';
 import { React, ReactDOM, html, useEffect, useRef, useState } from './runtime.mjs';
 import { handleRouteLink, navigate, parse } from './domain/routing.mjs';
 import { SAVED_KEY, restoreSaved, store } from './domain/storage.mjs';
 import { catalogRoute, readCatalogQuery, writeCatalogHistory } from './domain/catalog.mjs';
 import { toggleComparisonSelection } from './domain/comparison.mjs';
-import { byId } from './domain/registry.mjs';
+import { byId, refreshPeople, isCurrentRefresh } from './domain/registry.mjs';
 import { Record } from './pages/record.mjs';
 import { Compare } from './pages/compare.mjs';
 import { Apply } from './pages/application.mjs';
@@ -25,6 +26,26 @@ function App() {
   const [msg, toast] = useToast();
   const [savedRecords, setSavedRecords] = useState(() => restoreSaved(store.get(SAVED_KEY)));
   const [comparisonIds, setComparisonIds] = useState([]);
+  const [registryMessage, setRegistryMessage] = useState('');
+  const [registryRevision, setRegistryRevision] = useState(0);
+  const refreshRegistry = async () => {
+    try {
+      const result = await refreshPeople();
+      if (result.superseded || !isCurrentRefresh(result.requestId)) return;
+      setRegistryRevision((value) => value + 1);
+      setComparisonIds((ids) => ids.filter((id) => byId(id)));
+      setRegistryMessage('');
+      if (routeRef.current.name === 'compare' && routeRef.current.ids.some((id) => !byId(id))) {
+        navigate('notices');
+        setRegistryMessage(
+          'A selected passport is no longer available. The registry was refreshed.',
+        );
+      }
+    } catch (error) {
+      if (!isCurrentRefresh(error.requestId)) return;
+      setRegistryMessage('Could not refresh the registry. Displayed records may be out of date.');
+    }
+  };
   const [catalog, setCatalogState] = useState(() => ({
     ...readCatalogQuery(route.catalogQuery),
     view: store.get('spr-view')?.view === 'list' ? 'list' : 'grid',
@@ -61,6 +82,7 @@ function App() {
     const on = (event) => {
       // A Back/Forward traversal may emit both popstate and hashchange.
       if (event.isTrusted && location.hash === handledHash.current) return;
+      setComparisonIds((ids) => ids.filter((id) => byId(id)));
       let r = parse();
       handledHash.current = location.hash;
       const current = routeRef.current;
@@ -116,6 +138,22 @@ function App() {
     };
   }, []);
   useEffect(() => {
+    if (['home', 'notices', 'compare'].includes(route.name) && location.protocol !== 'file:')
+      refreshRegistry();
+  }, [route.name, route.name === 'compare' ? route.ids.join('/') : '']);
+  useEffect(() => {
+    const onVisible = () => {
+      if (
+        document.visibilityState === 'visible' &&
+        ['home', 'notices', 'compare'].includes(routeRef.current.name) &&
+        location.protocol !== 'file:'
+      )
+        refreshRegistry();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, []);
+  useEffect(() => {
     setMenu(false);
   }, [route.name, route.id]);
   useEffect(() => {
@@ -136,19 +174,21 @@ function App() {
     document.title =
       route.name === 'record'
         ? byId(route.id).name + ' | Synthetic Persona Registry'
-        : route.name === 'compare'
-          ? 'Compare personas | Synthetic Persona Registry'
-          : route.name === 'apply'
-            ? 'Register a persona | Synthetic Persona Registry'
-            : route.name === 'report'
-              ? 'Report a persona | Synthetic Persona Registry'
-              : route.name === 'notices'
-                ? 'Notices | Synthetic Persona Registry'
-                : route.name === 'case' || route.name === 'case-status'
-                  ? 'Case status | Synthetic Persona Registry'
-                  : route.name === 'review'
-                    ? 'Review console | Synthetic Persona Registry'
-                    : 'Synthetic Persona Registry';
+        : route.name === 'passport'
+          ? 'Public passport | Synthetic Persona Registry'
+          : route.name === 'compare'
+            ? 'Compare personas | Synthetic Persona Registry'
+            : route.name === 'apply'
+              ? 'Register a persona | Synthetic Persona Registry'
+              : route.name === 'report'
+                ? 'Report a persona | Synthetic Persona Registry'
+                : route.name === 'notices'
+                  ? 'Notices | Synthetic Persona Registry'
+                  : route.name === 'case' || route.name === 'case-status'
+                    ? 'Case status | Synthetic Persona Registry'
+                    : route.name === 'review'
+                      ? 'Review console | Synthetic Persona Registry'
+                      : 'Synthetic Persona Registry';
     if (route.preserveScroll) return;
     if (prev && prev.name === 'compare' && route.name === 'compare') return;
     if (route.name === 'record' && route.section) return;
@@ -190,40 +230,46 @@ function App() {
           savedRecords=${savedRecords}
           toggleSaved=${toggleSaved}
         />`
-      : route.name === 'compare'
-        ? html`<${Compare}
-            ids=${route.ids}
-            onlyDifferences=${route.differences === true}
-            toast=${toast}
-          />`
-        : route.name === 'apply'
-          ? html`<${Apply} toast=${toast} />`
-          : route.name === 'report'
-            ? html`<${Report}
-                key=${route.id || 'general'}
-                prefill=${byId(route.id)}
-                toast=${toast}
-              />`
-            : route.name === 'case-status'
-              ? html`<${CaseAccess} />`
-              : route.name === 'case'
-                ? html`<${CasePage}
-                    key=${route.id}
-                    caseId=${route.id}
-                    accessToken=${route.accessToken}
-                    toast=${toast}
-                  />`
-                : route.name === 'review'
-                  ? html`<${ReviewConsole} />`
-                  : html`<${Home}
-                      savedRecords=${savedRecords}
-                      toggleSaved=${toggleSaved}
-                      comparisonIds=${comparisonIds}
-                      toggleComparison=${toggleComparison}
-                      catalog=${catalog}
-                      setCatalog=${setCatalog}
-                    />`;
-  const cur = route.name === 'record' || route.name === 'notices' ? 'notices' : route.name;
+      : route.name === 'passport'
+        ? html`<${PublicPassport} key=${route.id} id=${route.id} />`
+        : route.name === 'compare'
+          ? html`<${Compare}
+              ids=${route.ids}
+              onlyDifferences=${route.differences === true}
+              toast=${toast}
+            />`
+          : route.name === 'apply'
+            ? html`<${Apply} toast=${toast} />`
+            : route.name === 'report'
+              ? html`<${Report}
+                  key=${route.id || 'general'}
+                  prefill=${byId(route.id)}
+                  toast=${toast}
+                />`
+              : route.name === 'case-status'
+                ? html`<${CaseAccess} />`
+                : route.name === 'case'
+                  ? html`<${CasePage}
+                      key=${route.id}
+                      caseId=${route.id}
+                      accessToken=${route.accessToken}
+                      toast=${toast}
+                    />`
+                  : route.name === 'review'
+                    ? html`<${ReviewConsole} />`
+                    : html`<${Home}
+                        savedRecords=${savedRecords}
+                        toggleSaved=${toggleSaved}
+                        comparisonIds=${comparisonIds}
+                        toggleComparison=${toggleComparison}
+                        registryRevision=${registryRevision}
+                        catalog=${catalog}
+                        setCatalog=${setCatalog}
+                      />`;
+  const cur =
+    route.name === 'record' || route.name === 'passport' || route.name === 'notices'
+      ? 'notices'
+      : route.name;
   return html`<div onClick=${(event) => handleRouteLink(event, catalogRoute(catalog))}>
     <a
       className="skip"
@@ -243,9 +289,9 @@ function App() {
           ><span className="u-long"
             >Independent registry of AI personas. Not a government or police body.</span
           ><span className="u-short"
-            >Independent registry, not a government body. Demo data.</span
+            >Independent registry, not a government body. Service preview.</span
           ></span
-        ><span>Demo data</span>
+        ><span>Service preview</span>
       </div>
     </div>
     <header className="hdr" inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}>
@@ -364,6 +410,18 @@ function App() {
       inert=${pal ? '' : undefined}
       aria-hidden=${pal ? 'true' : undefined}
     >
+      ${
+        registryMessage &&
+        ['home', 'notices', 'compare'].includes(route.name) &&
+        html`<div className="wrap" role="status">
+          <p>
+            ${registryMessage}
+            <button type="button" className="tlink" onClick=${refreshRegistry}>
+              Retry refresh
+            </button>
+          </p>
+        </div>`
+      }
       ${view}
     </main>
     <footer inert=${pal ? '' : undefined} aria-hidden=${pal ? 'true' : undefined}>
@@ -371,8 +429,9 @@ function App() {
         <div className="fbrand">
           <${Emblem} size=${56} color="#B9C6DC" />
           <p style=${{ maxWidth: '52ch' }}>
-            Independent registry, not affiliated with government or police. All records and
-            AI-generated portraits are fictional demo data, not identity or rights evidence.
+            Independent registry, not affiliated with government or police. Sample records and
+            portraits are fictional; published submissions are operator-reviewed service previews.
+            Neither verifies identity or rights.
           </p>
         </div>
         <ul>

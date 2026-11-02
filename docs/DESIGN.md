@@ -2,7 +2,7 @@
 
 SPR should read as an independent international registry. Navy bands carry the institution; white pages carry the work. The colour-coded notices are the main status language. The 3D passport is the one visually rich object.
 
-- Preserve the independent-registry and demo-data disclosures on every route. Never imply affiliation with a government, police body, or intergovernmental organization.
+- Preserve the independent-registry and service-preview disclosures on every route. Distinguish fictional samples from owner-consented published submissions; neither independently verifies identity or rights. Never imply affiliation with a government, police body, or intergovernmental organization.
 - Keep the existing emblem and typography: Archivo for the interface, IBM Plex Mono for identifiers, and the handwritten signature only inside the passport.
 - Avoid gradient backgrounds, glass effects, neon, gold interface elements, decorative eyebrow labels, ornamental arrows in buttons, and numbered labels for non-sequential content.
 - Buttons should name the action, such as “Check this passport” or “Send report”.

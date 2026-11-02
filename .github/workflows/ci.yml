@@ -25,7 +25,7 @@ jobs:
       - name: Build and smoke-test the runtime image
         run: |
           docker build --tag spr:ci .
-          docker run --detach --name spr-ci --publish 127.0.0.1:4176:4176 spr:ci
+          docker run --detach --name spr-ci --env SPR_REVIEWER_TOKEN=ci-publication-synthetic-reviewer-key-2026 --publish 127.0.0.1:4176:4176 spr:ci
           for attempt in $(seq 1 30); do
             if curl --fail --silent http://127.0.0.1:4176/api/v1/health > /dev/null; then break; fi
             sleep 1
@@ -40,6 +40,7 @@ jobs:
           curl --fail --silent http://127.0.0.1:4176/assets/portraits/PP-AZ-0001.jpg > /dev/null
           curl --fail --silent http://127.0.0.1:4176/assets/full-body/PP-AZ-0001.jpg > /dev/null
           curl --fail --silent http://127.0.0.1:4176/api/v1/personas/PP-AZ-0001/provenance > /dev/null
+          SPR_REVIEWER_TOKEN=ci-publication-synthetic-reviewer-key-2026 node scripts/smoke-publication.mjs http://127.0.0.1:4176
       - name: Stop smoke container
         if: always()
         run: docker rm --force spr-ci 2>/dev/null || true

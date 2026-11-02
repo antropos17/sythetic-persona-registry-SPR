@@ -1,3 +1,4 @@
+import { PublicationPanel } from './publication.mjs';
 import { html, useEffect, useRef, useState } from '../runtime.mjs';
 import {
   CASE_DATE_TIME,
@@ -304,6 +305,7 @@ function CasePage({ caseId, accessToken, toast }) {
             </div>
           </dl>
         </section>
+        ${data.kind === 'application' && data.status === 'approved' && html`<${PublicationPanel} key=${caseId} caseId=${caseId} token=${accessToken} />`}
         <section className="case-panel" aria-labelledby="case-evidence">
           <h2 id="case-evidence">Evidence</h2>
           <p className="sub">
