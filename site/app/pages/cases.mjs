@@ -18,7 +18,7 @@ import { navigate } from '../domain/routing.mjs';
 import { privateJson, submitCaseEvidence } from '../domain/api.mjs';
 import { copy } from '../ui/common.mjs';
 
-function CaseAccess() {
+function CaseAccess({ embedded = false }) {
   const [link, setLink] = useState('');
   const [showLink, setShowLink] = useState(false);
   const [linkError, setLinkError] = useState('');
@@ -60,7 +60,7 @@ function CaseAccess() {
       <li><a href="#home">Registry</a></li>
       <li aria-current="page">Case status</li>
     </ol>
-    <h1 className="fh1" id="h1" tabindex="-1">Check a case</h1>
+    <${embedded ? 'h2' : 'h1'} className="fh1" id=${embedded ? undefined : 'h1'} tabindex="-1">Open a private case link</${embedded ? 'h2' : 'h1'}>
     <p className="sub">
       Paste the private link you saved after submitting an application or report.
     </p>
@@ -237,7 +237,9 @@ function CasePage({ caseId, accessToken, toast }) {
       setBusy(false);
     }
   };
-  const privateLink = location.href.split('#')[0] + '#case/' + caseId + '/' + accessToken;
+  const privateLink = accessToken
+    ? location.href.split('#')[0] + '#case/' + caseId + '/' + accessToken
+    : '';
   const latestMessage = data ? latestReviewerMessage(data.events, data.status) : null;
   return html`<div className="wrap case-page">
     <ol className="crumbs" aria-label="Breadcrumb">
@@ -247,19 +249,26 @@ function CasePage({ caseId, accessToken, toast }) {
     <header className="case-heading">
       <h1 id="h1" tabindex="-1">Case <span className="case-number">${caseId}</span></h1>
       <p className="sub">
-        This page is available to anyone holding its private link. Keep the link confidential.
+        ${accessToken ? 'This page is available to anyone holding its private link. Keep the link confidential.' : 'This case is available through your signed-in account.'}
       </p>
       <div className="rowbtns">
-        <button
-          className="btn line"
-          type="button"
-          onClick=${() => copy(privateLink, 'Private case link', toast)}
-        >
-          Copy private link</button
-        ><a className="tlink" href="#case-status">Enter another case</a>
+        ${
+          accessToken &&
+          html`<button
+              className="btn line"
+              type="button"
+              onClick=${() => copy(privateLink, 'Private case link', toast)}
+            >
+              Copy private link
+            </button>
+            <a className="btn line" href=${'#account/claim/' + caseId + '/' + accessToken}
+              >Add to my account</a
+            >`
+        }
+        <a className="tlink" href="#account">My cases</a>
       </div>
     </header>
-    ${error && html`<p className="private-note" role="alert">${error}</p>`}
+    ${error && html`<p className="private-note" role="alert">${error} ${!accessToken && html`<a href="#account">Sign in to your account</a>`}</p>`}
     ${!data && !error && html`<p className="private-note" role="status">Loading case status…</p>`}
     ${
       data &&

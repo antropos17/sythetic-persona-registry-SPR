@@ -126,7 +126,7 @@ function PublicationPanel({ caseId, token, reviewer = false, payload = {} }) {
   >
     <${reviewer ? 'h3' : 'h2'} id=${reviewer ? 'review-publication' : 'owner-publication'}>Public passport</${reviewer ? 'h3' : 'h2'}>
     <p>
-      Service preview. Review and case-link access do not independently verify identity, ownership or legal rights. Evidence files stay private.
+      Service preview. Review and private case access do not independently verify identity, ownership or legal rights. Evidence files stay private.
     </p>
     ${!state && !message && html`<p role="status">Loading publication state…</p>`}
     <p role="status" aria-live="polite">${message}</p>
@@ -137,7 +137,7 @@ function PublicationPanel({ caseId, token, reviewer = false, payload = {} }) {
       html`<div>
         ${state.passportId && html`<p>Passport: <a href=${'#' + state.passportId}>${state.passportId}</a></p>`}
         ${current && html`<p>Public status: ${current.status}. ${current.status === 'published' ? 'The current public version remains visible while an update is reviewed.' : 'Revocation is terminal.'}</p>`}
-        ${!state.passportId && html`<p>${reviewer ? 'Prepare a reviewed draft for the case-link holder to preview and consent to.' : 'A reviewer has not prepared a public draft yet.'}</p>`}
+        ${!state.passportId && html`<p>${reviewer ? 'Prepare a reviewed draft for the case owner to preview and consent to.' : 'A reviewer has not prepared a public draft yet.'}</p>`}
         ${
           draft &&
           html`<div>
@@ -171,7 +171,7 @@ function PublicationPanel({ caseId, token, reviewer = false, payload = {} }) {
               draft.status === 'pending_review' &&
               html`<div className="fg">
                 <label htmlFor="publication-review-note"
-                  >Message to case-link holder (required for rejection)</label
+                  >Message to case owner (required for rejection)</label
                 ><textarea
                   id="publication-review-note"
                   className="in"

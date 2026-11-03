@@ -26,6 +26,7 @@ function Apply({ toast }) {
   const [err, setErr] = useState(null);
   const [ref, setRef] = useState(null);
   const [accessToken, setAccessToken] = useState('');
+  const [owned, setOwned] = useState(false);
   const [demo, setDemo] = useState(false);
   const [pending, setPending] = useState(false);
   const [serverError, setServerError] = useState('');
@@ -111,6 +112,7 @@ function Apply({ toast }) {
       const result = await submitToRegistry('/api/v1/applications', d);
       setRef(result.id);
       setAccessToken(result.accessToken || '');
+      setOwned(!!result.owned);
       setDemo(!!result.demo);
       finishApplicationDraft(result);
       focusTop();
@@ -200,6 +202,11 @@ function Apply({ toast }) {
               Copy private link
             </button>
           </div>`
+      }
+      ${
+        owned &&
+        html`<p>Your case is saved to your account.</p>
+          <a className="btn" href=${'#case/' + ref}>View case and upload evidence</a>`
       }
       <div className="rowbtns" style=${{ marginTop: '28px' }}>
         <a className="btn line" href="#notices">Back to notices</a

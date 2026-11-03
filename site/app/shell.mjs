@@ -10,7 +10,8 @@ import { Record } from './pages/record.mjs';
 import { Compare } from './pages/compare.mjs';
 import { Apply } from './pages/application.mjs';
 import { Report } from './pages/report.mjs';
-import { CaseAccess, CasePage } from './pages/cases.mjs';
+import { Account, recoveryPending } from './pages/account.mjs';
+import { CasePage } from './pages/cases.mjs';
 import { ReviewConsole } from './pages/review.mjs';
 import { Home } from './pages/home.mjs';
 import { Palette } from './ui/palette.mjs';
@@ -80,6 +81,10 @@ function App() {
     const previousRestoration = history.scrollRestoration;
     history.scrollRestoration = 'manual';
     const on = (event) => {
+      if (recoveryPending() && location.hash !== handledHash.current) {
+        history.replaceState(null, '', handledHash.current);
+        return;
+      }
       // A Back/Forward traversal may emit both popstate and hashchange.
       if (event.isTrusted && location.hash === handledHash.current) return;
       setComparisonIds((ids) => ids.filter((id) => byId(id)));
@@ -184,11 +189,13 @@ function App() {
                 ? 'Report a persona | Synthetic Persona Registry'
                 : route.name === 'notices'
                   ? 'Notices | Synthetic Persona Registry'
-                  : route.name === 'case' || route.name === 'case-status'
-                    ? 'Case status | Synthetic Persona Registry'
-                    : route.name === 'review'
-                      ? 'Review console | Synthetic Persona Registry'
-                      : 'Synthetic Persona Registry';
+                  : route.name === 'account'
+                    ? 'My cases | Synthetic Persona Registry'
+                    : route.name === 'case' || route.name === 'case-status'
+                      ? 'Case status | Synthetic Persona Registry'
+                      : route.name === 'review'
+                        ? 'Review console | Synthetic Persona Registry'
+                        : 'Synthetic Persona Registry';
     if (route.preserveScroll) return;
     if (prev && prev.name === 'compare' && route.name === 'compare') return;
     if (route.name === 'record' && route.section) return;
@@ -246,8 +253,8 @@ function App() {
                   prefill=${byId(route.id)}
                   toast=${toast}
                 />`
-              : route.name === 'case-status'
-                ? html`<${CaseAccess} />`
+              : route.name === 'case-status' || route.name === 'account'
+                ? html`<${Account} claim=${route.claim} toast=${toast} />`
                 : route.name === 'case'
                   ? html`<${CasePage}
                       key=${route.id}
@@ -376,9 +383,9 @@ function App() {
           >
           <a href="#report" aria-current=${cur === 'report' ? 'page' : undefined}>Report</a>
           <a
-            href="#case-status"
-            aria-current=${cur === 'case-status' || cur === 'case' ? 'page' : undefined}
-            >Case status</a
+            href="#account"
+            aria-current=${cur === 'case-status' || cur === 'account' || cur === 'case' ? 'page' : undefined}
+            >My cases</a
           >
           <button
             type="button"
@@ -436,7 +443,7 @@ function App() {
         </div>
         <ul>
           <li><a href="#report">Report a persona</a></li>
-          <li><a href="#case-status">Case status</a></li>
+          <li><a href="#account">My cases</a></li>
         </ul>
       </div>
     </footer>

@@ -21,7 +21,7 @@ function handleRouteLink(event, noticesRoute = 'notices') {
   if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
   const hash = link.getAttribute('href');
   if (
-    !/^#(?:home|notices|apply|report|review|case-status|case|compare|PP-(?:[A-Z]{2}-\d{4}|SPR-[A-F0-9]{12}))(?:$|[/?])/i.test(
+    !/^#(?:home|notices|apply|report|review|case-status|account|case|compare|PP-(?:[A-Z]{2}-\d{4}|SPR-[A-F0-9]{12}))(?:$|[/?])/i.test(
       hash,
     )
   )
@@ -39,6 +39,12 @@ function parse() {
   } catch {
     return { name: 'home' };
   }
+  const claimRoute = /^account\/claim\/((?:SPR|RPT)-\d{4}-[A-F0-9]{12})\/([A-Za-z0-9_-]{43})$/.exec(
+    h,
+  );
+  if (claimRoute) return { name: 'account', claim: { id: claimRoute[1], token: claimRoute[2] } };
+  const ownedCase = /^case\/((?:SPR|RPT)-\d{4}-[A-F0-9]{12})$/.exec(h);
+  if (ownedCase) return { name: 'case', id: ownedCase[1] };
   const caseRoute = /^case\/((?:SPR|RPT)-\d{4}-[A-F0-9]{12})\/([A-Za-z0-9_-]{43})$/.exec(h);
   if (caseRoute) return { name: 'case', id: caseRoute[1], accessToken: caseRoute[2] };
   const reportRoute = /^report\/([^/]+)$/.exec(h);
@@ -70,7 +76,14 @@ function parse() {
   const id = h.toUpperCase();
   if (/^PP-SPR-[A-F0-9]{12}$/.test(id)) return { name: 'passport', id };
   if (byId(id)) return { name: 'record', id };
-  if (h === 'apply' || h === 'report' || h === 'notices' || h === 'case-status' || h === 'review')
+  if (
+    h === 'apply' ||
+    h === 'report' ||
+    h === 'notices' ||
+    h === 'case-status' ||
+    h === 'account' ||
+    h === 'review'
+  )
     return { name: h };
   return { name: 'home' };
 }

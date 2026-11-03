@@ -38,6 +38,7 @@ function Report({ prefill, toast }) {
   const [err, setErr] = useState(null);
   const [ref, setRef] = useState(null);
   const [accessToken, setAccessToken] = useState('');
+  const [owned, setOwned] = useState(false);
   const [demo, setDemo] = useState(false);
   const [pending, setPending] = useState(false);
   const [serverError, setServerError] = useState('');
@@ -93,6 +94,7 @@ function Report({ prefill, toast }) {
       const result = await submitToRegistry('/api/v1/reports', d);
       setRef(result.id);
       setAccessToken(result.accessToken || '');
+      setOwned(!!result.owned);
       setDemo(!!result.demo);
       if (!result.demo) {
         try {
@@ -145,6 +147,11 @@ function Report({ prefill, toast }) {
               Copy private link
             </button>
           </div>`
+      }
+      ${
+        owned &&
+        html`<p>Your case is saved to your account.</p>
+          <a className="btn" href=${'#case/' + ref}>View case and upload evidence</a>`
       }
       <div className="rowbtns" style=${{ marginTop: '24px' }}>
         <a className="btn line" href="#notices">Back to notices</a>
