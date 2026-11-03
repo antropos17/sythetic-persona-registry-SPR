@@ -4,8 +4,8 @@ This release adds a versioned publication workflow to the demonstration service.
 
 ## Invariants
 
-- Only an approved application with an owner token can receive a publication draft. Reports, rejected and legacy tokenless cases cannot publish.
-- Approval alone never publishes. A reviewer prepares/approves a public revision; the case-link holder previews its exact content and explicitly consents before publishing.
+- Only an approved application with an owner token or linked owner account can receive a publication draft. Reports, rejected and legacy cases without either authorization cannot publish.
+- Approval alone never publishes. A reviewer prepares/approves a public revision; the authorized case owner previews its exact content and explicitly consents before publishing.
 - Public content is an explicit whitelist: `name`, `handle`, `nature`, `holder`, `languages`, `occupation`, `description`, `usageTerms`. Never copy submission objects, email, case ID, tokens, evidence metadata/files or private review notes into public responses.
 - `nature` and `holder` must match the approved application. Ownership transfer is outside this workflow.
 - Revisions have increasing integer versions and a server-computed SHA-256 digest of normalized content. Content of an existing revision is immutable. Editing creates another revision and invalidates any prior pending consent.
@@ -46,9 +46,9 @@ Published DTO: `id`, `recordType: 'published'`, `version`, `status: 'published'`
 
 ## HTTP
 
-Owner endpoints require the existing case bearer token:
+Owner endpoints require the existing case bearer token or the session cookie of the account linked to that case. Claiming invalidates the former bearer token. Cookie-authenticated writes additionally require `X-SPR-Owner: 1` and the account origin checks described in [owner accounts](OWNER-ACCOUNTS.md):
 
-- `GET /api/v1/cases/:id/publication`: private publication state; owner token required even before a draft exists.
+- `GET /api/v1/cases/:id/publication`: private publication state; case-owner authorization required even before a draft exists.
 - `POST /api/v1/cases/:id/publication/updates`: `{content, expectedVersion}` creates a `pending_review` revision after a passport draft exists, including a request to correct an unpublished first draft. Returns private publication state, 201.
 - `POST /api/v1/cases/:id/publication/publish`: `{version, digest, consent: true}` atomically records consent and publishes the latest approved revision. Returns private publication state, 200. Repeating the identical current publication is idempotent when no newer revision exists.
 - `POST /api/v1/cases/:id/publication/revoke`: `{version, reason, confirmed: true}` revokes the current version; reason is explicitly public, 10–300 characters. Reject stale versions and unpublished records. Repeating the same revocation is idempotent. Returns private publication state, 200.
@@ -69,4 +69,4 @@ Public endpoints:
 
 Keep the simplified interface: a publication panel in the private case and reviewer case, one public passport page, and no new global tabs. Reviewer prepares concise public fields after approval; owner sees the exact preview and unchecked consent for that version. A version change resets consent. A failed refresh after a successful write must not claim the write failed. Preserve unsent content on failure and make stale-version recovery explicit.
 
-The case-link holder can propose an update, follow its review, approve its exact preview and revoke the public passport. Publicly label the service preview and the scope of operator review. Do not describe newly submitted public records as fictional generated examples. Use neutral initials/emblem when no public image exists; evidence uploads are never public portraits.
+The authorized case owner can propose an update, follow its review, approve its exact preview and revoke the public passport. Publicly label the service preview and the scope of operator review. Do not describe newly submitted public records as fictional generated examples. Use neutral initials/emblem when no public image exists; evidence uploads are never public portraits.

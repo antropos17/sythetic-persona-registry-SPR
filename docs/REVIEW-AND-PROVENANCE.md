@@ -8,7 +8,7 @@ The console uses a single shared operator key. It has no account recovery, staff
 
 ## Case workflow
 
-1. A visitor submits an application or report. The response contains a random case ID and an independent 256-bit access token. SQLite stores the token's SHA-256 hash; the browser displays a private URL fragment containing the token. The link is shown once in the confirmation screen and is not emailed or stored in local storage.
+1. A visitor submits an application or report. Anonymous submissions receive a random case ID and an independent 256-bit access token. SQLite stores the token's SHA-256 hash; the browser displays a private URL fragment containing the token. The link is shown once and is not emailed or stored in local storage. Signed-in submissions are linked to the account without issuing a bearer token. An existing private link can be claimed into an account; the old link is then invalidated. See [owner accounts](OWNER-ACCOUNTS.md).
 2. A holder of that link can read status, evidence metadata, and public reviewer messages, and can upload up to five evidence files while the case remains open. The case endpoint never returns the original application or report payload.
 3. A reviewer opens the private queue, reads the submission, downloads evidence, and records a reason when accepting or rejecting each file. Reviewer messages and decisions appear in the case history. The UI labels these messages as visible to the submitter.
 4. The reviewer changes the case status through the allowed transitions. Closing or requesting evidence requires a message. An application approval requires at least one accepted uploaded file; a likeness application requires an accepted consent file. Approval alone does not publish a record or alter a demonstration notice.
@@ -19,7 +19,7 @@ Old submissions migrate in place. Since the previous API never issued owner toke
 
 ## Publication operations
 
-For an approved application, prepare a public draft from the eight whitelisted fields in [the publication contract](PUBLICATION-CONTRACT.md). The case-link holder must preview and explicitly consent to the exact version and digest. Approval alone is insufficient. Possession of the private link identifies a capability holder, not an independently verified legal owner.
+For an approved application, prepare a public draft from the eight whitelisted fields in [the publication contract](PUBLICATION-CONTRACT.md). The authorized case owner must preview and explicitly consent to the exact version and digest. Approval alone is insufficient. A private link or linked account grants case access without independently verifying legal ownership.
 
 Owner text updates require another review and fresh consent. The current version remains public meanwhile. Holder and nature are fixed; ownership transfer or new evidence collection requires a separate application. There is a persistent burst limit of 30 new revisions per rolling hour. It does not block publication or revocation.
 

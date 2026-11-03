@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { createHash, randomBytes } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { publicationStore } from './publication.mjs';
+import { accountStore } from './accounts.mjs';
 
 const transitions = {
   application: {
@@ -37,13 +38,22 @@ export function openDatabase(path = './var/spr.sqlite') {
     );
     CREATE INDEX IF NOT EXISTS submissions_created_at ON submissions(created_at);
   `);
+  function transaction(work) {
+    db.exec('BEGIN IMMEDIATE');
+    try { const result = work(); db.exec('COMMIT'); return result; }
+    catch (error) { db.exec('ROLLBACK'); throw error; }
+  }
+
+  const accounts = accountStore(db, transaction);
   // Existing local databases remain readable. Older cases have no owner token;
   // an operator can review them, but they cannot be guessed from a case number.
   const columns = new Set(db.prepare('PRAGMA table_info(submissions)').all().map(row => row.name));
   if (!columns.has('access_hash')) db.exec('ALTER TABLE submissions ADD COLUMN access_hash TEXT');
+  if (!columns.has('owner_account_id')) db.exec('ALTER TABLE submissions ADD COLUMN owner_account_id TEXT REFERENCES owner_accounts(id)');
   if (!columns.has('updated_at')) db.exec('ALTER TABLE submissions ADD COLUMN updated_at TEXT');
   db.exec(`
     UPDATE submissions SET updated_at = created_at WHERE updated_at IS NULL;
+    CREATE INDEX IF NOT EXISTS submissions_owner_created_id ON submissions(owner_account_id, created_at DESC, id DESC);
     CREATE TABLE IF NOT EXISTS submission_events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       submission_id TEXT NOT NULL REFERENCES submissions(id),
@@ -84,11 +94,6 @@ export function openDatabase(path = './var/spr.sqlite') {
   const evidenceMetaById = db.prepare('SELECT id, submission_id, review_status, review_note FROM evidence WHERE id = ?');
   const evidenceById = db.prepare('SELECT * FROM evidence WHERE id = ?');
 
-  function transaction(work) {
-    db.exec('BEGIN IMMEDIATE');
-    try { const result = work(); db.exec('COMMIT'); return result; }
-    catch (error) { db.exec('ROLLBACK'); throw error; }
-  }
 
   function present(row, reviewer = false) {
     const value = {
@@ -100,23 +105,33 @@ export function openDatabase(path = './var/spr.sqlite') {
     return value;
   }
 
-  const publication = publicationStore(db, transaction, rowById, rowByAccess, tokenHash, event);
+  const resolveAccess = (id, credential) => {
+    if (typeof credential === 'object' && credential?.session) {
+      const session = accounts.session(credential.session);
+      return session ? db.prepare('SELECT * FROM submissions WHERE id=? AND owner_account_id=?').get(id, session.account_id) : null;
+    }
+    return rowByAccess.get(id, tokenHash(credential));
+  };
+  const publication = publicationStore(db, transaction, rowById, resolveAccess, event);
 
   return {
-    publication,
-    create(kind, payload) {
+    publication, accounts,
+    create(kind, payload, sessionToken = null) {
       const prefix = kind === 'application' ? 'SPR' : 'RPT';
       const createdAt = new Date().toISOString();
       const id = `${prefix}-${createdAt.slice(0, 4)}-${randomBytes(6).toString('hex').toUpperCase()}`;
       const accessToken = randomBytes(32).toString('base64url');
       transaction(() => {
-        insert.run(id, kind, JSON.stringify(payload), 'received', createdAt, createdAt, tokenHash(accessToken));
+        const session = sessionToken ? accounts.session(sessionToken) : null;
+        if (sessionToken && !session) fail(401, 'Sign in required');
+        insert.run(id, kind, JSON.stringify(payload), 'received', createdAt, createdAt, session ? null : tokenHash(accessToken));
+        if (session) db.prepare('UPDATE submissions SET owner_account_id=? WHERE id=?').run(session.account_id, id);
         event.run(id, createdAt, 'submitter', 'submitted', 'received', '', null);
       });
-      return { id, status: 'received', createdAt, accessToken };
+      return sessionToken ? { id, status: 'received', createdAt, accessToken: null, owned: true } : { id, status: 'received', createdAt, accessToken };
     },
     getCase(id, accessToken) {
-      const row = rowByAccess.get(id, tokenHash(accessToken));
+      const row = resolveAccess(id, accessToken);
       return row ? present(row) : null;
     },
     getReview(id) {
@@ -128,7 +143,7 @@ export function openDatabase(path = './var/spr.sqlite') {
     },
     addEvidence(id, accessToken, data) {
       return transaction(() => {
-        const row = rowByAccess.get(id, tokenHash(accessToken));
+        const row = resolveAccess(id, accessToken);
         if (!row) fail(404, 'Case not found');
         if (!transitions[row.kind][row.status]) fail(409, 'This case is closed');
         const count = db.prepare('SELECT COUNT(*) AS n FROM evidence WHERE submission_id = ?').get(id).n;

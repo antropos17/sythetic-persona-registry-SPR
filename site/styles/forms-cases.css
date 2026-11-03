@@ -992,3 +992,21 @@ textarea.in {
   margin-top: 20px;
   max-width: 65ch;
 }
+.account-recovery {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 1rem;
+  border: 1px solid currentColor;
+  font-size: 1.1rem;
+  user-select: all;
+}
+.account-page .case-panel {
+  margin-block: 1.5rem;
+}
+.account-page .formwrap {
+  padding-inline: 0;
+}
+.account-page .case-panel li {
+  margin-block: 0.65rem;
+  overflow-wrap: anywhere;
+}

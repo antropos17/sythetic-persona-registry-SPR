@@ -233,6 +233,33 @@ function trustedHost(req, publicHost) {
   } catch { return false; }
 }
 
+function accountScope(req, allowedOrigin, write = false) {
+  let host;
+  try { host = new URL(`http://${req.headers.host}`).hostname.replace(/^\[|\]$/g, ''); } catch { return false; }
+  const loopbackHost = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  const peer = req.socket.remoteAddress || '';
+  const loopbackPeer = peer === '127.0.0.1' || peer === '::1' || peer === '::ffff:127.0.0.1';
+  const loopback = !allowedOrigin && loopbackHost && loopbackPeer;
+  const configured = allowedOrigin && new URL(allowedOrigin);
+  const publicRequest = configured && configured.protocol === 'https:' && req.headers.host === configured.host;
+  if (!publicRequest && !loopback) return false;
+  const expected = publicRequest ? configured.origin : `http://${req.headers.host}`;
+  if (req.headers.origin && req.headers.origin !== expected) return false;
+  if (req.headers['sec-fetch-site'] && !['same-origin', 'none'].includes(req.headers['sec-fetch-site'])) return false;
+  if (write && req.headers['x-spr-owner'] !== '1') return false;
+  return true;
+}
+function accountCookie(req, allowedOrigin) {
+  const secure = !!allowedOrigin && new URL(allowedOrigin).protocol === 'https:' && req.headers.host === new URL(allowedOrigin).host;
+  const name = secure ? '__Host-spr_owner' : 'spr_owner';
+  const cookies = (req.headers.cookie || '').split(';').map(part => part.trim().split('='));
+  const found = cookies.filter(part => part[0] === name);
+  return { token: found.length === 1 ? found[0][1] : '', name, secure };
+}
+function setOwnerCookie(cookie, token) {
+  return `${cookie.name}=${token || ''}; Path=/; HttpOnly; SameSite=Strict; ${cookie.secure ? 'Secure; ' : ''}${token ? 'Max-Age=604800' : 'Max-Age=0'}`;
+}
+
 export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlite', publicOrigin = process.env.PUBLIC_ORIGIN || '', reviewerToken = process.env.SPR_REVIEWER_TOKEN || '' } = {}) {
   if (reviewerToken && (reviewerToken.length < 32 || !/^[A-Za-z0-9_-]+$/.test(reviewerToken))) throw new Error('SPR_REVIEWER_TOKEN must contain at least 32 URL-safe characters (letters, digits, _ or -)');
   const allowedOrigin = publicOrigin ? new URL(publicOrigin).origin : '';
@@ -283,10 +310,47 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
           })
         });
       }
+      const cookie = accountCookie(req, allowedOrigin);
+      const isAccount = path === '/api/v1/account' || path.startsWith('/api/v1/account/');
+      if (isAccount) {
+        if (!accountScope(req, allowedOrigin, req.method !== 'GET')) return json(res, 403, { error: 'Origin is not allowed' });
+        const ip = req.socket.remoteAddress || 'unknown';
+        const accounts = db.accounts;
+        if (req.method === 'GET' && path === '/api/v1/account') return json(res, 200, { account: accounts.account(cookie.token) });
+        if (req.method === 'GET' && path === '/api/v1/account/sessions') return json(res, 200, { sessions: accounts.sessions(cookie.token) });
+        if (req.method === 'GET' && path === '/api/v1/account/cases') {
+          const offset = Number(url.searchParams.get('offset') || '0');
+          if (!Number.isSafeInteger(offset) || offset < 0 || offset > 1000000) return json(res, 400, { error: 'Invalid offset' });
+          return json(res, 200, accounts.cases(cookie.token, offset));
+        }
+        if (req.method === 'POST' && path === '/api/v1/account/logout') { accounts.logout(cookie.token); return json(res, 200, {}, { 'Set-Cookie': setOwnerCookie(cookie, '') }); }
+        if (req.method === 'POST') {
+          const body = await readJson(req);
+          let result;
+          if (path === '/api/v1/account/register') result = await accounts.register(body, ip);
+          else if (path === '/api/v1/account/login') result = await accounts.login(body, ip);
+          else if (path === '/api/v1/account/recover') result = await accounts.recover(body, ip);
+          else if (path === '/api/v1/account/password') result = await accounts.changePassword(cookie.token, body, ip);
+          else if (path === '/api/v1/account/sessions/revoke') result = await accounts.revoke(cookie.token, body, ip, false);
+          else if (path === '/api/v1/account/sessions/revoke-others') result = await accounts.revoke(cookie.token, body, ip, true);
+          else if (path === '/api/v1/account/cases') result = accounts.claim(cookie.token, body?.id, body?.accessToken);
+          else return json(res, 404, { error: 'Not found' });
+          const token = result.token; delete result.token;
+          return json(res, path.endsWith('/register') ? 201 : 200, result, token ? { 'Set-Cookie': setOwnerCookie(cookie, token) } : {});
+        }
+        return json(res, 404, { error: 'Not found' });
+      }
+      const ownerCredential = () => {
+        const token = bearer(req);
+        if (tokenPattern.test(token)) return token;
+        if (!cookie.token) return '';
+        if (!accountScope(req, allowedOrigin, req.method !== 'GET')) throw { status: 403, error: 'Origin is not allowed' };
+        return { session: cookie.token };
+      };
       const ownerPublication = new RegExp(`^/api/v1/cases/(${caseIdPattern})/publication(?:/(updates|publish|revoke))?$`).exec(path);
       if (ownerPublication && (req.method === 'GET' || req.method === 'POST')) {
-        const token = bearer(req);
-        if (!tokenPattern.test(token) || !db.getCase(ownerPublication[1], token)) return json(res, 404, { error: 'Case not found' });
+        const token = ownerCredential();
+        if (!token || !db.getCase(ownerPublication[1], token)) return json(res, 404, { error: 'Case not found' });
         if (req.method === 'GET' && !ownerPublication[2]) return json(res, 200, db.publication.getOwner(ownerPublication[1], token));
         if (req.method === 'POST' && ownerPublication[2]) {
           if (!sameOriginPublication(req, allowedOrigin)) return json(res, 403, { error: 'Origin is not allowed' });
@@ -298,15 +362,15 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
       }
       const caseMatch = new RegExp(`^/api/v1/cases/(${caseIdPattern})$`).exec(path);
       if (req.method === 'GET' && caseMatch) {
-        const token = bearer(req);
-        const result = tokenPattern.test(token) ? db.getCase(caseMatch[1], token) : null;
+        const token = ownerCredential();
+        const result = token ? db.getCase(caseMatch[1], token) : null;
         return result ? json(res, 200, result) : json(res, 404, { error: 'Case not found' });
       }
       const caseEvidence = new RegExp(`^/api/v1/cases/(${caseIdPattern})/evidence$`).exec(path);
       if (req.method === 'POST' && caseEvidence) {
         if (!sameOrigin(req, allowedOrigin)) return json(res, 403, { error: 'Origin is not allowed' });
-        const token = bearer(req);
-        if (!tokenPattern.test(token) || !db.getCase(caseEvidence[1], token)) return json(res, 404, { error: 'Case not found' });
+        const token = ownerCredential();
+        if (!token || !db.getCase(caseEvidence[1], token)) return json(res, 404, { error: 'Case not found' });
         const file = await readEvidence(req);
         return json(res, 201, db.addEvidence(caseEvidence[1], token, file));
       }
@@ -376,7 +440,12 @@ export function createApp({ dbPath = process.env.SPR_DB_PATH || './var/spr.sqlit
           const errors = application ? validateApplication(body) : validateReport(body);
           if (Object.keys(errors).length) return json(res, 422, { error: 'Validation failed', fields: errors });
           const data = application ? normalizeApplication(body) : normalizeReport(body);
-          const result = db.create(application ? 'application' : 'report', data);
+          let sessionToken = null;
+          if (cookie.token && db.accounts.session(cookie.token)) {
+            if (!accountScope(req, allowedOrigin, true)) return json(res, 403, { error: 'Origin is not allowed' });
+            sessionToken = cookie.token;
+          }
+          const result = db.create(application ? 'application' : 'report', data, sessionToken);
           entry.count += 1;
           return json(res, 201, { ...result, message: 'Stored for review. Keep the private case link; this service does not send email.' });
         } finally { entry.pending -= 1; }

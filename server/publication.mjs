@@ -71,7 +71,7 @@ function text(value, min, max) {
   return result;
 }
 
-export function publicationStore(db, transaction, rowById, rowByAccess, tokenHash, event) {
+export function publicationStore(db, transaction, rowById, resolveAccess, event) {
   db.exec(`CREATE TABLE IF NOT EXISTS publications (
     id TEXT PRIMARY KEY, submission_id TEXT NOT NULL UNIQUE REFERENCES submissions(id),
     latest_version INTEGER NOT NULL DEFAULT 0, current_version INTEGER, created_at TEXT NOT NULL,
@@ -89,7 +89,7 @@ export function publicationStore(db, transaction, rowById, rowByAccess, tokenHas
     'SELECT * FROM publication_revisions WHERE publication_id = ? AND version = ?',
   );
   function owner(id, token) {
-    const row = rowByAccess.get(id, tokenHash(token));
+    const row = resolveAccess(id, token);
     if (!row) fail(404, 'Case not found');
     return row;
   }
@@ -99,7 +99,7 @@ export function publicationStore(db, transaction, rowById, rowByAccess, tokenHas
     return row;
   }
   function eligible(row) {
-    if (row.kind !== 'application' || row.status !== 'approved' || !row.access_hash)
+    if (row.kind !== 'application' || row.status !== 'approved' || !row.access_hash && !row.owner_account_id)
       fail(409, 'An approved application with an owner token is required');
   }
   function publicValue(pub) {

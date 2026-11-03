@@ -51,11 +51,13 @@ Visitors can save records from cards, the table, or a record page and filter the
 
 An unfinished application is saved in that browser's local storage so it can be resumed. The form includes **Clear draft**, and a successful submission removes the draft. Reports are not stored in browser local storage.
 
-After submission, the visitor receives a case number and a private link. The link contains a 256-bit random access token in the URL fragment; only its SHA-256 hash is stored in SQLite. A case number alone cannot read the case. The private page shows status, reviewer messages, evidence metadata, and a timeline. The visitor can attach up to five JPEG, PNG, or PDF files, each at most 5 MiB, with a source or issuer statement. Files are stored as private SQLite blobs and are never served through the public static-file route. A reviewer can download them only through an authenticated endpoint. Keep the private link secure: it grants case access, and the service does not send it by email.
+Anonymous submissions receive a case number and a private link. The link contains a 256-bit random access token in the URL fragment; only its SHA-256 hash is stored in SQLite. A case number alone cannot read the case. The private page shows status, reviewer messages, evidence metadata, and a timeline. The visitor can attach up to five JPEG, PNG, or PDF files, each at most 5 MiB, with a source or issuer statement. Files are stored as private SQLite blobs and are never served through the public static-file route. A reviewer can download them only through an authenticated endpoint. Keep the private link secure: it grants case access, and the service does not send it by email.
+
+**My cases** provides username/password accounts, a saved single-use recovery code and session controls. An owner can add an existing case using its valid private link; that link is then invalidated. New submissions made while signed in belong to the account automatically. Contact email alone never grants case access. Public accounts require an HTTPS proxy with a private application listener. See [owner accounts](docs/OWNER-ACCOUNTS.md) for API, recovery limits and deployment requirements.
 
 Set a `SPR_REVIEWER_TOKEN` of at least 32 random characters in the process environment to enable the local review console at `/#review`. The key is held only in the browser tab's memory. The reviewer can inspect submissions, mark evidence accepted or rejected with a reason, request more evidence, and close a case with a message visible to the submitter. An application cannot be approved without accepted uploaded evidence; a licensed likeness also requires accepted consent evidence. Approval alone does not publish anything. See [review and provenance operations](docs/REVIEW-AND-PROVENANCE.md).
 
-For an approved application, the reviewer prepares an explicit public draft. The private case shows its exact fields and version; publication requires the case-link holder's unchecked-by-default consent to that version and SHA-256 digest. Proposed updates stay private until another review and fresh consent. Revocation is terminal for that passport ID, removes its former content from public responses and the catalog, and retains a minimal revoked-status page at the same URL. Email, case IDs, evidence metadata/files and private review messages are never copied into public records. Holder and persona type remain fixed; ownership transfer or new evidence collection requires a separate application. See [the publication contract](docs/PUBLICATION-CONTRACT.md).
+For an approved application, the reviewer prepares an explicit public draft. The private case shows its exact fields and version; publication requires the authorized case owner's unchecked-by-default consent to that version and SHA-256 digest. Proposed updates stay private until another review and fresh consent. Revocation is terminal for that passport ID, removes its former content from public responses and the catalog, and retains a minimal revoked-status page at the same URL. Email, case IDs, evidence metadata/files and private review messages are never copied into public records. Holder and persona type remain fixed; ownership transfer or new evidence collection requires a separate application. See [the publication contract](docs/PUBLICATION-CONTRACT.md).
 
 ## API
 
@@ -67,8 +69,8 @@ For an approved application, the reviewer prepares an explicit public draft. The
 | `GET` | `/api/v1/passports/:id/check` | Demo record lookup and its limits. |
 | `POST` | `/api/v1/applications` | Validate and store an application. |
 | `POST` | `/api/v1/reports` | Validate and store a report. |
-| `GET` | `/api/v1/cases/:id` | Private case status with owner bearer token. |
-| `POST` | `/api/v1/cases/:id/evidence` | Add a private evidence file with owner bearer token. |
+| `GET` | `/api/v1/cases/:id` | Private case status with its bearer token or linked owner session. |
+| `POST` | `/api/v1/cases/:id/evidence` | Add private evidence with case-owner authorization. |
 | `GET` | `/api/v1/personas/:id/provenance` | Compare demo image hashes with the checked-in manifest. |
 | `GET` | `/api/v1/review/cases` | Reviewer queue with operator bearer token. |
 | `GET` | `/api/v1/review/cases/:id` | Full reviewer case detail. |
@@ -76,7 +78,7 @@ For an approved application, the reviewer prepares an explicit public draft. The
 | `POST` | `/api/v1/review/evidence/:id/decision` | Record an evidence decision and reason. |
 | `GET` | `/api/v1/review/evidence/:id/file` | Private evidence download. |
 
-JSON writes accept up to 16 KiB. Submissions and evidence are stored in the local SQLite database. Private case reads require the access token; reviewer reads require the operator token. For example:
+JSON writes accept up to 16 KiB. Submissions and evidence are stored in SQLite. Private case reads require the private token or linked account session; reviewer reads require the operator token. Account endpoints are documented in [owner accounts](docs/OWNER-ACCOUNTS.md). For example:
 
 ```bash
 curl -X POST http://127.0.0.1:4176/api/v1/reports \
@@ -98,10 +100,10 @@ curl -X POST http://127.0.0.1:4176/api/v1/reports \
 
 ```bash
 docker build -t spr:local .
-docker run --rm -p 4176:4176 -v spr-data:/app/var spr:local
+docker run --rm -p 127.0.0.1:4176:4176 -v spr-data:/app/var spr:local
 ```
 
-The named volume retains SQLite data across container replacement. The image runs as an unprivileged user and includes a health check.
+The named volume retains SQLite data across container replacement. The image runs as an unprivileged user and includes a health check. The example exposes only loopback; public operation requires a trusted HTTPS proxy and private access to the raw application listener.
 
 `.github/workflows/ci.yml` runs syntax and API tests on pushes and pull requests, then builds and smoke-tests the runtime image. `.github/workflows/release.yml` is a manual workflow that repeats validation, tests the **same image** it publishes, and pushes it to GHCR under the immutable commit SHA. It does not deploy to a host; no host has been selected. Both workflows pin GitHub Actions to commit SHAs and use limited token permissions. Dependabot proposes updates to Docker and workflow dependencies.
 
