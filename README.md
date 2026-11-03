@@ -105,6 +105,8 @@ docker run --rm -p 127.0.0.1:4176:4176 -v spr-data:/app/var spr:local
 
 The named volume retains SQLite data across container replacement. The image runs as an unprivileged user and includes a health check. The example exposes only loopback; public operation requires a trusted HTTPS proxy and private access to the raw application listener.
 
+With Docker bridge networking, a browser on the host may appear to the application as a non-loopback peer. The example still serves anonymous preview flows, but owner account endpoints reject that development access. For local account use, run `npm start` directly on loopback; for container account use, configure the exact HTTPS `PUBLIC_ORIGIN` behind a trusted TLS proxy and keep the raw listener private. CI's owner scenario runs inside the container and does not qualify host-browser access through a Docker bridge.
+
 `.github/workflows/ci.yml` runs syntax and API tests on pushes and pull requests, then builds and smoke-tests the runtime image. `.github/workflows/release.yml` is a manual workflow that repeats validation, tests the **same image** it publishes, and pushes it to GHCR under the immutable commit SHA. It does not deploy to a host; no host has been selected. Both workflows pin GitHub Actions to commit SHAs and use limited token permissions. Dependabot proposes updates to Docker and workflow dependencies.
 
 `.github/workflows/ai_review.yml` provides advisory comments on internal PRs when opened or updated. It requires the `OPENAI_API_KEY` secret and `AI_REVIEW_MODEL` variable, skips forks and Dependabot, and tolerates reviewer failures. Keep its job out of required merge checks. See [AI review setup and limits](docs/AI-REVIEW.md).
